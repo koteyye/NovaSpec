@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter --version:*)",
+      "Bash(flutter create:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter pub add:*)",
+      "WebSearch",
+      "WebFetch(domain:pub.dev)",
+      "Bash(dart run build_runner:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(cat:*)",
+      "Bash(Select-Object -Skip 604 -First 10)",
+      "Bash(dart format:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
