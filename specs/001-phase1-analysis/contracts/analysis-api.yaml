@@ -1,0 +1,344 @@
+openapi: 3.0.3
+info:
+  title: NovaSpec Phase 1 Analysis API
+  description: API для анализа TypeScript проекта и миграции на Flutter
+  version: 1.0.0
+
+paths:
+  /api/components:
+    get:
+      summary: Получить список всех компонентов TypeScript
+      responses:
+        '200':
+          description: Успешный ответ со списком компонентов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TypeScriptComponent'
+
+  /api/components/{id}:
+    get:
+      summary: Получить детальную информацию о компоненте
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Детальная информация о компоненте
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TypeScriptComponent'
+
+  /api/migration/mapping:
+    get:
+      summary: Получить карту миграции компонентов
+      responses:
+        '200':
+          description: Карта миграции
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MigrationMapping'
+
+  /api/design-system:
+    get:
+      summary: Получить систему дизайна
+      responses:
+        '200':
+          description: Система дизайна
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesignSystem'
+
+  /api/flutter/config:
+    get:
+      summary: Получить конфигурацию Flutter проекта
+      responses:
+        '200':
+          description: Конфигурация проекта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlutterProjectConfig'
+
+components:
+  schemas:
+    TypeScriptComponent:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - filePath
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор компонента
+        name:
+          type: string
+          description: Название компонента
+        type:
+          $ref: '#/components/schemas/ComponentType'
+        filePath:
+          type: string
+          description: Путь к файлу компонента
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: Зависимости компонента
+        props:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentProp'
+        styling:
+          $ref: '#/components/schemas/ComponentStyling'
+        stateManagement:
+          $ref: '#/components/schemas/StateManagementType'
+        complexity:
+          $ref: '#/components/schemas/ComplexityLevel'
+
+    ComponentType:
+      type: string
+      enum:
+        - WIDGET
+        - DIALOG
+        - SCREEN
+        - CONTAINER
+        - INPUT
+        - BUTTON
+
+    ComponentProp:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        required:
+          type: boolean
+        defaultValue:
+          type: string
+
+    ComponentStyling:
+      type: object
+      properties:
+        className:
+          type: string
+        inlineStyles:
+          type: object
+        cssFile:
+          type: string
+
+    StateManagementType:
+      type: string
+      enum:
+        - NONE
+        - LOCAL_STATE
+        - REDUX
+        - CONTEXT
+        - CUSTOM_HOOK
+
+    ComplexityLevel:
+      type: string
+      enum:
+        - LOW
+        - MEDIUM
+        - HIGH
+
+    MigrationMapping:
+      type: object
+      required:
+        - tsComponent
+        - flutterEquivalent
+      properties:
+        tsComponent:
+          $ref: '#/components/schemas/TypeScriptComponent'
+        flutterEquivalent:
+          $ref: '#/components/schemas/FlutterEquivalent'
+        migrationNotes:
+          type: string
+        customCodeRequired:
+          type: boolean
+        testingApproach:
+          type: string
+        estimatedEffort:
+          $ref: '#/components/schemas/EffortEstimate'
+
+    FlutterEquivalent:
+      type: object
+      required:
+        - widgetType
+      properties:
+        widgetType:
+          type: string
+        package:
+          type: string
+        customImplementation:
+          type: boolean
+
+    EffortEstimate:
+      type: object
+      required:
+        - hours
+        - complexity
+      properties:
+        hours:
+          type: number
+          minimum: 0
+        complexity:
+          $ref: '#/components/schemas/ComplexityLevel'
+
+    DesignSystem:
+      type: object
+      properties:
+        colors:
+          $ref: '#/components/schemas/ColorPalette'
+        typography:
+          $ref: '#/components/schemas/TypographySystem'
+        spacing:
+          $ref: '#/components/schemas/SpacingSystem'
+        shadows:
+          $ref: '#/components/schemas/ShadowSystem'
+        animations:
+          $ref: '#/components/schemas/AnimationSystem'
+        breakpoints:
+          $ref: '#/components/schemas/BreakpointSystem'
+
+    ColorPalette:
+      type: object
+      properties:
+        primary:
+          type: string
+        secondary:
+          type: string
+        accent:
+          type: string
+        background:
+          type: string
+        surface:
+          type: string
+        error:
+          type: string
+
+    TypographySystem:
+      type: object
+      properties:
+        fontFamily:
+          type: string
+        fontSize:
+          type: object
+        fontWeight:
+          type: object
+        lineHeight:
+          type: object
+
+    FlutterProjectConfig:
+      type: object
+      required:
+        - projectName
+        - packageName
+        - flutterVersion
+        - dartVersion
+      properties:
+        projectName:
+          type: string
+        packageName:
+          type: string
+        flutterVersion:
+          type: string
+        dartVersion:
+          type: string
+        platforms:
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetPlatform'
+        dependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dependency'
+        devDependencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dependency'
+
+    TargetPlatform:
+      type: string
+      enum:
+        - WINDOWS
+        - MACOS
+        - LINUX
+        - IOS
+        - ANDROID
+        - WEB
+
+    Dependency:
+      type: object
+      required:
+        - name
+        - version
+        - type
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        type:
+          $ref: '#/components/schemas/DependencyType'
+        purpose:
+          type: string
+
+    DependencyType:
+      type: string
+      enum:
+        - RUNTIME
+        - DEV
+        - TEST
+
+    SpacingSystem:
+      type: object
+      properties:
+        unit:
+          type: number
+        scale:
+          type: array
+          items:
+            type: number
+
+    ShadowSystem:
+      type: object
+      properties:
+        elevation:
+          type: object
+        blurRadius:
+          type: object
+
+    AnimationSystem:
+      type: object
+      properties:
+        duration:
+          type: object
+        easing:
+          type: object
+
+    BreakpointSystem:
+      type: object
+      properties:
+        mobile:
+          type: number
+        tablet:
+          type: number
+        desktop:
+          type: number

@@ -1,5 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
 # Техническое задание для NovaSpec - Flutter/Dart версия
 
 В папке nova-spec-ide-studio лежит проект UI написанный на TypeScript - это полностью готовый UI для разрабатываемого приложения но без бизнес-логики, его необходимо в точности как оно есть переписать на **Flutter/Dart** (но при этом не забывать соблюдать паттерны Flutter).

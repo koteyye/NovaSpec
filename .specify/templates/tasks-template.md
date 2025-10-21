@@ -45,9 +45,11 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Create Flutter project structure per implementation plan
+- [ ] T002 Initialize Flutter project with required dependencies (dio, provider, get_it, file_picker, flutter_secure_storage, flutter_svg, webview_flutter, flutter_localizations)
+- [ ] T003 [P] Configure dart analysis options and formatting
+- [ ] T004 [P] Setup flutter_localizations for Russian/English support
+- [ ] T005 Move novaspec-logo.svg and atlassian-icon.svg to assets folder
 
 ---
 
@@ -61,10 +63,12 @@ Examples of foundational tasks (adjust based on your project):
 
 - [ ] T004 Setup database schema and migrations framework
 - [ ] T005 [P] Implement authentication/authorization framework
-- [ ] T006 [P] Setup API routing and middleware structure
-- [ ] T007 Create base models/entities that all stories depend on
-- [ ] T008 Configure error handling and logging infrastructure
-- [ ] T009 Setup environment configuration management
+- [ ] T006 [P] Setup dependency injection container with get_it
+- [ ] T007 [P] Create base UI components (ModernButton, ModernToast, CustomStyledDropdown)
+- [ ] T008 Create base models/entities that all stories depend on
+- [ ] T009 Configure error handling and logging infrastructure
+- [ ] T010 Setup environment configuration management
+- [ ] T011 [P] Setup caching service with memory and file storage
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -76,12 +80,12 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️
+### Manual Testing for User Story 1 (REQUIRED) ⚠️
 
-**NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+**NOTE: All functionality MUST be tested manually by user through UI**
 
-- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T010 [US1] Manual test: Verify [feature] works correctly through UI
+- [ ] T011 [US1] Manual test: Test [user journey] end-to-end manually
 
 ### Implementation for User Story 1
 
@@ -102,10 +106,10 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️
+### Manual Testing for User Story 2 (REQUIRED) ⚠️
 
-- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T018 [US2] Manual test: Verify [feature] works correctly through UI
+- [ ] T019 [US2] Manual test: Test [user journey] end-to-end manually
 
 ### Implementation for User Story 2
 
@@ -124,10 +128,10 @@ Examples of foundational tasks (adjust based on your project):
 
 **Independent Test**: [How to verify this story works on its own]
 
-### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️
+### Manual Testing for User Story 3 (REQUIRED) ⚠️
 
-- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T024 [US3] Manual test: Verify [feature] works correctly through UI
+- [ ] T025 [US3] Manual test: Test [user journey] end-to-end manually
 
 ### Implementation for User Story 3
 
@@ -150,7 +154,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Documentation updates in docs/
 - [ ] TXXX Code cleanup and refactoring
 - [ ] TXXX Performance optimization across all stories
-- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
+- [ ] TXXX Manual testing validation across all stories
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
 
@@ -175,7 +179,7 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Within Each User Story
 
-- Tests (if included) MUST be written and FAIL before implementation
+- Manual testing MUST be performed after implementation
 - Models before services
 - Services before endpoints
 - Core implementation before integration
@@ -186,7 +190,7 @@ Examples of foundational tasks (adjust based on your project):
 - All Setup tasks marked [P] can run in parallel
 - All Foundational tasks marked [P] can run in parallel (within Phase 2)
 - Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
-- All tests for a user story marked [P] can run in parallel
+- All manual testing for a user story can be performed in sequence
 - Models within a story marked [P] can run in parallel
 - Different user stories can be worked on in parallel by different team members
 
@@ -195,11 +199,11 @@ Examples of foundational tasks (adjust based on your project):
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch all tests for User Story 1 together (if tests requested):
-Task: "Contract test for [endpoint] in tests/contract/test_[name].py"
-Task: "Integration test for [user journey] in tests/integration/test_[name].py"
+# Perform all manual testing for User Story 1:
+Task: "Manual test: Verify [feature] works correctly through UI"
+Task: "Manual test: Test [user journey] end-to-end manually"
 
-# Launch all models for User Story 1 together:
+# Create all models for User Story 1 together:
 Task: "Create [Entity1] model in src/models/[entity1].py"
 Task: "Create [Entity2] model in src/models/[entity2].py"
 ```
@@ -242,7 +246,7 @@ With multiple developers:
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
-- Verify tests fail before implementing
+- Verify functionality works through manual testing after implementing
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
