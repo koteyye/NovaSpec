@@ -1,131 +1,182 @@
-# Feature Specification: [FEATURE NAME]
+# Спецификация функционала: Настройки и интеграции
 
-**Feature Branch**: `[###-feature-name]`  
-**Created**: [DATE]  
-**Status**: Draft  
-**Input**: User description: "$ARGUMENTS"
+**Фича-бранч**: `006-settings-integrations`  
+**Создана**: 22.10.2025  
+**Статус**: Черновик  
+**Вход**: User description: "Изучить requirements.md и implementation-plan.md, затем написать спецификацию на русском языке для Phase 4: Settings and Integrations"
 
-## User Scenarios & Testing *(mandatory)*
+## Сценарии использования и тестирование *(обязательно)*
 
-<!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
-  Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
-  Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
-  Think of each story as a standalone slice of functionality that can be:
-  - Developed independently
-  - Tested independently
-  - Deployed independently
-  - Demonstrated to users independently
--->
+### User Story 1 - Настройка AI-провайдеров (Priority: P1)
 
-### User Story 1 - [Brief Title] (Priority: P1)
+Пользователь настраивает параметры подключения к различным AI-провайдерам для генерации контента в технических заданиях.
 
-[Describe this user journey in plain language]
+**Почему этот приоритет**: Критически важная функциональность - без настроенных AI-провайдеров основная функция приложения недоступна.
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**Независимое тестирование**: Можно полностью протестировать настройку одного AI-провайдера (например, OpenAI) и получить рабочую функциональность генерации контента.
 
-**Independent Test**: [Describe how this can be tested independently - e.g., "Can be fully tested by [specific action] and delivers [specific value]"]
+**Сценарии принятия**:
 
-**Acceptance Scenarios**:
-
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-2. **Given** [initial state], **When** [action], **Then** [expected outcome]
+1. **Given** пользователь открывает настройки, **When** выбирает AI-провайдера OpenAI, **Then** может ввести API ключ и выбрать модель
+2. **Given** пользователь вводит неверный API ключ, **When** пытается сохранить, **Then** получает сообщение об ошибке валидации
+3. **Given** пользователь настраивает любого AI-провайдера, **When** вводит корректные данные, **Then** система успешно подключается и сохраняет настройки
 
 ---
 
-### User Story 2 - [Brief Title] (Priority: P2)
+### User Story 2 - Интеграция с Confluence (Priority: P1)
 
-[Describe this user journey in plain language]
+Пользователь настраивает подключение к Confluence Cloud или Data Center для импорта/экспорта технических заданий.
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**Почему этот приоритет**: Основная интеграция для работы с техническими заданиями в корпоративной среде.
 
-**Independent Test**: [Describe how this can be tested independently]
+**Независимое тестирование**: Можно настроить только Confluence Cloud и полностью протестировать импорт/экспорт документов.
 
-**Acceptance Scenarios**:
+**Сценарии принятия**:
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-
----
-
-### User Story 3 - [Brief Title] (Priority: P3)
-
-[Describe this user journey in plain language]
-
-**Why this priority**: [Explain the value and why it has this priority level]
-
-**Independent Test**: [Describe how this can be tested independently]
-
-**Acceptance Scenarios**:
-
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+1. **Given** пользователь выбирает Confluence, **When** вводит URL Cloud версии, **Then** система автоматически определяет тип и предлагает соответствующие настройки
+2. **Given** пользователь настраивает Data Center, **When** вводит учетные данные, **Then** система проверяет подключение к локальному серверу
+3. **Given** подключение не удалось, **When** пользователь пытается импортировать документ, **Then** получает понятное сообщение об ошибке с рекомендациями
 
 ---
 
-[Add more user stories as needed, each with an assigned priority]
+### User Story 3 - Настройка генерации музыки (Priority: P2)
 
-### Edge Cases
+Пользователь настраивает интеграцию с gen-api.ru для генерации музыкального сопровождения к техническим заданиям.
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
+**Почему этот приоритет**: Дополнительная функциональность, улучшающая пользовательский опыт, но не критичная для основной работы.
 
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
+**Независимое тестирование**: Можно настроить только генерацию музыки и протестировать создание аудиодорожек для проектов.
 
-## Requirements *(mandatory)*
+**Сценарии принятия**:
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
+1. **Given** пользователь переходит в настройки музыки, **When** вводит API ключ gen-api.ru, **Then** может выбрать стиль и параметры генерации
+2. **Given** пользователь генерирует музыку, **When** процесс завершается, **Then** аудиофайл доступен для прослушивания и скачивания
+3. **Given** API ключ неверный, **When** пользователь пытается сгенерировать музыку, **Then** получает сообщение об ошибке с инструкцией по проверке ключа
 
-### Functional Requirements
+---
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+### User Story 4 - Управление языком интерфейса (Priority: P2)
 
-### Flutter/Dart Specific Requirements
+Пользователь может переключать язык интерфейса между русским и английским.
 
-- **FR-006**: UI components MUST match TypeScript reference design exactly
-- **FR-007**: All external integrations MUST use dio HTTP client
-- **FR-008**: State management MUST follow Provider pattern with ChangeNotifier
-- **FR-009**: All text elements MUST support flutter_localizations
-- **FR-010**: File operations MUST use file_picker package
-- **FR-011**: SVG icons MUST use flutter_svg package
-- **FR-012**: WebView components MUST use webview_flutter package
-- **FR-013**: UI components MUST use created components: ModernButton, ModernToast, CustomStyledDropdown
-- **FR-014**: Standard Flutter buttons (ElevatedButton, TextButton) are PROHIBITED
-- **FR-015**: DI MUST use get_it with singleton pattern for services
-- **FR-016**: NO automated tests - all functionality MUST be validated manually by user
-- **FR-017**: Unit tests, widget tests, integration tests are PROHIBITED
+**Почему этот приоритет**: Важная функция для国际化, но не блокирующая основную функциональность.
 
-*Example of marking unclear requirements:*
+**Независимое тестирование**: Можно полностью протестировать переключение языков и локализацию всех элементов интерфейса.
 
-- **FR-013**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-014**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+**Сценарии принятия**:
 
-### Key Entities *(include if feature involves data)*
+1. **Given** пользователь использует русский интерфейс, **When** переключает на английский, **Then** все элементы интерфейса отображаются на английском
+2. **Given** пользователь меняет язык, **When** перезапускает приложение, **Then** выбранный язык сохраняется
+3. **Given** система не может загрузить локализацию, **When** пользователь открывает приложение, **Then** используется английский язык по умолчанию
 
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
+---
 
-## Success Criteria *(mandatory)*
+### User Story 5 - Валидация и сохранение настроек (Priority: P1)
 
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be technology-agnostic and measurable.
--->
+Система валидирует все настройки перед сохранением и обеспечивает их целостность.
 
-### Measurable Outcomes
+**Почему этот приоритет**: Критически важно для стабильности работы приложения и безопасности данных пользователя.
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+**Независимое тестирование**: Можно протестировать валидацию всех типов настроек независимо от конкретных интеграций.
 
+**Сценарии принятия**:
+
+1. **Given** пользователь заполняет форму настроек, **When** нажимает сохранить, **Then** система проверяет корректность всех полей
+2. **Given** настройки содержат ошибки, **When** пользователь пытается сохранить, **Then** подсвечиваются некорректные поля с описанием ошибок
+3. **Given** настройки корректны, **When** пользователь сохраняет, **Then** данные шифруются и сохраняются в secure storage
+
+---
+
+### Граничные случаи
+
+- Что происходит при потере интернет-соединения во время сохранения настроек?
+- Как система обрабатывает истечение срока действия API ключей?
+- Как поведение системы при недоступности внешних сервисов (Confluence, AI-провайдеры)?
+- Как работает валидация для разных типов AI провайдеров?
+
+**Ответы на граничные случаи:**
+- При потере интернет-соединения ничего не происходит, т.к. нет активной сессии с провайдером, проверка выполняется 1 запросом
+- Если срок API ключа истек, показываем тост с ошибкой
+- Если недоступность возникла при одном запросе, показываем тост с ошибкой
+- Валидация AI провайдеров: запрос моделей для OpenAI/Groq/Cerebras/OpenRouter, запрос сообщений для Anthropic, проверка доступности для LM Studio/Ollama, проверка баланса для Z.AI
+
+## Workflow валидации и сохранения
+
+### Кнопка "Проверить"
+1. Выполняет тестовые запросы к настроенным сервисам:
+   - AI провайдер: запрос моделей или сообщений через dio
+   - Confluence: запрос пространств через autoопределенный API URL
+   - Музыка: запрос баланса gen-api.ru (`/api/v1/user`)
+2. При всех 200 OK: SnackBar "Все интеграции успешно прошли проверку"
+3. При ошибке: SnackBar "<название> не прошло проверку: <ошибка>"
+
+### Кнопка "Сохранить"
+- Активна только после успешной проверки
+- Сохраняет все настройки в SharedPreferences
+- Чувствительные данные в flutter_secure_storage
+
+## Требования *(обязательно)*
+
+### Функциональные требования
+
+- **FR-001**: Система ДОЛЖНА предоставлять интерфейс для настройки AI-провайдеров (OpenAI, OpenAI Competitive, Anthropic, Cerebras, Groq, LM Studio, Ollama, OpenRouter, Z.AI)
+- **FR-002**: Система ДОЛЖНА автоматически определять тип Confluence (Cloud/Data Center) по URL с алгоритмом: 
+  - Cloud: `*.atlassian.net` с `/wiki` в пути → `https://host/wiki/rest/api`
+  - Data Center: остальные URL → `scheme://host/path/rest/api`
+- **FR-003**: Система ДОЛЖНА валидировать API ключи перед сохранением настроек
+- **FR-004**: Пользователь ДОЛЖЕН иметь возможность переключать язык интерфейса (RU/EN)
+- **FR-005**: Система ДОЛЖНА шифровать чувствительные данные (API ключи, токены)
+- **FR-006**: Система ДОЛЖНА предоставлять тестирование подключения к внешним сервисам с таймаутом 30 секунд и 3 попытками повторного запроса
+- **FR-007**: Система ДОЛЖНА сохранять настройки между сессиями приложения с оптимистичной блокировкой при одновременном доступе
+- **FR-008**: Система ДОЛЖНА обрабатывать ошибки внешних API и предоставлять понятные сообщения через ModernToast
+
+### Flutter/Dart специфичные требования
+
+- **FR-009**: UI компоненты ДОЛЖНЫ точно соответствовать TypeScript reference дизайну
+- **FR-010**: Все внешние интеграции ДОЛЖНЫ использовать dio HTTP клиент
+- **FR-011**: Управление состоянием ДОЛЖНО следовать Provider паттерну с ChangeNotifier
+- **FR-012**: Все текстовые элементы ДОЛЖНЫ поддерживать flutter_localizations
+- **FR-013**: Файловые операции ДОЛЖНЫ использовать file_picker пакет
+- **FR-014**: SVG иконки ДОЛЖНЫ использовать flutter_svg пакет
+- **FR-015**: WebView компоненты ДОЛЖНЫ использовать webview_flutter пакет
+- **FR-016**: UI компоненты ДОЛЖНЫ использовать созданные компоненты: ModernButton, ModernToast, CustomStyledDropdown
+- **FR-017**: Стандартные Flutter кнопки (ElevatedButton, TextButton) ЗАПРЕЩЕНЫ
+- **FR-018**: DI ДОЛЖЕН использовать get_it с singleton паттерном для сервисов
+- **FR-019**: БЕЗ автоматизированных тестов - вся функциональность ДОЛЖНА проверяться вручную пользователем
+- **FR-020**: Unit тесты, widget тесты, integration тесты ЗАПРЕЩЕНЫ
+- **FR-021**: Для хранения чувствительных данных ДОЛЖЕН использоваться flutter_secure_storage
+- **FR-022**: Для общих настроек ДОЛЖЕН использоваться shared_preferences
+
+### Ключевые сущности
+
+- **Settings**: Основная сущность настроек приложения, содержит AI-провайдеры, интеграции, язык интерфейса
+- **AIProvider**: Конфигурация AI-провайдера (одна активная конфигурация на провайдер: API ключ, базовый URL, модель, параметры)
+- **ConfluenceConfig**: Настройки подключения к Confluence (URL, email, токен, автоопределенный тип)
+- **MusicConfig**: Настройки генерации музыки (API ключ gen-api.ru, жанр из 8 вариантов)
+
+### Музыкальные жанры (локализованные):
+- **Русская локализация**: Поп, Русский рэп, Рок, Джаз, Классика, Электронная музыка, Хип-хоп, R&B
+- **Английская локализация**: Pop, Russian rap, Rock, Jazz, Classic, Electro music, Hip-hop, R&B
+- **Системные значения**: pop, russian rap, rock, jazz, classic, electro music, hip-hop, r&b
+
+## Clarifications
+
+### Session 2025-10-23
+- Q: Детали реализации безопасности → A: AES-256 шифрование с ротацией ключей каждые 90 дней
+- Q: Таймауты и retry стратегии для внешних API → A: Таймаут 30 секунд с 3 попытками повторного запроса
+- Q: Обработка одновременного доступа к настройкам → A: Оптимистичная блокировка с проверкой версии при сохранении
+- Q: Количество одновременно сохраняемых конфигураций провайдеров → A: Одна активная конфигурация на каждый провайдер
+- Q: Метрики производительности UI → A: Открытие настроек < 500ms, переключение вкладок < 200ms
+
+## Критерии успеха *(обязательно)*
+
+### Измеримые результаты
+
+- **SC-001**: Пользователь может настроить базовый AI-провайдер менее чем за 3 минуты
+- **SC-002**: Система успешно определяет тип Confluence в 95% случаев
+- **SC-003**: 90% пользователей успешно сохраняют настройки с первой попытки
+- **SC-004**: Время переключения языка интерфейса не превышает 1 секунду
+- **SC-007**: Открытие экрана настроек выполняется менее чем за 500ms
+- **SC-008**: Переключение вкладок настроек выполняется менее чем за 200ms
+- **SC-005**: Все чувствительные данные надежно шифруются при сохранении с использованием AES-256
+- **SC-006**: Система предоставляет понятные сообщения об ошибках в 100% случаев сбоя

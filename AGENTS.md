@@ -1,45 +1,46 @@
-﻿# NovaSpec Agent Context
+﻿# Контекст агента NovaSpec
 
-## Project Overview
-NovaSpec - Flutter/Dart версия приложения для создания технических заданий с ИИ-ассистентом.
+## Обзор проекта
+NovaSpec - это версия приложения на Flutter/Dart для создания технических заданий с ИИ-ассистентом.
 
-## Technology Stack
-- **Framework**: Flutter 3.x
-- **Language**: Dart 3.x
-- **State Management**: Provider/Bloc
-- **HTTP Client**: dio
-- **File Operations**: file_picker, dart:io
-- **Storage**: SharedPreferences, flutter_secure_storage
-- **UI Components**: Material Design 3
-- **Localization**: flutter_localizations
+## Технологический стек
+- **Фреймворк**: Flutter 3.x
+- **Язык**: Dart 3.x
+- **Управление состоянием**: Provider/Bloc
+- **HTTP клиент**: dio
+- **Работа с файлами**: file_picker, dart:io
+- **Хранилище**: SharedPreferences, flutter_secure_storage
+- **UI компоненты**: Material Design 3
+- **Локализация**: flutter_localizations
  - **Monaco Editor**: monaco_editor
  - **WebView**: webview_flutter (Swagger UI)
-- **Audio**: audioplayers
+- **Аудио**: audioplayers
 - **Markdown**: flutter_markdown
 - **HTML**: flutter_html
 - **SVG**: flutter_svg
 
-## Architecture Principles
-- MVVM pattern with Dependency Injection
-- Feature-based project structure
-- Manual testing only (no automated tests)
-- Visual identity with TypeScript reference
-- Russian and English localization support
+## Принципы архитектуры
+- Паттерн Bloc (или Riverpod) для управления состоянием
+- Внедрение зависимостей через get_it в связке с injectable или нативные возможности Riverpod
+- Структура проекта на основе функций
+- Только ручное тестирование (без автоматизированных тестов)
+- Визуальная идентичность с TypeScript версией
+- Поддержка русской и английской локализации
 
-## Key Dependencies
-- dio: HTTP requests for all external integrations
-- shared_preferences: App settings and configuration
-- flutter_secure_storage: API tokens and sensitive data
-- file_picker: File and directory selection
- - monaco_editor: Monaco Editor integration
- - webview_flutter: Swagger UI integration
-- flutter_svg: SVG icon rendering
-- flutter_localizations: Internationalization support
-- audioplayers: Audio playback functionality
-- flutter_markdown: Markdown rendering
-- flutter_html: HTML rendering
+## Ключевые зависимости
+- dio: HTTP запросы для всех внешних интеграций
+- shared_preferences: Настройки приложения и конфигурация
+- flutter_secure_storage: API токены и чувствительные данные
+- file_picker: Выбор файлов и директорий
+ - monaco_editor: Интеграция Monaco Editor
+ - webview_flutter: Интеграция Swagger UI
+- flutter_svg: Отрисовка SVG иконок
+- flutter_localizations: Поддержка интернационализации
+- audioplayers: Функциональность воспроизведения аудио
+- flutter_markdown: Отрисовка Markdown
+- flutter_html: Отрисовка HTML
 
-## Project Structure
+## Структура проекта
 ```
 lib/
 ├── main.dart
@@ -68,13 +69,18 @@ lib/
     └── app_localizations_en.dart
 ```
 
-## Constitution Compliance
-- UI identity with TypeScript reference (nova-spec-ide-studio-main)
-- Flutter/Dart ecosystem usage only
-- MVVM architecture with clear separation
-- Localization support for Russian and English
-- API integrations through dio only
-- Manual testing only (no automated tests)
+## Требования к коммуникации
+- **Язык коммуникации**: Весь обмен информацией, документация и комментарии должны вестись исключительно на русском языке
+- **Стиль общения**: Допускается использование неформального стиля с элементами блатного жаргона для улучшения командного взаимодействия
 
-## Current Phase: Phase 1 - Analysis and Preparation
-Focus on analyzing TypeScript project and setting up Flutter foundation.
+## Соответствие стандартам
+- Визуальная идентичность с TypeScript версией (nova-spec-ide-studio-main)
+- Использование только экосистемы Flutter/Dart
+- Архитектура на основе Bloc (или Riverpod) с четким разделением
+- Внедрение зависимостей через get_it в связке с injectable или нативные возможности Riverpod
+- Поддержка локализации для русского и английского языков
+- API интеграции только через dio
+- Только ручное тестирование (без автоматизированных тестов)
+
+## Текущий этап: Этап 1 - Анализ и подготовка
+Фокус на анализе TypeScript проекта и настройке Flutter основы.

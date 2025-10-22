@@ -1,0 +1,601 @@
+openapi: 3.0.3
+info:
+  title: NovaSpec Settings API
+  description: API contracts for settings and integrations
+  version: 1.0.0
+
+paths:
+  # AI Provider Validation (Real endpoints)
+  # OpenAI Models
+  /v1/models:
+    get:
+      summary: Get OpenAI available models
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+      responses:
+        '200':
+          description: Models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: "list"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        object:
+                          type: string
+                        created:
+                          type: integer
+                        owned_by:
+                          type: string
+        '401':
+          description: Invalid API key
+
+  # Anthropic Models  
+  /v1/models:
+    get:
+      summary: Get Anthropic available models
+      parameters:
+        - name: x-api-key
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: anthropic-version
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "2023-06-01"
+      responses:
+        '200':
+          description: Models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        object:
+                          type: string
+                        created:
+                          type: integer
+                        type:
+                          type: string
+        '401':
+          description: Invalid API key
+
+  # Cerebras Models
+  /openai/v1/models:
+    get:
+      summary: Get Cerebras available models
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+      responses:
+        '200':
+          description: Models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: "list"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        object:
+                          type: string
+                        created:
+                          type: integer
+                        owned_by:
+                          type: string
+        '401':
+          description: Invalid API key
+
+  # Groq Models
+  /openai/v1/models:
+    get:
+      summary: Get Groq available models
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+      responses:
+        '200':
+          description: Models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: "list"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        object:
+                          type: string
+                        created:
+                          type: integer
+                        owned_by:
+                          type: string
+        '401':
+          description: Invalid API key
+
+  # OpenRouter Models
+  /api/v1/models:
+    get:
+      summary: Get OpenRouter available models
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+      responses:
+        '200':
+          description: Models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        pricing:
+                          type: object
+                        context_length:
+                          type: integer
+        '401':
+          description: Invalid API key
+
+  # LM Studio / Ollama Models (OpenAI Compatible)
+  /v1/models:
+    get:
+      summary: Get LM Studio / Ollama available models
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+            description: Bearer token (optional for LM Studio/Ollama)
+      responses:
+        '200':
+          description: Models retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                    example: "list"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        object:
+                          type: string
+                        created:
+                          type: integer
+                        owned_by:
+                          type: string
+        '401':
+          description: Invalid API key (if provided)
+        '000':
+          description: Connection failed (LM Studio/Ollama not running)
+
+  # Confluence Integration (Real endpoints)
+  /rest/api/space:
+    get:
+      summary: Get Confluence spaces (Data Center)
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Basic auth token
+      responses:
+        '200':
+          description: Spaces retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConfluenceSpace'
+                  start:
+                    type: integer
+                  limit:
+                    type: integer
+                  size:
+                    type: integer
+        '401':
+          description: Authentication failed
+
+  /wiki/rest/api/space:
+    get:
+      summary: Get Confluence spaces (Cloud)
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+      responses:
+        '200':
+          description: Spaces retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConfluenceSpace'
+                  start:
+                    type: integer
+                  limit:
+                    type: integer
+                  size:
+                    type: integer
+        '401':
+          description: Authentication failed
+
+  # Music Generation (gen-api.ru)
+  /api/v1/user:
+    get:
+      summary: Get user info and balance (gen-api.ru)
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+        - name: User-Agent
+          in: header
+          required: true
+          schema:
+            type: string
+            description: NovaSpec/1.0
+      responses:
+        '200':
+          description: User info retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  phone_number:
+                    type: string
+                    nullable: true
+                  balance:
+                    type: integer
+                    description: Current balance in rubles
+                  email_verified_at:
+                    type: string
+                    format: date-time
+                  created_at:
+                    type: string
+                    format: date-time
+        '401':
+          description: Invalid token
+        '500':
+          description: Service error
+
+  /api/v1/networks/suno:
+    post:
+      summary: Generate music with Suno (gen-api.ru)
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            enum: [application/json]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, tags, prompt]
+              properties:
+                title:
+                  type: string
+                  description: Song title
+                  example: "Свобода"
+                tags:
+                  type: string
+                  description: Music genre from config
+                  example: "pop"
+                prompt:
+                  type: string
+                  description: Lyrics generated by AI
+                translate_input:
+                  type: boolean
+                  default: false
+                model:
+                  type: string
+                  default: "v5"
+                  enum: ["v5"]
+      responses:
+        '200':
+          description: Generation request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: integer
+                    description: Generation request ID
+                  model:
+                    type: string
+                    example: "suno"
+                  status:
+                    type: string
+                    example: "processing"
+        '201':
+          description: Generation request accepted (alternative success)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: integer
+                  model:
+                    type: string
+                    example: "suno"
+                  status:
+                    type: string
+                    example: "processing"
+        '402':
+          description: Insufficient balance
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Insufficient balance"
+        '400':
+          description: Request not found
+        '401':
+          description: Missing or invalid token
+        '404':
+          description: Network not found
+        '503':
+          description: Unexpected error
+        '419':
+          description: Too many requests
+
+  /api/v1/request/get/{requestId}:
+    get:
+      summary: Get music generation status
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            description: Bearer token
+      responses:
+        '200':
+          description: Status retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  status:
+                    type: string
+                    enum: [processing, success, failed, cancelled]
+                  response_type:
+                    type: string
+                    example: "audio"
+                  cost:
+                    type: integer
+                    description: Generation cost
+                  progress:
+                    type: integer
+                    description: Progress percentage (0-100)
+                  result:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                    description: Download URLs for generated audio files
+                    example: [
+                      "https://gen-api.storage.yandexcloud.net/input_files/1760102881_68e909e1ae303.mp3",
+                      "https://gen-api.storage.yandexcloud.net/input_files/1760102886_68e909e650cf9.mp3"
+                    ]
+        '400':
+          description: Request not found
+        '401':
+          description: Missing or invalid token
+        '404':
+          description: Request not found
+        '500':
+          description: Service error
+
+components:
+  schemas:
+    AIProviderType:
+      type: string
+      enum: [openai, anthropic, groq, cerebras, openrouter, openaiCompetitive, lmStudio, ollama]
+
+    ConfluenceType:
+      type: string
+      enum: [cloud, dataCenter]
+
+    ConfluenceConnectionStatus:
+      type: string
+      enum: [disconnected, connecting, connected, error, unauthorized]
+
+    MusicStyle:
+      type: string
+      enum: [pop, russian rap, rock, jazz, classic, electric music, hip-hop, r&b]
+
+    MusicFormat:
+      type: string
+      enum: [mp3, wav, flac]
+
+    ValidationResult:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+    ConfluenceConfig:
+      type: object
+      required: [type, url]
+      properties:
+        type:
+          $ref: '#/components/schemas/ConfluenceType'
+        url:
+          type: string
+          format: uri
+        email:
+          type: string
+        token:
+          type: string
+          format: password
+        cloudId:
+          type: string
+        spaceKey:
+          type: string
+
+    ConfluenceSpace:
+      type: object
+      properties:
+        id:
+          type: integer
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+
+    MusicGenerationResult:
+      type: object
+      properties:
+        generationId:
+          type: string
+        status:
+          $ref: '#/components/schemas/MusicGenerationStatus'
+        estimatedTime:
+          type: integer
+          description: Estimated time in seconds
+
+    MusicGenerationStatus:
+      type: string
+      enum: [pending, processing, completed, failed, cancelled]
+
+    SettingsValidationError:
+      type: string
+      enum: [invalidApiKey, unsupportedModel, invalidUrl, connectionFailed, quotaExceeded, invalidFormat, insufficientBalance]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/SettingsValidationError'
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []

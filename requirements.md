@@ -260,10 +260,38 @@ final response = await dio.post(
 );
 ```
 
+#### Z.AI
+Дополнительное поле "Способ доступа к API", со значением:
+- По подписке (Coding Plan)
+- По использованию (Pay-as-you-go)
+
+Пример запроса с **dio**:
+URL определяется по полю "Способ доступа к API":
+Если Coding Plan `https://api.z.ai/api/coding/paas/v4`
+Если Pay-as-you-go `https://api.z.ai/api/paas/v4/`
+
+```curl
+curl --location 'https://api.z.ai/{api/coding}/paas/v4/chat/completions' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--header 'Accept-Language: en-US,en' \
+--header 'Content-Type: application/json' \
+--data '{
+    "model": "glm-4.6",
+    "messages": [
+        {
+            "role": "user",
+            "content": "Write a poem about spring"
+        }
+    ],
+    "stream": true
+}'
+```
+
+Требуется запросить токен
 
 #### Общие требования
 
-Заголовки: OpenAI/Groq/OpenRouter/Cerebras/LM Studio/Ollama — Authorization: Bearer; Anthropic — x-api-key и обязательный anthropic-version;
+Заголовки: OpenAI/Groq/OpenRouter/Cerebras/LM Studio/Ollama/Z.AI — Authorization: Bearer; Anthropic — x-api-key и обязательный anthropic-version;
 
 ### Интеграция с Confluence
 
@@ -1338,45 +1366,10 @@ model: <название модели> по аналогии с AI-асисте�
 
 ## Архитектура приложения
 
-### MVVM Pattern
-Использовать встроенную поддержку MVVM в MAUI
-CommunityToolkit.Mvvm для дополнительных helpers
-
-### Dependency Injection
-Встроенный DI контейнер MAUI
-Регистрация сервисов в MauiProgram.cs
-
-### Сервисы
-```csharp
-// Сервис для работы с API провайдерами
-public interface IProviderService
-{
-    Task<List<Model>> GetModelsAsync();
-    Task<string> SendMessageAsync(string message);
-}
-
-// Сервис конфигурации
-public interface IConfigurationService
-{
-    Task SaveConfigAsync(AppConfig config);
-    Task<AppConfig> LoadConfigAsync();
-}
-```
-
-### Работа с файлами
-Использовать встроенные возможности MAUI:
-```csharp
-// Встроенный FilePicker для выбора папок
-var result = await FilePicker.PickAsync(new PickOptions
-{
-    PickerTitle = "Выберите папку проекта"
-});
-```
-
-### Хранение данных
-- Preferences API для простых настроек
-- SecureStorage для токенов и чувствительных данных
-- FileSystem API для работы с файлами проекта
+Приложение должно быть реализовано с использованием паттерна Bloc (или Riverpod) для управления состоянием.
+Для внедрения зависимостей использовать пакет get_it в связке с injectable или нативные возможности Riverpod.
+Все сервисы (работа с файлами, API, конфигурацией) должны быть изолированы в отдельные классы и инжектиться в виджеты.
+Хранение настроек — через shared_preferences, чувствительные данные (токены) — через flutter_secure_storage. 
 
 ### Локализация
 - Поддержка русского и английского языков согласно ТЗ
