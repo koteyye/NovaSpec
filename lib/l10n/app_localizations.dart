@@ -398,6 +398,24 @@ abstract class AppLocalizations {
   /// **'Page Not Found'**
   String get pageNotFound;
 
+  /// No description provided for @noOpenProject.
+  ///
+  /// In en, this message translates to:
+  /// **'No Open Project'**
+  String get noOpenProject;
+
+  /// No description provided for @workspaceComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Workspace will be available soon'**
+  String get workspaceComingSoon;
+
+  /// No description provided for @workspaceNextVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Workspace will be available in the next version'**
+  String get workspaceNextVersion;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
@@ -733,6 +751,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Completed'**
   String get completed;
+
+  /// No description provided for @parameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Parameters'**
+  String get parameters;
+
+  /// No description provided for @aiProviders.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Providers'**
+  String get aiProviders;
+
+  /// No description provided for @openAi.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI'**
+  String get openAi;
+
+  /// No description provided for @claude.
+  ///
+  /// In en, this message translates to:
+  /// **'Claude'**
+  String get claude;
+
+  /// No description provided for @gemini.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini'**
+  String get gemini;
+
+  /// No description provided for @deepseek.
+  ///
+  /// In en, this message translates to:
+  /// **'DeepSeek'**
+  String get deepseek;
+
+  /// No description provided for @ollama.
+  ///
+  /// In en, this message translates to:
+  /// **'Ollama'**
+  String get ollama;
+
+  /// No description provided for @lmStudio.
+  ///
+  /// In en, this message translates to:
+  /// **'LM Studio'**
+  String get lmStudio;
+
+  /// No description provided for @zAi.
+  ///
+  /// In en, this message translates to:
+  /// **'Z.AI'**
+  String get zAi;
+
+  /// No description provided for @baseUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Base URL'**
+  String get baseUrl;
+
+  /// No description provided for @apiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'API Key'**
+  String get apiKey;
+
+  /// No description provided for @enterBaseUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter base URL...'**
+  String get enterBaseUrl;
+
+  /// No description provided for @enterApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter API key...'**
+  String get enterApiKey;
+
+  /// No description provided for @confluenceIntegration.
+  ///
+  /// In en, this message translates to:
+  /// **'Confluence Integration'**
+  String get confluenceIntegration;
+
+  /// No description provided for @confluenceUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Confluence URL'**
+  String get confluenceUrl;
+
+  /// No description provided for @confluenceUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Confluence Username'**
+  String get confluenceUsername;
+
+  /// No description provided for @confluenceToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Confluence Token'**
+  String get confluenceToken;
+
+  /// No description provided for @enterConfluenceUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Confluence URL...'**
+  String get enterConfluenceUrl;
+
+  /// No description provided for @enterConfluenceUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Confluence username...'**
+  String get enterConfluenceUsername;
+
+  /// No description provided for @enterConfluenceToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Confluence token...'**
+  String get enterConfluenceToken;
+
+  /// No description provided for @musicIntegration.
+  ///
+  /// In en, this message translates to:
+  /// **'Music Integration'**
+  String get musicIntegration;
+
+  /// No description provided for @musicProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Music Provider'**
+  String get musicProvider;
+
+  /// No description provided for @spotify.
+  ///
+  /// In en, this message translates to:
+  /// **'Spotify'**
+  String get spotify;
+
+  /// No description provided for @youtubeMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'YouTube Music'**
+  String get youtubeMusic;
+
+  /// No description provided for @musicGenre.
+  ///
+  /// In en, this message translates to:
+  /// **'Music Genre'**
+  String get musicGenre;
+
+  /// No description provided for @classical.
+  ///
+  /// In en, this message translates to:
+  /// **'Classical'**
+  String get classical;
+
+  /// No description provided for @jazz.
+  ///
+  /// In en, this message translates to:
+  /// **'Jazz'**
+  String get jazz;
+
+  /// No description provided for @electronic.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic'**
+  String get electronic;
+
+  /// No description provided for @rock.
+  ///
+  /// In en, this message translates to:
+  /// **'Rock'**
+  String get rock;
+
+  /// No description provided for @pop.
+  ///
+  /// In en, this message translates to:
+  /// **'Pop Music'**
+  String get pop;
+
+  /// No description provided for @hipHop.
+  ///
+  /// In en, this message translates to:
+  /// **'Hip Hop'**
+  String get hipHop;
+
+  /// No description provided for @ambient.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambient'**
+  String get ambient;
+
+  /// No description provided for @loFi.
+  ///
+  /// In en, this message translates to:
+  /// **'Lo-Fi'**
+  String get loFi;
+
+  /// No description provided for @zAiAccessType.
+  ///
+  /// In en, this message translates to:
+  /// **'Z.AI Access Type'**
+  String get zAiAccessType;
+
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
+  /// No description provided for @premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get premium;
+
+  /// No description provided for @testConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Connection'**
+  String get testConnection;
+
+  /// No description provided for @testing.
+  ///
+  /// In en, this message translates to:
+  /// **'Testing...'**
+  String get testing;
+
+  /// No description provided for @connectionSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection successful!'**
+  String get connectionSuccessful;
+
+  /// No description provided for @connectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection failed!'**
+  String get connectionFailed;
+
+  /// No description provided for @invalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid URL format'**
+  String get invalidUrl;
+
+  /// No description provided for @invalidApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid API key format'**
+  String get invalidApiKey;
+
+  /// No description provided for @tokenRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'API token is required'**
+  String get tokenRequired;
+
+  /// No description provided for @urlRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Base URL is required'**
+  String get urlRequired;
+
+  /// No description provided for @usernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get usernameRequired;
+
+  /// No description provided for @confluenceUrlRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confluence URL is required'**
+  String get confluenceUrlRequired;
+
+  /// No description provided for @confluenceTokenRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confluence token is required'**
+  String get confluenceTokenRequired;
 }
 
 class _AppLocalizationsDelegate

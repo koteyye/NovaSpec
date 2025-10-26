@@ -1,24 +1,25 @@
 <!--
 Sync Impact Report:
-Version change: 1.0.0 → 1.1.0 (MINOR - added new principle + expanded technical requirements)
+Version change: 1.1.0 → 1.2.0 (MINOR - corrected architecture principle from MVVM to proper Flutter architecture)
 
 Modified principles:
-- Principle II: Updated Flutter/Dart ecosystem (removed Bloc, clarified Provider usage)
-- Principle III: Enhanced MVVM with DI specifics (singleton pattern, get_it details)
-- Principle VII: NEW - Created UI components mandatory usage principle
+- Principle III: Replaced MVVM with proper Flutter Widget/Provider architecture
+- Principle II: Clarified Flutter ecosystem patterns
+
+Removed sections:
+- MVVM references (incorrect for Flutter)
 
 Added sections:
-- CacheService in technology stack
-- File locking mechanism in data storage
-- AppError model and ErrorHandler in error handling
-- Detailed coding guidelines with component usage
+- Proper Flutter Widget/State/Provider architecture guidance
+- Widget composition patterns
+- Provider usage best practices
 
 Templates requiring updates:
 ✅ .specify/templates/plan-template.md - Constitution check updated
 ✅ .specify/templates/spec-template.md - Flutter/Dart requirements updated
 ✅ .specify/templates/tasks-template.md - Manual testing emphasis maintained
 
-Follow-up TODOs: None - all placeholders filled with concrete implementation details
+Follow-up TODOs: None - architecture correction completed
 -->
 
 # NovaSpec Конституция
@@ -31,8 +32,8 @@ Flutter/Dart версия приложения должна быть визуа�
 ### II. Flutter/Dart экосистема
 Все компоненты должны использовать Flutter паттерны и экосистему. Применять стандартные Flutter виджеты, Stateful/Stateless компоненты, Provider для управления состоянием. Использовать flutter_svg для SVG иконок, file_picker для работы с файлами, dio для HTTP запросов, webview_flutter для Monaco Editor и Swagger UI.
 
-### III. Архитектура MVVM с Dependency Injection
-Приложение должно следовать MVVM паттерну с четким разделением на View, ViewModel, Model слои. Все сервисы регистрируются через DI контейнер get_it как singleton для предотвращения потери состояния. Provider используется для реактивного обновления UI.
+### III. Flutter архитектура с Provider и Dependency Injection
+Приложение должно следовать Flutter паттернам с четким разделением на Widget, State, Model слои. Использовать Provider (ChangeNotifier) для управления состоянием и реактивного обновления UI. Все сервисы регистрируются через DI контейнер get_it как singleton для предотвращения потери состояния. Виджеты должны быть переиспользуемыми и следовать принципам композиции.
 
 ### IV. Локализация и интернационализация
 Поддержка русского и английского языков через flutter_localizations. Все текстовые элементы UI должны поддерживать локализацию. Сообщения об ошибках, диалоги, настройки - всё должно быть локализовано.
@@ -64,7 +65,7 @@ Flutter/Dart версия приложения должна быть визуа�
 - **File Operations**: file_picker, dart:io
 - **Storage**: SharedPreferences, flutter_secure_storage
 - **UI Components**: Material Design 3 + Custom Components
-- **Localization**: flutter_localizations
+- **Localization**: flutter_localizationsФ
 - **WebView**: webview_flutter (Monaco Editor, Swagger UI)
 - **Audio**: audioplayers
 - **Markdown**: flutter_markdown
@@ -94,8 +95,10 @@ Flutter/Dart версия приложения должна быть визуа�
 - Использовать dart format для форматирования
 - Все виджеты должны быть переиспользуемыми компонентами в lib/shared/widgets/
 - Использовать созданные UI-компоненты вместо стандартных Flutter виджетов
-- Provider паттерн для реактивного состояния
-- Singleton DI для сервисов
+- Provider паттерн (ChangeNotifier) для реактивного состояния
+- Widget композиция вместо наследования где возможно
+- Singleton DI для сервисов через get_it
+- Разделение на StatelessWidget и StatefulWidget по необходимости
 - Логирование операций через AppLogger
 
 ### Тестирование
@@ -108,4 +111,4 @@ Flutter/Dart версия приложения должна быть визуа�
 
 Эта конституция имеет приоритет над всеми другими практиками разработки. Изменения требуют документирования, согласования и плана миграции. Все PR и ревью должны проверять соответствие принципам. Сложность архитектурных решений должна быть обоснована.
 
-**Version**: 1.1.0 | **Ratified**: 2025-10-18 | **Last Amended**: 2025-10-19
+**Version**: 1.2.0 | **Ratified**: 2025-10-18 | **Last Amended**: 2025-10-26

@@ -256,24 +256,27 @@ class _ToastContainerState extends State<ToastContainer> {
     }
     
     return SafeArea(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 32,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          // Разворачиваем список, чтобы новые тосты появлялись снизу
-          children: toasts.reversed.map((toast) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: ModernToast(
-                key: ValueKey(toast.id),
-                toast: toast,
-                onDismiss: () => _toastService.removeToast(toast.id),
-              ),
-            );
-          }).toList(),
+      child: Material(
+        color: Colors.transparent,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width - 32,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            // Разворачиваем список, чтобы новые тосты появлялись снизу
+            children: toasts.reversed.map((toast) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: ModernToast(
+                  key: ValueKey(toast.id),
+                  toast: toast,
+                  onDismiss: () => _toastService.removeToast(toast.id),
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );

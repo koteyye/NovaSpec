@@ -10,6 +10,11 @@ set(BINARY_NAME "novaspec")
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.25)
 
+# Suppress CMP0175 warning for webview_windows plugin
+if(POLICY CMP0175)
+  cmake_policy(SET CMP0175 NEW)
+endif()
+
 # Define build configuration option.
 get_property(IS_MULTICONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(IS_MULTICONFIG)

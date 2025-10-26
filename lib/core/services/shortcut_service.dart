@@ -107,6 +107,12 @@ class ShortcutService {
       () => _triggerAction('replace'),
     );
 
+    // Settings operations
+    registerShortcutCallback(
+      const SingleActivator(LogicalKeyboardKey.comma, control: true),
+      () => _triggerAction('openSettings'),
+    );
+
     // Window operations
     registerShortcutCallback(
       const SingleActivator(LogicalKeyboardKey.keyW, control: true),
@@ -278,6 +284,10 @@ class QuitIntent extends Intent {
   const QuitIntent();
 }
 
+class OpenSettingsIntent extends Intent {
+  const OpenSettingsIntent();
+}
+
 // Actions for the intents
 class NewProjectAction extends Action<NewProjectIntent> {
   final VoidCallback? onNewProject;
@@ -441,5 +451,16 @@ class QuitAction extends Action<QuitIntent> {
   @override
   void invoke(covariant QuitIntent intent) {
     onQuit?.call();
+  }
+}
+
+class OpenSettingsAction extends Action<OpenSettingsIntent> {
+  final VoidCallback? onOpenSettings;
+
+  OpenSettingsAction({this.onOpenSettings});
+
+  @override
+  void invoke(covariant OpenSettingsIntent intent) {
+    onOpenSettings?.call();
   }
 }

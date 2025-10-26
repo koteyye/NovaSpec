@@ -159,6 +159,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pageNotFound => 'Страница не найдена';
 
   @override
+  String get noOpenProject => 'Нет открытого проекта';
+
+  @override
+  String get workspaceComingSoon => 'Рабочее пространство скоро будет доступно';
+
+  @override
+  String get workspaceNextVersion =>
+      'Рабочее пространство будет доступно в следующей версии';
+
+  @override
   String get appTitle => 'NovaSpec - Фаза 2 завершена';
 
   @override
@@ -326,4 +336,146 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get completed => 'Completed';
+
+  @override
+  String get parameters => 'Параметры';
+
+  @override
+  String get aiProviders => 'AI Провайдеры';
+
+  @override
+  String get openAi => 'OpenAI';
+
+  @override
+  String get claude => 'Claude';
+
+  @override
+  String get gemini => 'Gemini';
+
+  @override
+  String get deepseek => 'DeepSeek';
+
+  @override
+  String get ollama => 'Ollama';
+
+  @override
+  String get lmStudio => 'LM Studio';
+
+  @override
+  String get zAi => 'Z.AI';
+
+  @override
+  String get baseUrl => 'Базовый URL';
+
+  @override
+  String get apiKey => 'API Ключ';
+
+  @override
+  String get enterBaseUrl => 'Введите базовый URL...';
+
+  @override
+  String get enterApiKey => 'Введите API ключ...';
+
+  @override
+  String get confluenceIntegration => 'Интеграция с Confluence';
+
+  @override
+  String get confluenceUrl => 'URL Confluence';
+
+  @override
+  String get confluenceUsername => 'Имя пользователя Confluence';
+
+  @override
+  String get confluenceToken => 'Токен Confluence';
+
+  @override
+  String get enterConfluenceUrl => 'Введите URL Confluence...';
+
+  @override
+  String get enterConfluenceUsername =>
+      'Введите имя пользователя Confluence...';
+
+  @override
+  String get enterConfluenceToken => 'Введите токен Confluence...';
+
+  @override
+  String get musicIntegration => 'Музыкальная интеграция';
+
+  @override
+  String get musicProvider => 'Музыкальный провайдер';
+
+  @override
+  String get spotify => 'Spotify';
+
+  @override
+  String get youtubeMusic => 'YouTube Music';
+
+  @override
+  String get musicGenre => 'Музыкальный жанр';
+
+  @override
+  String get classical => 'Классическая';
+
+  @override
+  String get jazz => 'Джаз';
+
+  @override
+  String get electronic => 'Электронная';
+
+  @override
+  String get rock => 'Рок';
+
+  @override
+  String get pop => 'Поп';
+
+  @override
+  String get hipHop => 'Хип-хоп';
+
+  @override
+  String get ambient => 'Эмбиент';
+
+  @override
+  String get loFi => 'Lo-Fi';
+
+  @override
+  String get zAiAccessType => 'Тип доступа Z.AI';
+
+  @override
+  String get free => 'Бесплатный';
+
+  @override
+  String get premium => 'Премиум';
+
+  @override
+  String get testConnection => 'Проверить соединение';
+
+  @override
+  String get testing => 'Проверка...';
+
+  @override
+  String get connectionSuccessful => 'Соединение успешно!';
+
+  @override
+  String get connectionFailed => 'Соединение не удалось!';
+
+  @override
+  String get invalidUrl => 'Неверный формат URL';
+
+  @override
+  String get invalidApiKey => 'Неверный формат API ключа';
+
+  @override
+  String get tokenRequired => 'Требуется API токен';
+
+  @override
+  String get urlRequired => 'Требуется базовый URL';
+
+  @override
+  String get usernameRequired => 'Требуется имя пользователя';
+
+  @override
+  String get confluenceUrlRequired => 'Требуется URL Confluence';
+
+  @override
+  String get confluenceTokenRequired => 'Требуется токен Confluence';
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'app/app.dart';
 import 'core/di/service_locator.dart';
 import 'core/providers/app_provider.dart';
+import 'core/providers/settings_provider.dart';
 import 'core/services/config_service.dart';
 import 'core/services/secure_storage_service.dart';
 
@@ -68,6 +69,7 @@ class _NovaSpecAppWrapperState extends State<NovaSpecAppWrapper> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _appProvider),
+        ChangeNotifierProvider(create: (_) => sl<SettingsProvider>()),
         Provider<ConfigService>(create: (_) => sl<ConfigService>()),
         Provider<SecureStorageService>(create: (_) => sl<SecureStorageService>()),
       ],

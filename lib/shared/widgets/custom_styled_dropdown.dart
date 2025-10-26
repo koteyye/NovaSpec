@@ -68,7 +68,7 @@ class _CustomStyledDropdownState<T> extends State<CustomStyledDropdown<T>>
     ));
 
     _scaleAnimation = Tween<double>(
-      begin: 0.95,
+      begin: 1.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,

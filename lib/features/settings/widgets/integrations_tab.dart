@@ -4,6 +4,7 @@ import '../../../core/providers/settings_provider.dart';
 import '../../../core/services/toast_service.dart';
 import '../../../shared/widgets/modern_button.dart';
 import '../../../shared/widgets/styled_dropdown.dart';
+import '../../../shared/widgets/validation_status_widget.dart';
 
 class IntegrationsTab extends StatefulWidget {
   const IntegrationsTab({super.key});
@@ -63,25 +64,44 @@ class _IntegrationsTabState extends State<IntegrationsTab> {
                   icon: Icons.article,
                   child: Column(
                     children: [
-                      TextFormField(
-                        controller: _confluenceUrlController,
-                        decoration: const InputDecoration(
-                          labelText: 'URL сервера Confluence',
-                          hintText: 'https://your-company.atlassian.net/wiki',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.url,
-                        onChanged: (value) => settings.setConfluenceUrl(value),
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            final uri = Uri.tryParse(value);
-                            if (uri == null || !uri.hasScheme) {
-                              return 'Введите корректный URL';
-                            }
-                          }
-                          return null;
-                        },
-                      ),
+                       TextFormField(
+                         controller: _confluenceUrlController,
+                         decoration: InputDecoration(
+                           labelText: 'URL сервера Confluence',
+                           hintText: 'https://your-company.atlassian.net/wiki',
+                           border: const OutlineInputBorder(),
+                           suffixIcon: Row(
+                             mainAxisSize: MainAxisSize.min,
+                             children: [
+                               ValidationStatusWidget(
+                                 connectionStatus: settings.connectionStatuses['confluence'],
+                               ),
+                               const SizedBox(width: 8),
+                               IconButton(
+                                 icon: const Icon(Icons.autorenew),
+                                 onPressed: () => _detectConfluenceType(context),
+                               ),
+                             ],
+                           ),
+                         ),
+                         keyboardType: TextInputType.url,
+                         onChanged: (value) {
+                           settings.setConfluenceUrl(value);
+                           // Автоопределение типа при изменении URL
+                           if (value.isNotEmpty) {
+                             _detectConfluenceType(context);
+                           }
+                         },
+                         validator: (value) {
+                           if (value != null && value.isNotEmpty) {
+                             final uri = Uri.tryParse(value);
+                             if (uri == null || !uri.hasScheme) {
+                               return 'Введите корректный URL';
+                             }
+                           }
+                           return null;
+                         },
+                       ),
                       const SizedBox(height: 16),
                       
                       StyledDropdown<ConfluenceAuthMethod>(
@@ -112,17 +132,36 @@ class _IntegrationsTabState extends State<IntegrationsTab> {
                       ),
                       const SizedBox(height: 16),
                       
-                      TextFormField(
-                        controller: _confluenceTokenController,
-                        decoration: const InputDecoration(
-                          labelText: 'API Token',
-                          hintText: 'Введите ваш API токен',
-                          border: OutlineInputBorder(),
-                          helperText: 'Создайте токен в настройках аккаунта Atlassian',
-                        ),
-                        obscureText: true,
-                        onChanged: (value) => settings.setConfluenceApiToken(value),
-                      ),
+                       TextFormField(
+                         controller: _confluenceTokenController,
+                         decoration: InputDecoration(
+                           labelText: settings.confluenceAuthMethod == ConfluenceAuthMethod.basicAuth 
+                               ? 'Пароль' 
+                               : 'API Token',
+                           hintText: settings.confluenceAuthMethod == ConfluenceAuthMethod.basicAuth 
+                               ? 'Введите пароль'
+                               : 'Введите ваш API токен',
+                           border: const OutlineInputBorder(),
+                           helperText: settings.confluenceAuthMethod == ConfluenceAuthMethod.basicAuth
+                               ? 'Пароль для Basic Auth'
+                               : 'Создайте токен в настройках аккаунта Atlassian',
+                           suffixIcon: Row(
+                             mainAxisSize: MainAxisSize.min,
+                             children: [
+                               ValidationStatusWidget(
+                                 connectionStatus: settings.connectionStatuses['confluence'],
+                               ),
+                               const SizedBox(width: 8),
+                               IconButton(
+                                 icon: const Icon(Icons.check),
+                                 onPressed: () => _testConfluenceConnection(context),
+                               ),
+                             ],
+                           ),
+                         ),
+                         obscureText: true,
+                         onChanged: (value) => settings.setConfluenceApiToken(value),
+                       ),
                       const SizedBox(height: 16),
                       
                       TextFormField(
@@ -141,62 +180,96 @@ class _IntegrationsTabState extends State<IntegrationsTab> {
                 
                 const SizedBox(height: 32),
                 
-                // Music Generation Integration
-                _buildIntegrationSection(
-                  title: 'Генерация музыки',
-                  icon: Icons.music_note,
-                  child: Column(
-                    children: [
-                      StyledDropdown<String>(
-                        value: settings.musicProvider.isEmpty ? '' : settings.musicProvider,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'suno',
-                            child: Text('Suno AI'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'udio',
-                            child: Text('Udio'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'custom',
-                            child: Text('Другой провайдер'),
-                          ),
-                        ],
-                        onChanged: (provider) {
-                          if (provider != null) {
-                            settings.setMusicProvider(provider);
-                          }
-                        },
-                        hint: 'Выберите провайдера',
-                      ),
-                      const SizedBox(height: 16),
+                 // Music Generation Integration
+                 _buildIntegrationSection(
+                   title: 'Генерация музыки',
+                   icon: Icons.music_note,
+                   child: Column(
+                     children: [
+                       StyledDropdown<String>(
+                         value: settings.musicProvider.isEmpty ? 'gen-api' : settings.musicProvider,
+                         items: const [
+                           DropdownMenuItem(
+                             value: 'gen-api',
+                             child: Text('Gen-API.ru'),
+                           ),
+                         ],
+                         onChanged: (provider) {
+                           if (provider != null) {
+                             settings.setMusicProvider(provider);
+                           }
+                         },
+                       ),
+                       const SizedBox(height: 16),
                       
-                      TextFormField(
-                        controller: _musicKeyController,
-                        decoration: const InputDecoration(
-                          labelText: 'API Key',
-                          hintText: 'Введите API ключ музыкального сервиса',
-                          border: OutlineInputBorder(),
+                       TextFormField(
+                         controller: _musicKeyController,
+                         decoration: InputDecoration(
+                           labelText: 'API Key gen-api.ru',
+                           hintText: 'Введите API ключ gen-api.ru',
+                           border: const OutlineInputBorder(),
+                           suffixIcon: Row(
+                             mainAxisSize: MainAxisSize.min,
+                             children: [
+                               ValidationStatusWidget(
+                                 connectionStatus: settings.connectionStatuses['music'],
+                               ),
+                               const SizedBox(width: 8),
+                               IconButton(
+                                 icon: const Icon(Icons.check),
+                                 onPressed: () => _testMusicConnection(context),
+                               ),
+                             ],
+                           ),
+                         ),
+                         obscureText: true,
+                         onChanged: (value) => settings.setMusicApiKey(value),
+                       ),
+                       const SizedBox(height: 16),
+                       
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Жанр музыки',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 8),
+                            StyledDropdown<String>(
+                              value: settings.musicGenre,
+                              items: const [
+                                DropdownMenuItem(value: 'pop', child: Text('Pop Music')),
+                                DropdownMenuItem(value: 'Russian rap', child: Text('Russian rap')),
+                                DropdownMenuItem(value: 'Rock', child: Text('Rock')),
+                                DropdownMenuItem(value: 'Jazz', child: Text('Jazz')),
+                                DropdownMenuItem(value: 'Classic', child: Text('Classic')),
+                                DropdownMenuItem(value: 'Electronic', child: Text('Electronic')),
+                                DropdownMenuItem(value: 'Hip-hop', child: Text('Hip-hop')),
+                                DropdownMenuItem(value: 'R&B', child: Text('R&B')),
+                              ],
+                              onChanged: (String? value) {
+                                if (value != null) {
+                                  settings.setMusicGenre(value);
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                        obscureText: true,
-                        onChanged: (value) => settings.setMusicApiKey(value),
-                      ),
-                      const SizedBox(height: 16),
-                      
-                      StyledDropdown<String>(
-                        value: settings.audioFormat,
-                        items: const [
-                          DropdownMenuItem(value: 'mp3', child: Text('MP3')),
-                          DropdownMenuItem(value: 'wav', child: Text('WAV')),
-                          DropdownMenuItem(value: 'flac', child: Text('FLAC')),
-                        ],
-                        onChanged: (format) {
-                          if (format != null) {
-                            settings.setAudioFormat(format);
-                          }
-                        },
-                      ),
+                        const SizedBox(height: 16),
+                       
+                       StyledDropdown<String>(
+                         value: settings.audioFormat,
+                         items: const [
+                           DropdownMenuItem(value: 'mp3', child: Text('MP3')),
+                           DropdownMenuItem(value: 'wav', child: Text('WAV')),
+                           DropdownMenuItem(value: 'flac', child: Text('FLAC')),
+                         ],
+                         onChanged: (format) {
+                           if (format != null) {
+                             settings.setAudioFormat(format);
+                           }
+                         },
+                       ),
                       const SizedBox(height: 16),
                       
                       StyledDropdown<String>(
@@ -291,34 +364,69 @@ class _IntegrationsTabState extends State<IntegrationsTab> {
     switch (method) {
       case ConfluenceAuthMethod.apiToken:
         return 'API Token';
-      case ConfluenceAuthMethod.oauth:
-        return 'OAuth';
+      case ConfluenceAuthMethod.basicAuth:
+        return 'Basic Auth';
     }
   }
   
-  void _testConfluenceConnection(BuildContext context) {
+  void _detectConfluenceType(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final url = _confluenceUrlController.text;
     
-    if (settings.confluenceUrl.isEmpty || 
-        settings.confluenceUsername.isEmpty || 
-        settings.confluenceApiToken.isEmpty) {
-      warning(description: 'Заполните все поля для Confluence интеграции');
-      return;
+    if (url.isNotEmpty) {
+      final detectedType = settings.detectConfluenceType(url);
+      settings.setConfluenceAuthMethod(detectedType);
+      
+      final typeName = detectedType == ConfluenceAuthMethod.apiToken ? 'Cloud' : 'Data Center';
+      success(description: 'Определен тип Confluence: $typeName');
     }
-    
-    // TODO: Implement actual connection testing
-    show(description: 'Проверка соединения с Confluence будет реализована в следующей версии');
   }
   
-  void _testMusicConnection(BuildContext context) {
+  Future<void> _testConfluenceConnection(BuildContext context) async {
     final settings = Provider.of<SettingsProvider>(context, listen: false);
     
-    if (settings.musicProvider.isEmpty || settings.musicApiKey.isEmpty) {
-      warning(description: 'Выберите провайдера и введите API ключ');
+    if (settings.confluenceUrl.isEmpty || settings.confluenceApiToken.isEmpty) {
+      warning(description: 'Заполните URL и API токен для Confluence');
       return;
     }
     
-    // TODO: Implement actual connection testing
-    show(description: 'Проверка соединения с музыкальным сервисом будет реализована в следующей версии');
+    if (settings.confluenceAuthMethod == ConfluenceAuthMethod.basicAuth && 
+        settings.confluenceUsername.isEmpty) {
+      warning(description: 'Для Basic Auth требуется имя пользователя');
+      return;
+    }
+    
+    try {
+      final result = await settings.validateConfluence();
+      
+      if (result.isValid) {
+        success(description: 'Подключение к Confluence успешно: ${result.message}');
+      } else {
+        error(description: 'Ошибка подключения: ${result.message}');
+      }
+    } catch (e) {
+      error(description: 'Ошибка проверки: $e');
+    }
+  }
+  
+  Future<void> _testMusicConnection(BuildContext context) async {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    
+    if (settings.musicApiKey.isEmpty) {
+      warning(description: 'Введите API ключ gen-api.ru');
+      return;
+    }
+    
+    try {
+      final result = await settings.validateMusicService();
+      
+      if (result.isValid) {
+        success(description: 'Подключение к gen-api.ru успешно: ${result.message}');
+      } else {
+        error(description: 'Ошибка подключения: ${result.message}');
+      }
+    } catch (e) {
+      error(description: 'Ошибка проверки: $e');
+    }
   }
 }

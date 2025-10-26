@@ -22,7 +22,7 @@ class MacOSMenuBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    
+
     return Container(
       height: 28,
       decoration: BoxDecoration(
@@ -135,11 +135,11 @@ class MacOSMenuBar extends StatelessWidget {
         PopupMenuItem<String>(
           value: 'new',
           onTap: onNewProject,
-          child: Row(
+          child: const Row(
             children: [
-              const Text('Новый проект'),
-              const Spacer(),
-              const Text('⌘N'),
+              Text('Новый проект'),
+              Spacer(),
+              Text('⌘N'),
             ],
           ),
         ),
@@ -267,12 +267,12 @@ const PopupMenuItem<String>(
         PopupMenuItem<String>(
           value: 'toggleTheme',
           onTap: () {},
-          child: Text('Переключить тему'),
+          child: const Text('Переключить тему'),
         ),
         PopupMenuItem<String>(
           value: 'toggleSidebar',
           onTap: () {},
-          child: Text('Переключить боковую панель'),
+          child: const Text('Переключить боковую панель'),
         ),
       ],
     );
@@ -365,7 +365,7 @@ class _MenuBarButtonState extends State<_MenuBarButton> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: _isHovered 
+            color: _isHovered
                 ? CupertinoColors.systemGrey5.resolveFrom(context)
                 : Colors.transparent,
           ),

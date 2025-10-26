@@ -5,7 +5,6 @@ import '../../l10n/app_localizations.dart';
 import '../../core/providers/app_provider.dart';
 import '../../core/services/security_service.dart';
 import '../screens/component_demo_screen.dart';
-import '../../features/settings/screens/settings_screen.dart';
 
 // Enhanced security validation for routes
 class RouteValidator {
@@ -148,14 +147,7 @@ class AppRouter {
           settings: settings,
         );
         
-      case AppRoutes.settings:
-        return MaterialPageRoute(
-          builder: (_) => LazyLoadWidget.create(
-            () => const SettingsScreen(),
-            cacheKey: 'settings',
-          ),
-          settings: settings,
-        );
+
         
       case AppRoutes.aiAssistant:
         return MaterialPageRoute(

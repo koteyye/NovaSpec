@@ -25,12 +25,12 @@ class FileMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    
+
     return ListenableBuilder(
       listenable: projectProvider,
       builder: (context, child) {
         final menuItems = _getMenuItems(localizations);
-        
+
         return MenuDropdown<String>(
           value: 'file',
           label: 'Файл',
@@ -45,7 +45,7 @@ class FileMenu extends StatelessWidget {
   List<MenuItem<String>> _getMenuItems(AppLocalizations localizations) {
     final hasProject = projectProvider.hasActiveProject;
     final hasUnsavedChanges = projectProvider.hasUnsavedChanges;
-    
+
 return [
       const MenuItem(
         value: 'new',
@@ -86,7 +86,7 @@ return [
         label: 'Выход',
         icon: Icons.exit_to_app_outlined,
       ),
-      MenuItem(
+      const MenuItem(
         value: 'open',
         label: 'Открыть',
         icon: Icons.folder_open_outlined,
@@ -134,7 +134,7 @@ return [
 
   void _handleMenuAction(String? action) {
     if (action == null || action == '---') return;
-    
+
     switch (action) {
       case 'new':
         onNewProject?.call();
@@ -225,7 +225,7 @@ class FileMenuActionHandler {
 
   Future<void> _showRecentProjectsDialog() async {
     final recentProjects = projectProvider.recentProjects;
-    
+
     if (recentProjects.isEmpty) {
       show(description: 'Нет недавних проектов');
       return;

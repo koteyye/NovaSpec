@@ -159,6 +159,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pageNotFound => 'Page Not Found';
 
   @override
+  String get noOpenProject => 'No Open Project';
+
+  @override
+  String get workspaceComingSoon => 'Workspace will be available soon';
+
+  @override
+  String get workspaceNextVersion =>
+      'Workspace will be available in the next version';
+
+  @override
   String get appTitle => 'NovaSpec - Phase 2 Complete';
 
   @override
@@ -326,4 +336,145 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completed => 'Completed';
+
+  @override
+  String get parameters => 'Parameters';
+
+  @override
+  String get aiProviders => 'AI Providers';
+
+  @override
+  String get openAi => 'OpenAI';
+
+  @override
+  String get claude => 'Claude';
+
+  @override
+  String get gemini => 'Gemini';
+
+  @override
+  String get deepseek => 'DeepSeek';
+
+  @override
+  String get ollama => 'Ollama';
+
+  @override
+  String get lmStudio => 'LM Studio';
+
+  @override
+  String get zAi => 'Z.AI';
+
+  @override
+  String get baseUrl => 'Base URL';
+
+  @override
+  String get apiKey => 'API Key';
+
+  @override
+  String get enterBaseUrl => 'Enter base URL...';
+
+  @override
+  String get enterApiKey => 'Enter API key...';
+
+  @override
+  String get confluenceIntegration => 'Confluence Integration';
+
+  @override
+  String get confluenceUrl => 'Confluence URL';
+
+  @override
+  String get confluenceUsername => 'Confluence Username';
+
+  @override
+  String get confluenceToken => 'Confluence Token';
+
+  @override
+  String get enterConfluenceUrl => 'Enter Confluence URL...';
+
+  @override
+  String get enterConfluenceUsername => 'Enter Confluence username...';
+
+  @override
+  String get enterConfluenceToken => 'Enter Confluence token...';
+
+  @override
+  String get musicIntegration => 'Music Integration';
+
+  @override
+  String get musicProvider => 'Music Provider';
+
+  @override
+  String get spotify => 'Spotify';
+
+  @override
+  String get youtubeMusic => 'YouTube Music';
+
+  @override
+  String get musicGenre => 'Music Genre';
+
+  @override
+  String get classical => 'Classical';
+
+  @override
+  String get jazz => 'Jazz';
+
+  @override
+  String get electronic => 'Electronic';
+
+  @override
+  String get rock => 'Rock';
+
+  @override
+  String get pop => 'Pop Music';
+
+  @override
+  String get hipHop => 'Hip Hop';
+
+  @override
+  String get ambient => 'Ambient';
+
+  @override
+  String get loFi => 'Lo-Fi';
+
+  @override
+  String get zAiAccessType => 'Z.AI Access Type';
+
+  @override
+  String get free => 'Free';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get testConnection => 'Test Connection';
+
+  @override
+  String get testing => 'Testing...';
+
+  @override
+  String get connectionSuccessful => 'Connection successful!';
+
+  @override
+  String get connectionFailed => 'Connection failed!';
+
+  @override
+  String get invalidUrl => 'Invalid URL format';
+
+  @override
+  String get invalidApiKey => 'Invalid API key format';
+
+  @override
+  String get tokenRequired => 'API token is required';
+
+  @override
+  String get urlRequired => 'Base URL is required';
+
+  @override
+  String get usernameRequired => 'Username is required';
+
+  @override
+  String get confluenceUrlRequired => 'Confluence URL is required';
+
+  @override
+  String get confluenceTokenRequired => 'Confluence token is required';
 }

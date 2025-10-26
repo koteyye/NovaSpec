@@ -499,7 +499,7 @@ components:
   schemas:
     AIProviderType:
       type: string
-      enum: [openai, anthropic, groq, cerebras, openrouter, openaiCompetitive, lmStudio, ollama]
+      enum: [openai, anthropic, groq, cerebras, openrouter, openaiCompetitive, lmStudio, ollama, zai]
 
     ConfluenceType:
       type: string

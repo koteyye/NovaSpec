@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/settings_provider.dart';
+import '../../../core/providers/app_provider.dart';
 import '../../../core/services/toast_service.dart';
 import '../../../shared/widgets/modern_button.dart';
-import '../../../shared/widgets/styled_dropdown.dart';
+import '../../../shared/widgets/custom_styled_dropdown.dart';
 import 'package:file_picker/file_picker.dart';
 
 class GeneralTab extends StatefulWidget {
@@ -16,28 +17,28 @@ class GeneralTab extends StatefulWidget {
 class _GeneralTabState extends State<GeneralTab> {
   final _formKey = GlobalKey<FormState>();
   final _projectLocationController = TextEditingController();
-  
+
   @override
   void initState() {
     super.initState();
     _loadCurrentSettings();
   }
-  
+
   @override
   void dispose() {
     _projectLocationController.dispose();
     super.dispose();
   }
-  
+
   void _loadCurrentSettings() {
     final settings = Provider.of<SettingsProvider>(context, listen: false);
     _projectLocationController.text = settings.defaultProjectLocation;
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<SettingsProvider>(
-      builder: (context, settings, child) {
+    return Consumer2<SettingsProvider, AppProvider>(
+      builder: (context, settings, appProvider, child) {
         return Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -50,50 +51,53 @@ class _GeneralTabState extends State<GeneralTab> {
                   title: 'Приложение',
                   child: Column(
                     children: [
-                      // Language
-                      StyledDropdown<String>(
-                        value: settings.language,
-                        items: const [
-                          DropdownMenuItem(value: 'ru', child: Text('Русский')),
-                          DropdownMenuItem(value: 'en', child: Text('English')),
-                        ],
-                        onChanged: (language) {
-                          if (language != null) {
-                            settings.setLanguage(language);
-                          }
-                        },
-                      ),
+                       // Language
+                  CustomStyledDropdown<String>(
+                         value: settings.language,
+                         items: const [
+                           DropdownItem(value: 'ru', label: 'Русский'),
+                           DropdownItem(value: 'en', label: 'English'),
+                         ],
+                         onChanged: (language) {
+                           if (language != null) {
+                             settings.setLanguage(language);
+                             // Показать уведомление о необходимости перезапуска
+                             warning(description: 'Изменение языка требует перезапуска приложения');
+                           }
+                         },
+                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Theme
-                      StyledDropdown<String>(
-                        value: settings.theme,
-                        items: const [
-                          DropdownMenuItem(value: 'system', child: Text('Системная')),
-                          DropdownMenuItem(value: 'light', child: Text('Светлая')),
-                          DropdownMenuItem(value: 'dark', child: Text('Темная')),
-                        ],
+                      CustomStyledDropdown<String>(
+                        value: appProvider.appConfiguration?.theme ?? 'system',
+                         items: const [
+                           DropdownItem(value: 'system', label: 'Системная'),
+                           DropdownItem(value: 'light', label: 'Светлая'),
+                           DropdownItem(value: 'dark', label: 'Темная'),
+                         ],
                         onChanged: (theme) {
                           if (theme != null) {
-                            settings.setTheme(theme);
+                            final appProvider = Provider.of<AppProvider>(context, listen: false);
+                            appProvider.updateTheme(theme);
                           }
                         },
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Auto-save interval
                       Row(
                         children: [
                           Expanded(
                             child: Text(
-                              'Автосохранение: ${_formatInterval(settings.autoSaveInterval)}',
+                              'Автосохранение: ${_formatInterval(int.tryParse(settings.autoSaveInterval) ?? 300)}',
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ),
                           Expanded(
                             flex: 2,
                             child: Slider(
-                              value: settings.autoSaveInterval.toDouble(),
+                              value: (int.tryParse(settings.autoSaveInterval) ?? 300).toDouble(),
                               min: 60,
                               max: 1800,
                               divisions: 29,
@@ -103,7 +107,7 @@ class _GeneralTabState extends State<GeneralTab> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Default project location
                       Row(
                         children: [
@@ -137,9 +141,9 @@ class _GeneralTabState extends State<GeneralTab> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Editor Settings
                 _buildSection(
                   title: 'Редактор',
@@ -167,7 +171,7 @@ class _GeneralTabState extends State<GeneralTab> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Tab size
                       Row(
                         children: [
@@ -190,7 +194,7 @@ class _GeneralTabState extends State<GeneralTab> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Word wrap
                       SwitchListTile(
                         title: const Text('Перенос слов'),
@@ -200,7 +204,7 @@ class _GeneralTabState extends State<GeneralTab> {
                         activeColor: const Color(0xFFB91C1C),
                       ),
                       const SizedBox(height: 8),
-                      
+
                       // Auto completion
                       SwitchListTile(
                         title: const Text('Автодополнение'),
@@ -212,25 +216,25 @@ class _GeneralTabState extends State<GeneralTab> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Storage Information
                 _buildSection(
                   title: 'Хранилище',
                   child: Column(
                     children: [
-                      ListTile(
-                        leading: const Icon(Icons.security, color: Color(0xFFB91C1C)),
-                        title: const Text('Безопасное хранилище'),
-                        subtitle: const Text('API ключи и токены хранятся в зашифрованном виде'),
-                        trailing: const Icon(Icons.check_circle, color: Colors.green),
+                      const ListTile(
+                        leading: Icon(Icons.security, color: Color(0xFFB91C1C)),
+                        title: Text('Безопасное хранилище'),
+                        subtitle: Text('API ключи и токены хранятся в зашифрованном виде'),
+                        trailing: Icon(Icons.check_circle, color: Colors.green),
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.storage, color: Color(0xFFB91C1C)),
-                        title: const Text('Общие настройки'),
-                        subtitle: const Text('Хранятся в локальных настройках приложения'),
-                        trailing: const Icon(Icons.check_circle, color: Colors.green),
+                      const ListTile(
+                        leading: Icon(Icons.storage, color: Color(0xFFB91C1C)),
+                        title: Text('Общие настройки'),
+                        subtitle: Text('Хранятся в локальных настройках приложения'),
+                        trailing: Icon(Icons.check_circle, color: Colors.green),
                       ),
                       const SizedBox(height: 16),
                       ModernButton(
@@ -243,28 +247,28 @@ class _GeneralTabState extends State<GeneralTab> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // About Section
                 _buildSection(
                   title: 'О приложении',
-                  child: Column(
+                  child: const Column(
                     children: [
                       ListTile(
-                        leading: const Icon(Icons.info, color: Color(0xFFB91C1C)),
-                        title: const Text('NovaSpec'),
-                        subtitle: const Text('Версия 1.0.0'),
+                        leading: Icon(Icons.info, color: Color(0xFFB91C1C)),
+                        title: Text('NovaSpec'),
+                        subtitle: Text('Версия 1.0.0'),
                       ),
                       ListTile(
-                        leading: const Icon(Icons.description, color: Color(0xFFB91C1C)),
-                        title: const Text('Описание'),
-                        subtitle: const Text('Приложение для создания технических заданий с ИИ-ассистентом'),
+                        leading: Icon(Icons.description, color: Color(0xFFB91C1C)),
+                        title: Text('Описание'),
+                        subtitle: Text('Приложение для создания технических заданий с ИИ-ассистентом'),
                       ),
                       ListTile(
-                        leading: const Icon(Icons.code, color: Color(0xFFB91C1C)),
-                        title: const Text('Технологии'),
-                        subtitle: const Text('Flutter, Dart, Provider, Material Design 3'),
+                        leading: Icon(Icons.code, color: Color(0xFFB91C1C)),
+                        title: Text('Технологии'),
+                        subtitle: Text('Flutter, Dart, Provider, Material Design 3'),
                       ),
                     ],
                   ),
@@ -276,7 +280,7 @@ class _GeneralTabState extends State<GeneralTab> {
       },
     );
   }
-  
+
   Widget _buildSection({required String title, required Widget child}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +297,7 @@ class _GeneralTabState extends State<GeneralTab> {
       ],
     );
   }
-  
+
   String _formatInterval(int seconds) {
     if (seconds < 60) {
       return '$seconds сек';
@@ -302,22 +306,23 @@ class _GeneralTabState extends State<GeneralTab> {
       return '$minutes мин';
     }
   }
-  
+
   Future<void> _selectProjectLocation(BuildContext context) async {
+    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
     try {
       final result = await FilePicker.platform.getDirectoryPath(
         dialogTitle: 'Выберите папку для проектов',
       );
-      
-      if (result != null) {
+
+      if (result != null && mounted) {
         _projectLocationController.text = result;
-        Provider.of<SettingsProvider>(context, listen: false).setDefaultProjectLocation(result);
+        settingsProvider.setDefaultProjectLocation(result);
       }
     } catch (e) {
       error(description: 'Ошибка выбора папки: $e');
     }
   }
-  
+
   void _clearCache(BuildContext context) {
     showDialog(
       context: context,
@@ -328,9 +333,10 @@ class _GeneralTabState extends State<GeneralTab> {
           'Это может немного замедлить работу при следующем запуске.',
         ),
         actions: [
-          TextButton(
+          ModernButton(
+            text: 'Отмена',
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Отмена'),
+            type: ButtonType.secondary,
           ),
           ModernButton(
             text: 'Очистить',

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/app_provider.dart';
+import '../../core/providers/settings_provider.dart';
+import '../../l10n/app_localizations.dart';
+
 import '../../features/project/providers/project_provider.dart';
 import '../../core/services/project_service.dart';
 import '../../core/services/toast_service.dart';
 import '../../features/onboarding/screens/onboarding_dialog.dart';
-import '../../features/topbar/widgets/top_bar_refactored.dart';
+import '../../features/topbar/widgets/top_bar.dart';
 import '../../features/topbar/widgets/status_bar.dart';
+import '../../features/settings/widgets/settings_dialog.dart';
 import '../../shared/widgets/modern_button.dart';
-import '../../features/settings/screens/settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -30,11 +34,14 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> _initializeMainScreen() async {
     final appProvider = Provider.of<AppProvider>(context, listen: false);
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
-    
+    final projectProvider = Provider.of<ProjectProvider>(
+      context,
+      listen: false,
+    );
+
     // Check if this is first run or no last project
     final isFirstRun = appProvider.lastOpenedProject == null;
-    
+
     if (isFirstRun) {
       setState(() {
         _showOnboarding = true;
@@ -43,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
       // Try to load last project
       await _loadLastProject(projectProvider);
     }
-    
+
     setState(() {
       _isInitialized = true;
     });
@@ -52,7 +59,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _loadLastProject(ProjectProvider projectProvider) async {
     final appProvider = Provider.of<AppProvider>(context, listen: false);
     final lastProjectPath = appProvider.lastOpenedProject;
-    
+
     if (lastProjectPath != null) {
       try {
         await projectProvider.openProject(lastProjectPath);
@@ -82,61 +89,100 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
 
-    return Consumer<ProjectProvider>(
-      builder: (context, projectProvider, child) {
-        return Scaffold(
-          // Top bar for Windows/Linux
-          appBar: _buildAppBar(context, projectProvider),
-          
-          // Body
-          body: Column(
-            children: [
-              // Main content area
-              Expanded(
-                child: _buildMainContent(context, projectProvider),
+    return Consumer2<ProjectProvider, SettingsProvider>(
+      builder: (context, projectProvider, settingsProvider, child) {
+        return CallbackShortcuts(
+          bindings: {
+            const SingleActivator(LogicalKeyboardKey.comma, control: true):
+                _handleOpenSettingsModal,
+            const SingleActivator(LogicalKeyboardKey.keyN, control: true):
+                _handleNewProject,
+            const SingleActivator(LogicalKeyboardKey.keyO, control: true):
+                _handleOpenProject,
+            const SingleActivator(LogicalKeyboardKey.keyS, control: true): () =>
+                _handleSaveProject(),
+            const SingleActivator(
+              LogicalKeyboardKey.keyS,
+              control: true,
+              shift: true,
+            ): _handleSaveProjectAs,
+            const SingleActivator(LogicalKeyboardKey.keyQ, control: true): () =>
+                _handleExit(),
+          },
+          child: Focus(
+            autofocus: true,
+            child: Scaffold(
+              // Top bar for Windows/Linux
+              appBar: _buildAppBar(context, projectProvider, settingsProvider),
+
+              // Body
+              body: Column(
+                children: [
+                  // Main content area
+                  Expanded(child: _buildMainContent(context, projectProvider)),
+
+                  // Status bar
+                  StatusBar(
+                    projectProvider: projectProvider,
+                    showProgress: projectProvider.isLoading,
+                    progressMessage: projectProvider.isLoading
+                        ? 'Загрузка...'
+                        : null,
+                  ),
+                ],
               ),
-              
-              // Status bar
-              StatusBar(
-                projectProvider: projectProvider,
-                showProgress: projectProvider.isLoading,
-                progressMessage: projectProvider.isLoading ? 'Загрузка...' : null,
-              ),
-            ],
+
+              // Floating action button for debug
+              floatingActionButton: kDebugMode
+                  ? _buildDebugButton(projectProvider)
+                  : null,
+            ),
           ),
-          
-          // Floating action button for debug
-          floatingActionButton: kDebugMode ? _buildDebugButton(projectProvider) : null,
         );
       },
     );
   }
 
-  PreferredSizeWidget? _buildAppBar(BuildContext context, ProjectProvider projectProvider) {
+  PreferredSizeWidget? _buildAppBar(
+    BuildContext context,
+    ProjectProvider projectProvider,
+    SettingsProvider settingsProvider,
+  ) {
     // For macOS, we might want to use system menu bar
     // For now, we'll use custom top bar for all platforms
+
     return PreferredSize(
       preferredSize: const Size.fromHeight(48),
-      child: TopBarRefactored(
-        onOpenSettings: _handleOpenSettings,
-        onOpenAbout: _handleOpenAbout,
-        onOpenTemplates: _handleOpenTemplates,
+      child: TopBar(
+        projectProvider: projectProvider,
+        settingsProvider: settingsProvider,
         onNewProject: _handleNewProject,
         onOpenProject: _handleOpenProject,
         onSaveProject: _handleSaveProject,
         onSaveProjectAs: _handleSaveProjectAs,
+        onExit: _handleExit,
+        onOpenTemplates: _handleOpenTemplates,
+        onOpenAbout: _handleOpenAbout,
       ),
     );
   }
 
-  Widget _buildMainContent(BuildContext context, ProjectProvider projectProvider) {
+  Widget _buildMainContent(
+    BuildContext context,
+    ProjectProvider projectProvider,
+  ) {
     if (_showOnboarding) {
       // Show onboarding using proper modal dialog
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showOnboardingDialog();
       });
-      // Return empty container while dialog is shown
-      return const SizedBox.shrink();
+      // Использовать фон из темы вместо пустого контейнера
+      return Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
     if (!projectProvider.hasActiveProject) {
@@ -175,19 +221,23 @@ class _MainScreenState extends State<MainScreen> {
             Icon(
               Icons.description_outlined,
               size: 80,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 24),
             Text(
-              'Нет открытого проекта',
+              AppLocalizations.of(context)!.noOpenProject,
               style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             Text(
-              'Рабочее пространство скоро будет доступно',
+              AppLocalizations.of(context)!.workspaceComingSoon,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -216,7 +266,10 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildWorkspace(BuildContext context, ProjectProvider projectProvider) {
+  Widget _buildWorkspace(
+    BuildContext context,
+    ProjectProvider projectProvider,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -243,9 +296,9 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Workspace content
           Expanded(
             child: Container(
@@ -254,7 +307,9 @@ class _MainScreenState extends State<MainScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -263,18 +318,22 @@ class _MainScreenState extends State<MainScreen> {
                   Icon(
                     Icons.workspaces_outlined,
                     size: 64,
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.6),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Рабочее пространство',
+                    AppLocalizations.of(context)!.workspace,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Рабочее пространство будет доступно в следующей версии',
+                    AppLocalizations.of(context)!.workspaceNextVersion,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -343,11 +402,14 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   // Event handlers
-  void _handleOpenSettings() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const SettingsScreen(),
-      ),
+  void _handleOpenSettingsModal() {
+    final settingsProvider = Provider.of<SettingsProvider>(
+      context,
+      listen: false,
+    );
+    showDialog(
+      context: context,
+      builder: (context) => SettingsDialog(settingsProvider: settingsProvider),
     );
   }
 
@@ -360,7 +422,9 @@ class _MainScreenState extends State<MainScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('NovaSpec - Flutter/Dart версия приложения для создания технических заданий с ИИ-ассистентом.'),
+            Text(
+              'NovaSpec - Flutter/Dart версия приложения для создания технических заданий с ИИ-ассистентом.',
+            ),
             SizedBox(height: 16),
             Text('Версия: 1.0.0'),
             Text('Технологии: Flutter 3.x, Dart 3.x'),
@@ -386,15 +450,21 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleOpenProject() async {
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+    final projectProvider = Provider.of<ProjectProvider>(
+      context,
+      listen: false,
+    );
     Navigator.of(context).pop(); // Close onboarding dialog first
-    
+
     try {
       await projectProvider.openProject('');
-      
+
       // Show success message
       if (mounted && projectProvider.currentProject != null) {
-        success(description: 'Проект "${projectProvider.currentProject!.name}" успешно открыт');
+        success(
+          description:
+              'Проект "${projectProvider.currentProject!.name}" успешно открыт',
+        );
       }
     } catch (e) {
       // Show error using the current context
@@ -405,9 +475,12 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleCancelOnboarding() {
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+    final projectProvider = Provider.of<ProjectProvider>(
+      context,
+      listen: false,
+    );
     Navigator.of(context).pop(); // Close onboarding dialog first
-    
+
     projectProvider.createEmptyProject();
   }
 
@@ -416,7 +489,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleSaveProject() async {
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+    final projectProvider = Provider.of<ProjectProvider>(
+      context,
+      listen: false,
+    );
     await projectProvider.saveProject();
   }
 
@@ -424,23 +500,32 @@ class _MainScreenState extends State<MainScreen> {
     _showSaveProjectAsDialog();
   }
 
+  void _handleExit() {
+    // Handle application exit
+    Navigator.of(context).pop();
+  }
+
   void _showCreateProjectDialog() {
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+    final projectProvider = Provider.of<ProjectProvider>(
+      context,
+      listen: false,
+    );
     showDialog(
       context: context,
-      builder: (context) => _CreateProjectDialog(
-        projectProvider: projectProvider,
-      ),
+      builder: (context) =>
+          _CreateProjectDialog(projectProvider: projectProvider),
     );
   }
 
   void _showSaveProjectAsDialog() {
-    final projectProvider = Provider.of<ProjectProvider>(context, listen: false);
+    final projectProvider = Provider.of<ProjectProvider>(
+      context,
+      listen: false,
+    );
     showDialog(
       context: context,
-      builder: (context) => _SaveProjectAsDialog(
-        projectProvider: projectProvider,
-      ),
+      builder: (context) =>
+          _SaveProjectAsDialog(projectProvider: projectProvider),
     );
   }
 }
@@ -513,7 +598,7 @@ class _CreateProjectDialogState extends State<_CreateProjectDialog> {
   Future<void> _selectDirectory() async {
     final projectService = ProjectService();
     final directory = await projectService.pickDirectory();
-    
+
     if (directory != null) {
       setState(() {
         _directoryController.text = directory;
@@ -523,16 +608,16 @@ class _CreateProjectDialogState extends State<_CreateProjectDialog> {
 
   Future<void> _createProject() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Введите имя проекта')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Введите имя проекта')));
       return;
     }
 
     if (_directoryController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите директорию')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Выберите директорию')));
       return;
     }
 
@@ -545,7 +630,7 @@ class _CreateProjectDialogState extends State<_CreateProjectDialog> {
         _nameController.text.trim(),
         _directoryController.text.trim(),
       );
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         success(description: 'Проект "${_nameController.text}" создан');
@@ -632,7 +717,7 @@ class _SaveProjectAsDialogState extends State<_SaveProjectAsDialog> {
   Future<void> _selectDirectory() async {
     final projectService = ProjectService();
     final directory = await projectService.pickDirectory();
-    
+
     if (directory != null) {
       setState(() {
         _directoryController.text = directory;
@@ -642,16 +727,16 @@ class _SaveProjectAsDialogState extends State<_SaveProjectAsDialog> {
 
   Future<void> _saveProjectAs() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Введите имя проекта')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Введите имя проекта')));
       return;
     }
 
     if (_directoryController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Выберите директорию')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Выберите директорию')));
       return;
     }
 
@@ -661,7 +746,7 @@ class _SaveProjectAsDialogState extends State<_SaveProjectAsDialog> {
 
     try {
       await widget.projectProvider.saveProjectAs();
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         success(description: 'Проект сохранен как "${_nameController.text}"');

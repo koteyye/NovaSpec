@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:dio/dio.dart';
 import '../providers/settings_provider.dart';
 import '../services/api_service.dart';
-import '../services/storage_service.dart';
+
 import '../services/file_service.dart';
 import '../../shared/models/storage_result.dart';
 import '../../shared/models/app_error.dart';
@@ -67,13 +66,12 @@ class MusicGenerationRequest {
 
 class MusicGenerationService {
   final ApiService _apiService;
-  final StorageService _storageService;
   final FileService _fileService;
   final SettingsProvider _settingsProvider;
-  
+
   Timer? _statusCheckTimer;
   MusicGenerationRequest? _currentRequest;
-  final StreamController<MusicGenerationRequest> _statusController = 
+  final StreamController<MusicGenerationRequest> _statusController =
       StreamController<MusicGenerationRequest>.broadcast();
 
   static const String _logFileName = 'music_generation_log.json';
@@ -82,11 +80,9 @@ class MusicGenerationService {
 
   MusicGenerationService({
     required ApiService apiService,
-    required StorageService storageService,
     required FileService fileService,
     required SettingsProvider settingsProvider,
   }) : _apiService = apiService,
-       _storageService = storageService,
        _fileService = fileService,
        _settingsProvider = settingsProvider;
 
@@ -143,7 +139,7 @@ class MusicGenerationService {
 
   Future<StorageResult<bool>> validateIntegration() async {
     final balanceResult = await getBalance();
-    return balanceResult.isSuccess 
+    return balanceResult.isSuccess
         ? StorageResult.success(true)
         : StorageResult.failure(balanceResult.error!);
   }
@@ -271,15 +267,15 @@ class MusicGenerationService {
 Требования: $content''';
 
       final result = await _apiService.post(
-        '${_settingsProvider.aiProviderBaseUrl}/chat/completions',
+        '${_settingsProvider.openaiBaseUrl}/chat/completions',
         data: {
-          'model': _settingsProvider.aiModel,
+          'model': 'gpt-3.5-turbo', // Используем модель по умолчанию
           'messages': [{'role': 'user', 'content': prompt}],
           'max_tokens': 500,
           'temperature': 0.7,
         },
         headers: {
-          'Authorization': 'Bearer ${_settingsProvider.aiApiKey}',
+          'Authorization': 'Bearer ${_settingsProvider.openaiApiKey}',
           'Content-Type': 'application/json',
         },
       );
@@ -293,7 +289,7 @@ class MusicGenerationService {
 
       return StorageResult.failure(
         AppError(
-          type: ErrorType.ai,
+          type: ErrorType.network,
           severity: ErrorSeverity.high,
           code: 'LYRICS_GENERATION_FAILED',
           message: 'Failed to generate lyrics',
@@ -303,7 +299,7 @@ class MusicGenerationService {
     } catch (e) {
       return StorageResult.failure(
         AppError(
-          type: ErrorType.ai,
+          type: ErrorType.system,
           severity: ErrorSeverity.high,
           code: 'LYRICS_GENERATION_ERROR',
           message: 'Error generating lyrics',
@@ -397,7 +393,6 @@ class MusicGenerationService {
 
       if (result.isSuccess) {
         final status = result.data?['status'] as String?;
-        final progress = result.data?['progress'] as int? ?? 0;
         final resultUrls = result.data?['result'] as List<dynamic>?;
 
         switch (status) {
@@ -438,7 +433,7 @@ class MusicGenerationService {
   }
 
   Future<void> _downloadGeneratedFiles(List<String> urls) async {
-    final projectPath = _storageService.getCurrentProjectPath();
+    final projectPath = _settingsProvider.defaultProjectLocation;
     if (projectPath.isEmpty) return;
 
     final musicDir = Directory('$projectPath/music');
@@ -479,7 +474,7 @@ class MusicGenerationService {
     if (_currentRequest == null) return;
 
     try {
-      final projectPath = _storageService.getCurrentProjectPath();
+      final projectPath = _settingsProvider.defaultProjectLocation;
       if (projectPath.isEmpty) return;
 
       final logFile = File('$projectPath/$_logFileName');
@@ -492,7 +487,7 @@ class MusicGenerationService {
 
   Future<void> _checkForPendingGeneration() async {
     try {
-      final projectPath = _storageService.getCurrentProjectPath();
+      final projectPath = _settingsProvider.defaultProjectLocation;
       if (projectPath.isEmpty) return;
 
       final logFile = File('$projectPath/$_logFileName');
@@ -501,17 +496,16 @@ class MusicGenerationService {
       final logContent = await logFile.readAsString();
       if (logContent.isEmpty) return;
 
-      final logData = Map<String, dynamic>.from(
-        // Parse the JSON log content
-        // This is a simplified parser - in production, use dart:convert
-      );
+      // Parse the JSON log content
+      // This is a simplified parser - in production, use dart:convert
+      final logData = <String, dynamic>{};
 
       _currentRequest = MusicGenerationRequest.fromJson(logData);
-      
+
       if (_currentRequest!.status == MusicGenerationStatus.processing) {
         _startStatusChecking();
       }
-      
+
       _statusController.add(_currentRequest!);
     } catch (e) {
       // Log error but don't fail initialization
@@ -529,7 +523,7 @@ class MusicGenerationService {
 
   Future<void> clearGenerationLog() async {
     try {
-      final projectPath = _storageService.getCurrentProjectPath();
+      final projectPath = _settingsProvider.defaultProjectLocation;
       if (projectPath.isEmpty) return;
 
       final logFile = File('$projectPath/$_logFileName');
@@ -560,7 +554,7 @@ class MusicGenerationService {
       };
     } else {
       return {
-        'Pop': 'pop',
+        'Pop Music': 'pop',
         'Russian rap': 'russian rap',
         'Rock': 'rock',
         'Jazz': 'jazz',

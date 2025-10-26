@@ -61,7 +61,7 @@ class _OnboardingContentState extends State<OnboardingContent>
 
   @override
   Widget build(BuildContext context) {
-    
+
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
@@ -92,10 +92,10 @@ class _OnboardingContentState extends State<OnboardingContent>
           children: [
             // Header with gradient background
             _buildHeader(context),
-            
+
             // Content section with features
             _buildContent(context),
-            
+
             // Action buttons
             _buildActions(context),
           ],
@@ -105,7 +105,7 @@ class _OnboardingContentState extends State<OnboardingContent>
   }
 
   Widget _buildHeader(BuildContext context) {
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -148,22 +148,22 @@ class _OnboardingContentState extends State<OnboardingContent>
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Welcome text
-          Text(
+          const Text(
             'Добро пожаловать в NovaSpec',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           // Subtitle
           Text(
             'Создавайте технические задания с помощью ИИ-ассистента',
@@ -179,7 +179,7 @@ class _OnboardingContentState extends State<OnboardingContent>
   }
 
   Widget _buildContent(BuildContext context) {
-    
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -271,7 +271,7 @@ class _OnboardingContentState extends State<OnboardingContent>
   }
 
   Widget _buildActions(BuildContext context) {
-    
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(

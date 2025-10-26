@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../project/providers/project_provider.dart';
+import '../../../core/providers/settings_provider.dart';
+import '../../settings/widgets/settings_dialog.dart';
 
 class TopBar extends StatelessWidget {
   final ProjectProvider projectProvider;
+  final SettingsProvider settingsProvider;
   final VoidCallback onNewProject;
   final VoidCallback onOpenProject;
   final VoidCallback onSaveProject;
   final VoidCallback onSaveProjectAs;
   final VoidCallback onExit;
+  final VoidCallback? onOpenTemplates;
+  final VoidCallback? onOpenAbout;
 
   const TopBar({
     super.key,
     required this.projectProvider,
+    required this.settingsProvider,
     required this.onNewProject,
     required this.onOpenProject,
     required this.onSaveProject,
     required this.onSaveProjectAs,
     required this.onExit,
+    this.onOpenTemplates,
+    this.onOpenAbout,
   });
 
   @override
@@ -38,8 +47,8 @@ class TopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Window controls (Windows/Linux)
-          if (Theme.of(context).platform != TargetPlatform.macOS)
+          // Window controls (macOS only)
+          if (Theme.of(context).platform == TargetPlatform.macOS)
             Row(
               children: [
                 const SizedBox(width: 8),
@@ -52,7 +61,19 @@ class TopBar extends StatelessWidget {
               ],
             ),
 
-          // App title
+          // Левая сторона - кнопки меню
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildFileMenu(context, localizations),
+              const SizedBox(width: 8),
+              _buildSettingsMenu(context, localizations),
+              const SizedBox(width: 8),
+              _buildAboutMenu(context, localizations),
+            ],
+          ),
+
+          // App title в центре
           Expanded(
             child: Center(
               child: Text(
@@ -66,15 +87,11 @@ class TopBar extends StatelessWidget {
             ),
           ),
 
-          // Menu items
+          // Правая сторона - индикаторы статуса
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildFileMenu(context, localizations),
-              const SizedBox(width: 8),
-              _buildEditMenu(context, localizations),
-              const SizedBox(width: 8),
-              _buildStatusIndicator(context, localizations),
+              _buildStatusIndicators(context, localizations),
               const SizedBox(width: 16),
             ],
           ),
@@ -106,15 +123,19 @@ class TopBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
+          border: Border.all(
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+          ),
           borderRadius: BorderRadius.circular(8),
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(
+            alpha: 0.3,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Файл',
+              localizations.files,
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
                 fontSize: 14,
@@ -132,23 +153,30 @@ class TopBar extends StatelessWidget {
     );
   }
 
-  Widget _buildEditMenu(BuildContext context, AppLocalizations localizations) {
+  Widget _buildSettingsMenu(
+    BuildContext context,
+    AppLocalizations localizations,
+  ) {
     final theme = Theme.of(context);
     return InkWell(
-      onTap: () => _showEditMenu(context, localizations),
+      onTap: () => _showSettingsMenu(context, localizations),
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
+          border: Border.all(
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+          ),
           borderRadius: BorderRadius.circular(8),
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(
+            alpha: 0.3,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Редактирование',
+              localizations.settings,
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
                 fontSize: 14,
@@ -166,64 +194,256 @@ class TopBar extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusIndicator(BuildContext context, AppLocalizations localizations) {
+  Widget _buildAboutMenu(BuildContext context, AppLocalizations localizations) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onOpenAbout,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
+          ),
+          borderRadius: BorderRadius.circular(8),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(
+            alpha: 0.3,
+          ),
+        ),
+        child: Text(
+          localizations.about,
+          style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusIndicators(
+    BuildContext context,
+    AppLocalizations localizations,
+  ) {
     return ListenableBuilder(
-      listenable: projectProvider,
+      listenable: Listenable.merge([projectProvider, settingsProvider]),
       builder: (context, child) {
-        final status = projectProvider.projectStatus;
-        final hasUnsavedChanges = projectProvider.hasUnsavedChanges;
         final theme = Theme.of(context);
-        
-        Color statusColor;
-        IconData statusIcon;
-        
-        if (!projectProvider.hasActiveProject) {
-          statusColor = Colors.grey;
-          statusIcon = Icons.circle_outlined;
-        } else if (hasUnsavedChanges) {
-          statusColor = Colors.orange;
-          statusIcon = Icons.circle;
-        } else {
-          statusColor = Colors.green;
-          statusIcon = Icons.circle;
-        }
-        
+
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              statusIcon,
-              size: 8,
-              color: statusColor,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              _getStatusText(status, hasUnsavedChanges, localizations),
-              style: TextStyle(
-                fontSize: 12,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            _buildAIProviderIndicator(context, theme),
+            const SizedBox(width: 8),
+            _buildConfluenceIndicator(context, theme),
+            const SizedBox(width: 8),
+            _buildMusicIndicator(context, theme),
           ],
         );
       },
     );
   }
 
-  String _getStatusText(String status, bool hasUnsavedChanges, AppLocalizations localizations) {
-    if (!projectProvider.hasActiveProject) {
-      return 'Нет проекта';
-    } else if (hasUnsavedChanges) {
-      return 'Есть изменения';
-    } else {
-      return 'Сохранено';
-    }
+  Widget _buildAIProviderIndicator(BuildContext context, ThemeData theme) {
+    final provider = settingsProvider.currentProvider;
+    final hasToken =
+        settingsProvider.getProviderToken(provider)?.isNotEmpty == true;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
+        ),
+        borderRadius: BorderRadius.circular(8),
+        color: hasToken 
+            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.psychology,
+            size: 16,
+            color: hasToken
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+          ),
+          if (hasToken) ...[
+            const SizedBox(width: 6),
+            Text(
+              _getProviderDisplayName(provider),
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ] else ...[
+            const SizedBox(width: 6),
+            Text(
+              'Провайдер',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConfluenceIndicator(BuildContext context, ThemeData theme) {
+    final isActive =
+        settingsProvider.confluenceEnabled &&
+        settingsProvider.confluenceUrl.isNotEmpty &&
+        settingsProvider.confluenceEmail.isNotEmpty &&
+        settingsProvider.confluenceToken.isNotEmpty;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
+        ),
+        borderRadius: BorderRadius.circular(8),
+        color: isActive 
+            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(
+            'assets/images/atlassian-icon.svg',
+            width: 16,
+            height: 16,
+            colorFilter: ColorFilter.mode(
+              isActive
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+              BlendMode.srcIn,
+            ),
+          ),
+          if (isActive) ...[
+            const SizedBox(width: 6),
+            Text(
+              'Confluence',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ] else ...[
+            const SizedBox(width: 6),
+            Text(
+              'Confluence',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMusicIndicator(BuildContext context, ThemeData theme) {
+    final isActive =
+        settingsProvider.musicEnabled && settingsProvider.musicToken.isNotEmpty;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
+        ),
+        borderRadius: BorderRadius.circular(8),
+        color: isActive 
+            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.music_note,
+            size: 16,
+            color: isActive
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface.withValues(alpha: 0.4),
+          ),
+          if (isActive) ...[
+            const SizedBox(width: 6),
+            Text(
+              '${settingsProvider.musicBalance} ₽',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '·',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              settingsProvider.getGenreDisplayName(settingsProvider.musicGenre),
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(width: 4),
+            InkWell(
+              onTap: () => _refreshMusicBalance(),
+              borderRadius: BorderRadius.circular(4),
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Icon(
+                  Icons.refresh,
+                  size: 12,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ),
+          ] else ...[
+            const SizedBox(width: 6),
+            Text(
+              'Музикация',
+              style: TextStyle(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _getProviderDisplayName(AIProvider provider) {
+    return provider.displayName;
+  }
+
+  void _refreshMusicBalance() async {
+    // TODO: Implement music balance refresh
+    // This would call the music validation service to update the balance
   }
 
   void _showFileMenu(BuildContext context, AppLocalizations localizations) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
     showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
@@ -238,13 +458,15 @@ class TopBar extends StatelessWidget {
             children: [
               const Icon(Icons.file_present_outlined, size: 18),
               const SizedBox(width: 12),
-              const Text('Новый проект'),
+              Text(localizations.newProject),
               const Spacer(),
               Text(
                 'Ctrl+N',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -257,13 +479,15 @@ class TopBar extends StatelessWidget {
             children: [
               const Icon(Icons.folder_open_outlined, size: 18),
               const SizedBox(width: 12),
-              const Text('Открыть'),
+              Text(localizations.openProject),
               const Spacer(),
               Text(
                 'Ctrl+O',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -277,13 +501,15 @@ class TopBar extends StatelessWidget {
             children: [
               const Icon(Icons.save_outlined, size: 18),
               const SizedBox(width: 12),
-              const Text('Сохранить'),
+              Text(localizations.save),
               const Spacer(),
               Text(
                 'Ctrl+S',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -303,7 +529,9 @@ class TopBar extends StatelessWidget {
                 'Ctrl+Shift+S',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -313,18 +541,15 @@ class TopBar extends StatelessWidget {
         PopupMenuItem<String>(
           value: 'exit',
           onTap: onExit,
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.exit_to_app_outlined, size: 18),
-              SizedBox(width: 12),
-              Text('Выход'),
-              Spacer(),
-              Text(
+              const Icon(Icons.exit_to_app_outlined, size: 18),
+              const SizedBox(width: 12),
+              Text(localizations.close),
+              const Spacer(),
+              const Text(
                 'Ctrl+Q',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0x99000000),
-                ),
+                style: TextStyle(fontSize: 12, color: Color(0x99000000)),
               ),
             ],
           ),
@@ -333,9 +558,10 @@ class TopBar extends StatelessWidget {
     );
   }
 
-  void _showEditMenu(BuildContext context, AppLocalizations localizations) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-    
+  void _showSettingsMenu(BuildContext context, AppLocalizations localizations) {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
     showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
@@ -343,103 +569,46 @@ class TopBar extends StatelessWidget {
         overlay.localToGlobal(Offset.zero) & overlay.size,
       ),
       items: [
-const PopupMenuItem<String>(
-          value: 'undo',
-          enabled: false,
+        PopupMenuItem<String>(
+          value: 'settings',
+          onTap: () => _showSettingsDialog(context),
           child: Row(
             children: [
-              Icon(Icons.undo_outlined, size: 18),
-              SizedBox(width: 12),
-              Text('Отменить'),
-              Spacer(),
+              const Icon(Icons.settings_outlined, size: 18),
+              const SizedBox(width: 12),
+              const Text('Параметры'),
+              const Spacer(),
               Text(
-                'Ctrl+Z',
+                'Ctrl+,',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0x99000000),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
           ),
         ),
         PopupMenuItem<String>(
-value: 'redo',
-          enabled: false,
-          child: Row(
+          value: 'templates',
+          onTap: onOpenTemplates,
+          child: const Row(
             children: [
-              Icon(Icons.redo_outlined, size: 18),
+              Icon(Icons.dashboard_outlined, size: 18),
               SizedBox(width: 12),
-              Text('Повторить'),
-              Spacer(),
-              Text(
-                'Ctrl+Y',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0x99000000),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const PopupMenuDivider(),
-        PopupMenuItem<String>(
-value: 'cut',
-          enabled: false,
-          child: Row(
-            children: [
-              Icon(Icons.content_cut_outlined, size: 18),
-              SizedBox(width: 12),
-              Text('Вырезать'),
-              Spacer(),
-              Text(
-                'Ctrl+X',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0x99000000),
-                ),
-              ),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'copy',
-          enabled: false, // TODO: Implement copy functionality
-          child: Row(
-            children: [
-              Icon(Icons.content_copy_outlined, size: 18),
-              SizedBox(width: 12),
-              Text('Копировать'),
-              Spacer(),
-              Text(
-                'Ctrl+C',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0x99000000),
-                ),
-              ),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'paste',
-          enabled: false, // TODO: Implement paste functionality
-          child: Row(
-            children: [
-              Icon(Icons.content_paste_outlined, size: 18),
-              SizedBox(width: 12),
-              Text('Вставить'),
-              Spacer(),
-              Text(
-                'Ctrl+V',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0x99000000),
-                ),
-              ),
+              Text('Шаблоны'),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  void _showSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => SettingsDialog(settingsProvider: settingsProvider),
     );
   }
 }

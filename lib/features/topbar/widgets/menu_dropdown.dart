@@ -30,7 +30,7 @@ class _MenuDropdownState<T> extends State<MenuDropdown<T>> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return InkWell(
       onTap: _showMenu,
       borderRadius: BorderRadius.circular(8),
@@ -69,7 +69,7 @@ class _MenuDropdownState<T> extends State<MenuDropdown<T>> {
     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     final RenderBox button = context.findRenderObject() as RenderBox;
     final Offset position = button.localToGlobal(Offset.zero);
-    
+
     showMenu<T>(
       context: context,
       position: RelativeRect.fromRect(
@@ -85,7 +85,7 @@ class _MenuDropdownState<T> extends State<MenuDropdown<T>> {
               Icon(
                 item.icon,
                 size: 18,
-                color: item.enabled 
+                color: item.enabled
                     ? Theme.of(context).colorScheme.onSurface
                     : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
               ),
@@ -95,7 +95,7 @@ class _MenuDropdownState<T> extends State<MenuDropdown<T>> {
               child: Text(
                 item.label,
                 style: TextStyle(
-                  color: item.enabled 
+                  color: item.enabled
                       ? Theme.of(context).colorScheme.onSurface
                       : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 ),
@@ -203,25 +203,25 @@ class MenuItems {
         shortcut: 'Ctrl+Y',
         enabled: false, // TODO: Implement redo functionality
       ),
-      const MenuItem(
+      MenuItem(
         value: 'separator1',
         label: '---',
       ),
-      const MenuItem(
+      MenuItem(
         value: 'cut',
         label: 'Вырезать',
         icon: Icons.content_cut_outlined,
         shortcut: 'Ctrl+X',
         enabled: false, // TODO: Implement cut functionality
       ),
-      const MenuItem(
+      MenuItem(
         value: 'copy',
         label: 'Копировать',
         icon: Icons.content_copy_outlined,
         shortcut: 'Ctrl+C',
         enabled: false, // TODO: Implement copy functionality
       ),
-      const MenuItem(
+      MenuItem(
         value: 'paste',
         label: 'Вставить',
         icon: Icons.content_paste_outlined,
