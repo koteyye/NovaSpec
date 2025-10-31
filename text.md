@@ -1,97 +1,95 @@
-Повторное ревью задачи 'specs/007-update-006-spec'
-Зацени, братан. Проверил все исправления и вот что нашел:
+# Отчет о ревью: Workspace and Editors Phase 5.1
 
-✅ Исправленные проблемы
-1. Проблема с отступами в CustomStyledDropdown - ИСПРАВЛЕНО ✅
-Было: В custom_styled_dropdown.dart было:
+## Критические ошибки компиляции
 
-_scaleAnimation = Tween<double>(
-  begin: 0.95,  // Вызывало отступ
-  end: 1.0,
-)
+Зацени, братан, у тебя тут куча проблем, которые не дают проекту собраться:
 
-Стало: Исправили на:
+### 1. Отсутствующие методы в FileExplorerProvider
 
-_scaleAnimation = Tween<double>(
-  begin: 1.0,  // Теперь нет отступа
-  end: 1.0,
-)
+В [`file_explorer_tree.dart`](lib/features/workspace/widgets/file_explorer_tree.dart:317) вызываются методы, которых нет в [`FileExplorerProvider`](lib/features/workspace/providers/file_explorer_provider.dart):
 
-Результат: Проблема с отступами решена, поля теперь имеют нормальный размер.
+- `loadChildren(node)` (строка 317)
+- `copyNode(node)` (строки 510, 541)
+- `cutNode(node)` (строки 513, 544)
+- `deleteNode(node)` (строка 650)
 
-2. Использование ModernToast вместо SnackBar - ИСПРАВЛЕНО ✅
-Было: В settings_dialog_content.dart использовался SnackBar
+### 2. Проблемы с PopupMenuItem
 
-Стало: Заменили на ModernToast через ToastService:
+В [`file_explorer_tree.dart`](lib/features/workspace/widgets/file_explorer_tree.dart) на строках 409 и 490 используется несуществующий параметр `onSelected` у `PopupMenuButton`. В текущей версии Flutter этот параметр называется `onSelected`.
 
-ToastService().showSuccess(
-  title: 'Подключение успешно',
-  description: 'Подключение к ${widget.settingsProvider.selectedAIProvider.displayName} установлено',
-);
+## Несоответствия спецификации
 
-Результат: Теперь соответствует спецификации проекта.
+### 1. Архитектурные проблемы
 
-❌ Новые проблемы найдены
-1. Неправильная валидация Z.AI - КРИТИЧНО ❌
-Проблема: В settings_provider.dart метод isZAIConfigurationValid() содержит ошибку:
+- В [`FileExplorerProvider`](lib/features/workspace/providers/file_explorer_provider.dart) отсутствуют методы для работы с узлами дерева, которые требуются по спецификации
+- Нет реализации ленивой загрузки дочерних элементов для папок
+- Отсутствует функциональность копирования/вырезания узлов напрямую
 
-bool isZAIConfigurationValid() {
-  if (_selectedProvider != AIProvider.zai) return true;
-  
-  // Для Z.AI проверяем только API ключ и тип доступа
-  // Base URL определяется автоматически и не требует валидации
-  return _zaiToken.isNotEmpty && 
-         _zaiToken.length >= 10 && 
-         _zaiAccessType != ZAIAccessType.codingPlan; // ❌ ОШИБКА ЗДЕСЬ
+### 2. Проблемы с UI компонентами
+
+- В [`file_explorer_tree.dart`](lib/features/workspace/widgets/file_explorer_tree.dart) используются стандартные `TextButton` в диалогах (строки 577, 581, 613, 617, 648, 652), что нарушает требование использовать только `ModernButton`
+- В [`create_file_dialog.dart`](lib/features/workspace/widgets/create_file_dialog.dart) также используются `TextButton` вместо `ModernButton`
+
+### 3. Проблемы с локализацией
+
+- В [`file_explorer_tree.dart`](lib/features/workspace/widgets/file_explorer_tree.dart) и [`create_file_dialog.dart`](lib/features/workspace/widgets/create_file_dialog.dart) есть хардкоденные строки на русском языке, что нарушает требование о поддержке локализации
+
+### 4. Проблемы с состоянием
+
+- В [`file_explorer_tree.dart`](lib/features/workspace/widgets/file_explorer_tree.dart) состояние раскрытых узлов хранится в самом виджете, а не в провайдере, что нарушает паттерн Provider
+
+## Рекомендации по исправлению
+
+### 1. Добавить отсутствующие методы в FileExplorerProvider
+
+```dart
+// Загрузка дочерних элементов узла
+Future<List<FileExplorerNode>> loadChildren(FileExplorerNode node) async {
+  return await getDirectoryContents(node.path);
 }
 
-Проблема: Условие _zaiAccessType != ZAIAccessType.codingPlan запрещает использовать codingPlan, но по спецификации оба типа должны поддерживаться.
-
-Решение: Заменить на:
-
-return _zaiToken.isNotEmpty && 
-       _zaiToken.length >= 10 && 
-       _zaiAccessType != null; // Просто проверяем, что тип доступа выбран
-
-2. Отсутствие локализации для Z.AI - НЕ ИСПРАВЛЕНО ❌
-Проблема: В файлах локализации все еще отсутствуют ключи:
-
-zaiCodingPlan / zaiApi
-zaiValidationSuccess / zaiValidationError
-Решение: Добавить недостающие ключи в оба файла локализации.
-
-3. Проблема с сохранением Base URL для Z.AI - НЕ ИСПРАВЛЕНО ❌
-Проблема: В settings_provider.dart метод setZaiAccessType не обновляет Base URL при смене типа доступа:
-
-void setZaiAccessType(ZAIAccessType accessType) {
-  _zaiAccessType = accessType;
-  _prefs?.setInt('zai_access_type', accessType.index);
-  
-  // Обновляем base URL при смене типа доступа
-  if (_zaiBaseUrl.isEmpty) {
-    notifyListeners(); // ❌ Нет обновления Base URL
-  }
-  
-  notifyListeners();
+// Копирование узла
+Future<void> copyNode(FileExplorerNode node) async {
+  await copySelected();
 }
 
-Решение: Добавить автоматическое обновление Base URL:
-
-void setZaiAccessType(ZAIAccessType accessType) {
-  _zaiAccessType = accessType;
-  _prefs?.setInt('zai_access_type', accessType.index);
-  
-  // Обновляем base URL при смене типа доступа
-  if (_zaiBaseUrl.isEmpty) {
-    _zaiBaseUrl = getDefaultBaseUrl(); // Добавить эту строку
-    _secureStorage.write(key: 'zai_base_url', value: _zaiBaseUrl);
-  }
-  
-  notifyListeners();
+// Вырезание узла
+Future<void> cutNode(FileExplorerNode node) async {
+  await cutSelected();
 }
 
-🎯 Итог
-Исправлено: 1 из 5 проблем (20%)
-Осталось: 4 проблемы, включая 1 критическую
+// Удаление узла
+Future<void> deleteNode(FileExplorerNode node) async {
+  final fullPath = joinPath(_currentDirectory, node.name);
+  await delete(fullPath, isFolder: node.isFolder);
+  await refresh();
+}
+```
 
-Задача все еще требует доработки, особенно критичная проблема с валидацией Z.AI, которая блокирует использование типа доступа codingPlan.
+### 2. Исправить PopupMenuItem
+
+Заменить `onSelected` на `onSelected` в строках 409 и 490.
+
+### 3. Заменить TextButton на ModernButton
+
+Во всех диалогах заменить `TextButton` на `ModernButton` с соответствующими параметрами.
+
+### 4. Добавить локализацию
+
+Все хардкоденные строки вынести в `AppLocalizations` и использовать через `l10n`.
+
+### 5. Перенести состояние в провайдер
+
+Состояние раскрытых узлов перенести из виджета в `FileExplorerProvider`.
+
+## Итог
+
+Братан, у тебя серьезные проблемы с кодом. Многое не соответствует спецификации и есть критические ошибки, которые не дают проекту собраться. Нужно срочно исправлять:
+
+1. Добавить отсутствующие методы в `FileExplorerProvider`
+2. Исправить параметры `PopupMenuButton`
+3. Заменить все `TextButton` на `ModernButton`
+4. Вынести все строки в локализацию
+5. Перенести состояние в провайдеры
+
+После этих правок проект должен собраться и соответствовать спецификации.

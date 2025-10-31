@@ -453,7 +453,6 @@ class TopBar extends StatelessWidget {
       items: [
         PopupMenuItem<String>(
           value: 'new',
-          onTap: onNewProject,
           child: Row(
             children: [
               const Icon(Icons.file_present_outlined, size: 18),
@@ -474,7 +473,6 @@ class TopBar extends StatelessWidget {
         ),
         PopupMenuItem<String>(
           value: 'open',
-          onTap: onOpenProject,
           child: Row(
             children: [
               const Icon(Icons.folder_open_outlined, size: 18),
@@ -495,7 +493,6 @@ class TopBar extends StatelessWidget {
         ),
         PopupMenuItem<String>(
           value: 'save',
-          onTap: onSaveProject,
           enabled: projectProvider.hasActiveProject,
           child: Row(
             children: [
@@ -517,7 +514,6 @@ class TopBar extends StatelessWidget {
         ),
         PopupMenuItem<String>(
           value: 'saveAs',
-          onTap: onSaveProjectAs,
           enabled: projectProvider.hasActiveProject,
           child: Row(
             children: [
@@ -540,7 +536,6 @@ class TopBar extends StatelessWidget {
         const PopupMenuDivider(),
         PopupMenuItem<String>(
           value: 'exit',
-          onTap: onExit,
           child: Row(
             children: [
               const Icon(Icons.exit_to_app_outlined, size: 18),
@@ -555,14 +550,34 @@ class TopBar extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ).then((value) {
+      if (value != null) {
+        switch (value) {
+          case 'new':
+            onNewProject();
+            break;
+          case 'open':
+            onOpenProject();
+            break;
+          case 'save':
+            onSaveProject();
+            break;
+          case 'saveAs':
+            onSaveProjectAs();
+            break;
+          case 'exit':
+            onExit();
+            break;
+        }
+      }
+    });
   }
 
-  void _showSettingsMenu(BuildContext context, AppLocalizations localizations) {
+  void _showSettingsMenu(BuildContext context, AppLocalizations localizations) async {
     final RenderBox overlay =
         Overlay.of(context).context.findRenderObject() as RenderBox;
 
-    showMenu<String>(
+    final value = await showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
         Rect.zero,
@@ -571,7 +586,6 @@ class TopBar extends StatelessWidget {
       items: [
         PopupMenuItem<String>(
           value: 'settings',
-          onTap: () => _showSettingsDialog(context),
           child: Row(
             children: [
               const Icon(Icons.settings_outlined, size: 18),
@@ -590,10 +604,9 @@ class TopBar extends StatelessWidget {
             ],
           ),
         ),
-        PopupMenuItem<String>(
+        const PopupMenuItem<String>(
           value: 'templates',
-          onTap: onOpenTemplates,
-          child: const Row(
+          child: Row(
             children: [
               Icon(Icons.dashboard_outlined, size: 18),
               SizedBox(width: 12),
@@ -603,6 +616,19 @@ class TopBar extends StatelessWidget {
         ),
       ],
     );
+    
+    if (value != null) {
+      switch (value) {
+        case 'settings':
+          if (context.mounted) {
+            _showSettingsDialog(context);
+          }
+          break;
+        case 'templates':
+          onOpenTemplates?.call();
+          break;
+      }
+    }
   }
 
   void _showSettingsDialog(BuildContext context) {

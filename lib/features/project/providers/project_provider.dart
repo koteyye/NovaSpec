@@ -1,11 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../core/services/project_service.dart';
 import '../../../core/services/toast_service.dart';
 import '../../../shared/models/project.dart';
+import '../../../shared/models/project_status.dart';
+import '../../../core/services/file_monitor_service.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/app_logger.dart';
 
 class ProjectProvider extends ChangeNotifier {
   final ProjectService _projectService;
+  final FileMonitorService _fileMonitorService;
   Timer? _fileMonitorTimer;
   
   Project? _currentProject;
@@ -17,7 +23,7 @@ class ProjectProvider extends ChangeNotifier {
   // Global key for showing snack bars
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  ProjectProvider(this._projectService) {
+  ProjectProvider(this._projectService, this._fileMonitorService) {
     _startFileMonitoring();
   }
 
@@ -40,7 +46,7 @@ class ProjectProvider extends ChangeNotifier {
   }
 
   // Create new project
-  Future<void> createProject(String name, String directory) async {
+  Future<void> createProject({required String name, required String directory}) async {
     _setLoading(true);
     _clearError();
 
@@ -51,10 +57,10 @@ class ProjectProvider extends ChangeNotifier {
       // Add to recent projects
       _addToRecentProjects(project);
       
-      _showSuccessMessage('Проект "${project.name}" успешно создан');
+      _showSuccessMessage(_l10n.projectCreatedSuccessfully(project.name));
     } catch (e) {
       _setError(e.toString());
-      _showErrorMessage('Не удалось создать проект: ${e.toString()}');
+      _showErrorMessage(_l10n.failedToCreateProject(e.toString()));
     } finally {
       _setLoading(false);
     }
@@ -93,7 +99,7 @@ class ProjectProvider extends ChangeNotifier {
   // Save current project
   Future<void> saveProject() async {
     if (_currentProject == null || _currentProject!.isEmpty) {
-      _showErrorMessage('Нет проекта для сохранения');
+      _showErrorMessage(_l10n.noProjectToSave);
       return;
     }
 
@@ -106,10 +112,10 @@ class ProjectProvider extends ChangeNotifier {
       _hasUnsavedChanges = false;
       notifyListeners();
       
-      _showSuccessMessage('Проект успешно сохранен');
+      _showSuccessMessage(_l10n.projectSavedSuccessfully);
     } catch (e) {
       _setError(e.toString());
-      _showErrorMessage('Не удалось сохранить проект: ${e.toString()}');
+      _showErrorMessage(_l10n.failedToSaveProject(e.toString()));
     } finally {
       _setLoading(false);
     }
@@ -118,7 +124,7 @@ class ProjectProvider extends ChangeNotifier {
   // Save project as new file
   Future<void> saveProjectAs() async {
     if (_currentProject == null) {
-      _showErrorMessage('Нет проекта для сохранения');
+      _showErrorMessage(_l10n.noProjectToSave);
       return;
     }
 
@@ -135,10 +141,10 @@ class ProjectProvider extends ChangeNotifier {
       await _setCurrentProject(newProject);
       _addToRecentProjects(newProject);
       
-      _showSuccessMessage('Проект успешно сохранен как "${newProject.name}"');
+      _showSuccessMessage(_l10n.projectSavedAsSuccessfully(newProject.name));
     } catch (e) {
       _setError(e.toString());
-      _showErrorMessage('Не удалось сохранить проект как: ${e.toString()}');
+      _showErrorMessage(_l10n.failedToSaveProjectAs(e.toString()));
     } finally {
       _setLoading(false);
     }
@@ -147,6 +153,11 @@ class ProjectProvider extends ChangeNotifier {
   // Close current project
   Future<void> closeProject() async {
     if (_currentProject == null) return;
+
+    // Stop file monitoring for this project
+    if (_currentProject!.isFolderProject) {
+      await _fileMonitorService.stopMonitoring(_currentProject!.directory);
+    }
 
     // Check if there are unsaved changes
     if (_hasUnsavedChanges) {
@@ -215,6 +226,9 @@ class ProjectProvider extends ChangeNotifier {
 
     try {
       final isAccessible = await _projectService.isProjectAccessible(_currentProject!);
+      final oldStatus = _currentProject!.status.name;
+      
+      AppLogger.projectAccessibilityCheck(_currentProject!.id, isAccessible);
 
       if (!isAccessible && _currentProject!.status != ProjectStatus.inaccessible) {
         _currentProject = _currentProject!.copyWith(
@@ -222,17 +236,19 @@ class ProjectProvider extends ChangeNotifier {
         );
         notifyListeners();
         
-        _showErrorMessage('Файл проекта стал недоступен');
+        AppLogger.projectStatusChanged(_currentProject!.id, oldStatus, 'inaccessible');
+        _showErrorMessage(_l10n.projectFileInaccessible);
       } else if (isAccessible && _currentProject!.status == ProjectStatus.inaccessible) {
         _currentProject = _currentProject!.copyWith(
-          status: _hasUnsavedChanges ? ProjectStatus.modified : ProjectStatus.saved,
+          status: ProjectStatus.accessible,
         );
         notifyListeners();
         
-        _showSuccessMessage('Файл проекта снова доступен');
+        AppLogger.projectStatusChanged(_currentProject!.id, oldStatus, 'accessible');
+        _showSuccessMessage(_l10n.projectFileAccessible);
       }
     } catch (e) {
-      // Ignore monitoring errors to avoid spamming user
+      AppLogger.serviceError('ProjectProvider', 'checkProjectAccessibility', e);
     }
   }
 
@@ -240,7 +256,48 @@ class ProjectProvider extends ChangeNotifier {
   Future<void> _setCurrentProject(Project project) async {
     _currentProject = project;
     _hasUnsavedChanges = false;
+    
+    // Start lightweight file monitoring for folder projects only
+    if (project.isFolderProject) {
+      _startLightweightMonitoring(project.directory, project.id);
+    }
+    
     notifyListeners();
+  }
+
+  // Start lightweight file monitoring with throttling
+  void _startLightweightMonitoring(String directory, String projectId) {
+    // Use a timer-based approach instead of filesystem watching for better performance
+    
+    // Check directory changes every 10 seconds (lightweight approach)
+    Timer.periodic(const Duration(seconds: 10), (timer) async {
+      if (_currentProject == null || _currentProject!.id != projectId) {
+        timer.cancel();
+        return;
+      }
+      
+      // Only check if project is still accessible
+      try {
+        final dir = Directory(directory);
+        if (!await dir.exists()) {
+          if (_currentProject!.status != ProjectStatus.inaccessible) {
+            _currentProject = _currentProject!.copyWith(
+              status: ProjectStatus.inaccessible,
+            );
+            notifyListeners();
+            _showErrorMessage(_l10n.projectFolderInaccessible);
+          }
+        } else if (_currentProject!.status == ProjectStatus.inaccessible) {
+          _currentProject = _currentProject!.copyWith(
+            status: ProjectStatus.accessible,
+          );
+          notifyListeners();
+          _showSuccessMessage(_l10n.projectFolderAccessible);
+        }
+      } catch (e) {
+        // Ignore monitoring errors to prevent UI blocking
+      }
+    });
   }
 
   void _addToRecentProjects(Project project) {
@@ -262,6 +319,25 @@ class ProjectProvider extends ChangeNotifier {
     });
   }
 
+  // Open folder project
+  Future<void> openFolderProject(String directory) async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final projectName = directory.split(Platform.pathSeparator).last;
+      final project = Project.fromPath(name: projectName, directory: directory);
+      await _setCurrentProject(project);
+      _addToRecentProjects(project);
+      _showSuccessMessage(_l10n.folderProjectOpenedSuccessfully(project.name));
+    } catch (e) {
+      _setError(e.toString());
+      _showErrorMessage(_l10n.failedToOpenFolderProject(e.toString()));
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -275,6 +351,14 @@ class ProjectProvider extends ChangeNotifier {
   void _clearError() {
     _errorMessage = null;
     notifyListeners();
+  }
+
+  AppLocalizations get _l10n {
+    final context = navigatorKey.currentContext;
+    if (context == null) {
+      throw Exception('Navigator context is not available');
+    }
+    return AppLocalizations.of(context)!;
   }
 
   void _showSuccessMessage(String message) {
@@ -303,6 +387,7 @@ class ProjectProvider extends ChangeNotifier {
   @override
   void dispose() {
     _fileMonitorTimer?.cancel();
+    _fileMonitorService.dispose();
     super.dispose();
   }
 }

@@ -774,14 +774,46 @@ class SettingsProvider extends ChangeNotifier {
     }
   }
 
-  // Validate current provider (alias for validateSettings)
+  // Validate current provider only (fast validation)
   Future<bool> validateCurrentProvider() async {
     print(
       'DEBUG: validateCurrentProvider called for ${_selectedProvider.name}',
     );
     print('DEBUG: Token: ${getProviderToken(_selectedProvider)}');
     print('DEBUG: AI Validation Service: ${_aiValidationService != null}');
-    return await validateSettings();
+    
+    try {
+      setLoading(true);
+      clearError();
+
+      // Validate only current AI provider, not all services
+      if (_aiValidationService != null) {
+        final token = getProviderToken(_selectedProvider);
+        if (token != null && token.isNotEmpty) {
+          final result = await _aiValidationService.validateApiKey(
+            _selectedProvider,
+            token,
+            getDefaultBaseUrl(),
+          );
+          if (!result.isValid) {
+            setError(result.message);
+            return false;
+          }
+          return true;
+        } else {
+          setError('API ключ не может быть пустым');
+          return false;
+        }
+      } else {
+        setError('Сервис валидации недоступен');
+        return false;
+      }
+    } catch (e) {
+      setError('Validation failed: $e');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Save settings (alias for save)

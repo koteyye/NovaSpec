@@ -49,13 +49,16 @@ dependencies:
   # UI компоненты
   flutter_svg: ^2.0.9
   flutter_monaco: ^1.0.0
+  webview_flutter: ^4.4.2
 
   # Редакторы и рендеринг
   flutter_markdown: ^0.6.18
   flutter_html: ^3.0.0
 
-  # Аудио
+  # Аудио и видео
   audioplayers: ^6.1.0
+  video_player: ^2.8.1
+  chewie: ^1.7.4
 
   # State Management & DI
   provider: ^6.1.2
@@ -101,6 +104,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/file-icons/
     - assets/icons/
 
   # Generate localization files

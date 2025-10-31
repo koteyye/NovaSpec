@@ -111,6 +111,63 @@ class AppLocalizationsRu extends AppLocalizations {
   String get rename => 'Переименовать';
 
   @override
+  String get copy => 'Копировать';
+
+  @override
+  String get cut => 'Вырезать';
+
+  @override
+  String get newName => 'Новое имя';
+
+  @override
+  String get folderName => 'Имя папки';
+
+  @override
+  String get file => 'файл';
+
+  @override
+  String get folder => 'папку';
+
+  @override
+  String confirmDelete(Object name, Object type) {
+    return 'Вы уверены, что хотите удалить $type \"$name\"?';
+  }
+
+  @override
+  String get createNewFile => 'Создать новый файл';
+
+  @override
+  String get fileName => 'Имя файла';
+
+  @override
+  String get enterFileName => 'Введите имя файла';
+
+  @override
+  String get fileType => 'Тип файла';
+
+  @override
+  String get template => 'Шаблон';
+
+  @override
+  String get creating => 'Создание...';
+
+  @override
+  String get enterFileNameError => 'Введите имя файла';
+
+  @override
+  String get invalidFileNameError => 'Имя содержит недопустимые символы';
+
+  @override
+  String fileCreated(Object fileName) {
+    return 'Файл \"$fileName\" создан';
+  }
+
+  @override
+  String createFileError(Object error) {
+    return 'Ошибка создания файла: $error';
+  }
+
+  @override
   String get switchToEnglish => 'Переключить на английский';
 
   @override
@@ -478,4 +535,87 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get confluenceTokenRequired => 'Требуется токен Confluence';
+
+  @override
+  String projectCreatedSuccessfully(Object projectName) {
+    return 'Проект \"$projectName\" успешно создан';
+  }
+
+  @override
+  String failedToCreateProject(Object error) {
+    return 'Не удалось создать проект: $error';
+  }
+
+  @override
+  String get noProjectToSave => 'Нет проекта для сохранения';
+
+  @override
+  String get projectSavedSuccessfully => 'Проект успешно сохранен';
+
+  @override
+  String failedToSaveProject(Object error) {
+    return 'Не удалось сохранить проект: $error';
+  }
+
+  @override
+  String projectSavedAsSuccessfully(Object projectName) {
+    return 'Проект успешно сохранен как \"$projectName\"';
+  }
+
+  @override
+  String failedToSaveProjectAs(Object error) {
+    return 'Не удалось сохранить проект как: $error';
+  }
+
+  @override
+  String get projectFileInaccessible => 'Файл проекта стал недоступен';
+
+  @override
+  String get projectFileAccessible => 'Файл проекта снова доступен';
+
+  @override
+  String get projectFolderInaccessible => 'Папка проекта стала недоступна';
+
+  @override
+  String get projectFolderAccessible => 'Папка проекта снова доступна';
+
+  @override
+  String folderProjectOpenedSuccessfully(Object projectName) {
+    return 'Папочный проект \"$projectName\" успешно открыт';
+  }
+
+  @override
+  String failedToOpenFolderProject(Object error) {
+    return 'Не удалось открыть папочный проект: $error';
+  }
+
+  @override
+  String get projectStatusAccessible => 'Доступен';
+
+  @override
+  String get projectStatusInaccessible => 'Недоступен';
+
+  @override
+  String get projectStatusError => 'Ошибка';
+
+  @override
+  String get projectStatusSynced => 'Синхронизирован';
+
+  @override
+  String get projectStatusConflict => 'Конфликт';
+
+  @override
+  String get projectStatusPending => 'Ожидание';
+
+  @override
+  String get projectStatusOffline => 'Офлайн';
+
+  @override
+  String get expandFileExplorerPanel => 'Развернуть панель файлов';
+
+  @override
+  String get collapseFileExplorerPanel => 'Свернуть панель файлов';
+
+  @override
+  String get refresh => 'Обновить';
 }

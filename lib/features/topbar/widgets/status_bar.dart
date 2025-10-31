@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../project/providers/project_provider.dart';
-import '../../../shared/models/project.dart';
+import '../../../shared/models/project_status.dart';
 
 class StatusBar extends StatelessWidget {
   final ProjectProvider projectProvider;
@@ -83,23 +83,31 @@ class StatusBar extends StatelessWidget {
       listenable: projectProvider,
       builder: (context, child) {
         final status = projectProvider.projectStatus;
-        final hasUnsavedChanges = projectProvider.hasUnsavedChanges;
         final theme = Theme.of(context);
         
         Color statusColor;
         IconData statusIcon;
-        String statusText = status;
+        String statusText;
         
         if (!projectProvider.hasActiveProject) {
           statusColor = Colors.grey;
           statusIcon = Icons.circle_outlined;
           statusText = 'Нет проекта';
-        } else if (hasUnsavedChanges) {
-          statusColor = Colors.orange;
-          statusIcon = Icons.circle;
         } else {
-          statusColor = Colors.green;
-          statusIcon = Icons.circle;
+          // Use string-based status from projectProvider
+          if (status == 'Нет проекта') {
+            statusColor = Colors.grey;
+            statusIcon = Icons.circle_outlined;
+            statusText = 'Нет проекта';
+          } else if (status == 'Есть изменения') {
+            statusColor = Colors.orange;
+            statusIcon = Icons.circle;
+            statusText = 'Есть изменения';
+          } else {
+            statusColor = Colors.green;
+            statusIcon = Icons.circle;
+            statusText = 'Сохранено';
+          }
         }
 
         return Row(
@@ -209,7 +217,7 @@ class StatusBar extends StatelessWidget {
         if (project == null || project.isEmpty) return const SizedBox.shrink();
         
         final theme = Theme.of(context);
-        final isAccessible = project.status != ProjectStatus.inaccessible && project.status != ProjectStatus.corrupted;
+        final isAccessible = project.status != ProjectStatus.inaccessible && project.status != ProjectStatus.error;
         
         return Row(
           children: [

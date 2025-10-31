@@ -302,6 +302,108 @@ abstract class AppLocalizations {
   /// **'Rename'**
   String get rename;
 
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @cut.
+  ///
+  /// In en, this message translates to:
+  /// **'Cut'**
+  String get cut;
+
+  /// No description provided for @newName.
+  ///
+  /// In en, this message translates to:
+  /// **'New name'**
+  String get newName;
+
+  /// No description provided for @folderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder name'**
+  String get folderName;
+
+  /// No description provided for @file.
+  ///
+  /// In en, this message translates to:
+  /// **'file'**
+  String get file;
+
+  /// No description provided for @folder.
+  ///
+  /// In en, this message translates to:
+  /// **'folder'**
+  String get folder;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {type} \"{name}\"?'**
+  String confirmDelete(Object name, Object type);
+
+  /// No description provided for @createNewFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New File'**
+  String get createNewFile;
+
+  /// No description provided for @fileName.
+  ///
+  /// In en, this message translates to:
+  /// **'File name'**
+  String get fileName;
+
+  /// No description provided for @enterFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter file name'**
+  String get enterFileName;
+
+  /// No description provided for @fileType.
+  ///
+  /// In en, this message translates to:
+  /// **'File type'**
+  String get fileType;
+
+  /// No description provided for @template.
+  ///
+  /// In en, this message translates to:
+  /// **'Template'**
+  String get template;
+
+  /// No description provided for @creating.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating...'**
+  String get creating;
+
+  /// No description provided for @enterFileNameError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter file name'**
+  String get enterFileNameError;
+
+  /// No description provided for @invalidFileNameError.
+  ///
+  /// In en, this message translates to:
+  /// **'File name contains invalid characters'**
+  String get invalidFileNameError;
+
+  /// No description provided for @fileCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'File \"{fileName}\" created'**
+  String fileCreated(Object fileName);
+
+  /// No description provided for @createFileError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error creating file: {error}'**
+  String createFileError(Object error);
+
   /// No description provided for @switchToEnglish.
   ///
   /// In en, this message translates to:
@@ -1033,6 +1135,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confluence token is required'**
   String get confluenceTokenRequired;
+
+  /// No description provided for @projectCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Project \"{projectName}\" created successfully'**
+  String projectCreatedSuccessfully(Object projectName);
+
+  /// No description provided for @failedToCreateProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create project: {error}'**
+  String failedToCreateProject(Object error);
+
+  /// No description provided for @noProjectToSave.
+  ///
+  /// In en, this message translates to:
+  /// **'No project to save'**
+  String get noProjectToSave;
+
+  /// No description provided for @projectSavedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Project saved successfully'**
+  String get projectSavedSuccessfully;
+
+  /// No description provided for @failedToSaveProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save project: {error}'**
+  String failedToSaveProject(Object error);
+
+  /// No description provided for @projectSavedAsSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Project saved successfully as \"{projectName}\"'**
+  String projectSavedAsSuccessfully(Object projectName);
+
+  /// No description provided for @failedToSaveProjectAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save project as: {error}'**
+  String failedToSaveProjectAs(Object error);
+
+  /// No description provided for @projectFileInaccessible.
+  ///
+  /// In en, this message translates to:
+  /// **'Project file became inaccessible'**
+  String get projectFileInaccessible;
+
+  /// No description provided for @projectFileAccessible.
+  ///
+  /// In en, this message translates to:
+  /// **'Project file is accessible again'**
+  String get projectFileAccessible;
+
+  /// No description provided for @projectFolderInaccessible.
+  ///
+  /// In en, this message translates to:
+  /// **'Project folder became inaccessible'**
+  String get projectFolderInaccessible;
+
+  /// No description provided for @projectFolderAccessible.
+  ///
+  /// In en, this message translates to:
+  /// **'Project folder is accessible again'**
+  String get projectFolderAccessible;
+
+  /// No description provided for @folderProjectOpenedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder project \"{projectName}\" opened successfully'**
+  String folderProjectOpenedSuccessfully(Object projectName);
+
+  /// No description provided for @failedToOpenFolderProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to open folder project: {error}'**
+  String failedToOpenFolderProject(Object error);
+
+  /// No description provided for @projectStatusAccessible.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessible'**
+  String get projectStatusAccessible;
+
+  /// No description provided for @projectStatusInaccessible.
+  ///
+  /// In en, this message translates to:
+  /// **'Inaccessible'**
+  String get projectStatusInaccessible;
+
+  /// No description provided for @projectStatusError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get projectStatusError;
+
+  /// No description provided for @projectStatusSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get projectStatusSynced;
+
+  /// No description provided for @projectStatusConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Conflict'**
+  String get projectStatusConflict;
+
+  /// No description provided for @projectStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get projectStatusPending;
+
+  /// No description provided for @projectStatusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get projectStatusOffline;
+
+  /// No description provided for @expandFileExplorerPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand file explorer panel'**
+  String get expandFileExplorerPanel;
+
+  /// No description provided for @collapseFileExplorerPanel.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse file explorer panel'**
+  String get collapseFileExplorerPanel;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
 }
 
 class _AppLocalizationsDelegate

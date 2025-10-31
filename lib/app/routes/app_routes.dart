@@ -6,6 +6,8 @@ import '../../core/providers/app_provider.dart';
 import '../../core/services/security_service.dart';
 import '../screens/component_demo_screen.dart';
 
+import '../../features/workspace/screens/file_explorer_demo_page.dart';
+
 // Enhanced security validation for routes
 class RouteValidator {
   static final SecurityService _security = SecurityService.instance;
@@ -53,6 +55,7 @@ class AppRoutes {
   static const String textEditor = '/text-editor';
   static const String swaggerViewer = '/swagger-viewer';
   static const String componentDemo = '/component-demo';
+  static const String fileExplorerDemo = '/file-explorer-demo';
 }
 
 // Кэш для виджетов - оптимизация производительности
@@ -262,6 +265,15 @@ class AppRouter {
           builder: (_) => LazyLoadWidget.create(
             () => const ComponentDemoScreen(),
             cacheKey: 'component_demo',
+          ),
+          settings: settings,
+        );
+        
+      case AppRoutes.fileExplorerDemo:
+        return MaterialPageRoute(
+          builder: (_) => LazyLoadWidget.create(
+            () => const FileExplorerDemoPage(),
+            cacheKey: 'file_explorer_demo',
           ),
           settings: settings,
         );
@@ -609,6 +621,14 @@ class HomeScreen extends StatelessWidget {
                     icon: Icons.palette,
                     onTap: () {
                       Navigator.of(context).pushNamed(AppRoutes.componentDemo);
+                    },
+                  ),
+                  _NavigationCard(
+                    title: 'Файл-проводник',
+                    subtitle: 'Демо проводника',
+                    icon: Icons.folder,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(AppRoutes.fileExplorerDemo);
                     },
                   ),
                 ],

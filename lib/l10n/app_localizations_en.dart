@@ -111,6 +111,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rename => 'Rename';
 
   @override
+  String get copy => 'Copy';
+
+  @override
+  String get cut => 'Cut';
+
+  @override
+  String get newName => 'New name';
+
+  @override
+  String get folderName => 'Folder name';
+
+  @override
+  String get file => 'file';
+
+  @override
+  String get folder => 'folder';
+
+  @override
+  String confirmDelete(Object name, Object type) {
+    return 'Are you sure you want to delete $type \"$name\"?';
+  }
+
+  @override
+  String get createNewFile => 'Create New File';
+
+  @override
+  String get fileName => 'File name';
+
+  @override
+  String get enterFileName => 'Enter file name';
+
+  @override
+  String get fileType => 'File type';
+
+  @override
+  String get template => 'Template';
+
+  @override
+  String get creating => 'Creating...';
+
+  @override
+  String get enterFileNameError => 'Enter file name';
+
+  @override
+  String get invalidFileNameError => 'File name contains invalid characters';
+
+  @override
+  String fileCreated(Object fileName) {
+    return 'File \"$fileName\" created';
+  }
+
+  @override
+  String createFileError(Object error) {
+    return 'Error creating file: $error';
+  }
+
+  @override
   String get switchToEnglish => 'Switch to English';
 
   @override
@@ -477,4 +534,87 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confluenceTokenRequired => 'Confluence token is required';
+
+  @override
+  String projectCreatedSuccessfully(Object projectName) {
+    return 'Project \"$projectName\" created successfully';
+  }
+
+  @override
+  String failedToCreateProject(Object error) {
+    return 'Failed to create project: $error';
+  }
+
+  @override
+  String get noProjectToSave => 'No project to save';
+
+  @override
+  String get projectSavedSuccessfully => 'Project saved successfully';
+
+  @override
+  String failedToSaveProject(Object error) {
+    return 'Failed to save project: $error';
+  }
+
+  @override
+  String projectSavedAsSuccessfully(Object projectName) {
+    return 'Project saved successfully as \"$projectName\"';
+  }
+
+  @override
+  String failedToSaveProjectAs(Object error) {
+    return 'Failed to save project as: $error';
+  }
+
+  @override
+  String get projectFileInaccessible => 'Project file became inaccessible';
+
+  @override
+  String get projectFileAccessible => 'Project file is accessible again';
+
+  @override
+  String get projectFolderInaccessible => 'Project folder became inaccessible';
+
+  @override
+  String get projectFolderAccessible => 'Project folder is accessible again';
+
+  @override
+  String folderProjectOpenedSuccessfully(Object projectName) {
+    return 'Folder project \"$projectName\" opened successfully';
+  }
+
+  @override
+  String failedToOpenFolderProject(Object error) {
+    return 'Failed to open folder project: $error';
+  }
+
+  @override
+  String get projectStatusAccessible => 'Accessible';
+
+  @override
+  String get projectStatusInaccessible => 'Inaccessible';
+
+  @override
+  String get projectStatusError => 'Error';
+
+  @override
+  String get projectStatusSynced => 'Synced';
+
+  @override
+  String get projectStatusConflict => 'Conflict';
+
+  @override
+  String get projectStatusPending => 'Pending';
+
+  @override
+  String get projectStatusOffline => 'Offline';
+
+  @override
+  String get expandFileExplorerPanel => 'Expand file explorer panel';
+
+  @override
+  String get collapseFileExplorerPanel => 'Collapse file explorer panel';
+
+  @override
+  String get refresh => 'Refresh';
 }

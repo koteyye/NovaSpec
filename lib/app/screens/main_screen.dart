@@ -13,6 +13,7 @@ import '../../features/onboarding/screens/onboarding_dialog.dart';
 import '../../features/topbar/widgets/top_bar.dart';
 import '../../features/topbar/widgets/status_bar.dart';
 import '../../features/settings/widgets/settings_dialog.dart';
+import '../../features/workspace/screens/workspace_screen.dart';
 import '../../shared/widgets/modern_button.dart';
 
 class MainScreen extends StatefulWidget {
@@ -47,8 +48,10 @@ class _MainScreenState extends State<MainScreen> {
         _showOnboarding = true;
       });
     } else {
-      // Try to load last project
-      await _loadLastProject(projectProvider);
+      // Try to load last project after build is complete
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await _loadLastProject(projectProvider);
+      });
     }
 
     setState(() {
@@ -296,10 +299,10 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-
+          
           const SizedBox(height: 24),
 
-          // Workspace content
+          // Workspace content - ИНТЕГРИРУЕМ WorkspaceScreen ЗДЕСЬ
           Expanded(
             child: Container(
               width: double.infinity,
@@ -307,37 +310,12 @@ class _MainScreenState extends State<MainScreen> {
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outline.withValues(alpha: 0.3),
+                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.workspaces_outlined,
-                    size: 64,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.6),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(context)!.workspace,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppLocalizations.of(context)!.workspaceNextVersion,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: const WorkspaceScreen(),
               ),
             ),
           ),
@@ -445,7 +423,13 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleCreateProject() {
-    Navigator.of(context).pop(); // Close onboarding dialog first
+    // Close onboarding dialog if it's open and reset state
+    if (_showOnboarding) {
+      Navigator.of(context).pop();
+      setState(() {
+        _showOnboarding = false;
+      });
+    }
     _showCreateProjectDialog();
   }
 
@@ -454,10 +438,18 @@ class _MainScreenState extends State<MainScreen> {
       context,
       listen: false,
     );
-    Navigator.of(context).pop(); // Close onboarding dialog first
+    
+    // Close onboarding dialog if it's open and reset state
+    if (_showOnboarding) {
+      Navigator.of(context).pop();
+      setState(() {
+        _showOnboarding = false;
+      });
+    }
 
     try {
-      await projectProvider.openProject('');
+      // Use project provider to open project
+      await projectProvider.openProject(null);
 
       // Show success message
       if (mounted && projectProvider.currentProject != null) {
@@ -480,6 +472,10 @@ class _MainScreenState extends State<MainScreen> {
       listen: false,
     );
     Navigator.of(context).pop(); // Close onboarding dialog first
+    
+    setState(() {
+      _showOnboarding = false;
+    });
 
     projectProvider.createEmptyProject();
   }
@@ -627,8 +623,8 @@ class _CreateProjectDialogState extends State<_CreateProjectDialog> {
 
     try {
       await widget.projectProvider.createProject(
-        _nameController.text.trim(),
-        _directoryController.text.trim(),
+        name: _nameController.text.trim(),
+        directory: _directoryController.text.trim(),
       );
 
       if (mounted) {

@@ -7,7 +7,7 @@ import '../core/providers/settings_provider.dart';
 import 'themes/app_theme.dart';
 import '../app/screens/main_screen.dart';
 import '../features/project/providers/project_provider.dart';
-import '../core/services/project_service.dart';
+import '../shared/services/di_container.dart';
 import '../shared/widgets/modern_toast.dart';
 
 class NovaSpecApp extends StatelessWidget {
@@ -18,7 +18,7 @@ class NovaSpecApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // Используем SettingsProvider из main.dart для избежания дублирования
-        ChangeNotifierProvider(create: (context) => ProjectProvider(ProjectService())),
+        ChangeNotifierProvider(create: (context) => getIt<ProjectProvider>()),
       ],
       child: Consumer2<AppProvider, SettingsProvider>(
         builder: (context, appProvider, settingsProvider, child) {

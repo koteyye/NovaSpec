@@ -105,7 +105,7 @@ class _OnboardingDialogRefactoredState extends State<OnboardingDialogRefactored>
           Text(
             description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
@@ -229,7 +229,7 @@ class _OnboardingDialogRefactoredState extends State<OnboardingDialogRefactored>
                   child: Text(
                     'Вы можете настроить параметры прямо сейчас или сделать это позже в настройках приложения.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
