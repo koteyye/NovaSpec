@@ -25,10 +25,13 @@ import '../../features/workspace/providers/workspace_provider.dart';
 import '../../features/workspace/providers/file_explorer_provider.dart';
 import '../../features/workspace/providers/tab_provider.dart';
 import '../../features/workspace/providers/panel_provider.dart';
+import '../../features/workspace/providers/webview_provider.dart';
 import '../../core/services/workspace_service.dart';
 import '../../core/services/clipboard_service.dart';
 import '../../core/services/workspace_file_service.dart';
 import '../../core/services/file_icon_service.dart';
+import '../../features/workspace/services/webview2_checker_service.dart';
+import '../../features/workspace/services/swagger_server_service.dart';
 
 // Shared Services
 // import '../models/app_config.dart';
@@ -39,25 +42,30 @@ Future<void> setupDI() async {
   // Register core services first
   getIt.registerSingleton<SecureStorageService>(SecureStorageServiceImpl());
   getIt.registerSingleton<StorageService>(StorageServiceImpl());
-  getIt.registerSingleton<ConfigService>(ConfigServiceImpl(
-    getIt<StorageService>(),
-  ));
-  
+  getIt.registerSingleton<ConfigService>(
+    ConfigServiceImpl(getIt<StorageService>()),
+  );
+
   // Register validation services
   getIt.registerSingleton<AIValidationService>(AIValidationService(Dio()));
-  getIt.registerSingleton<ConfluenceValidationService>(ConfluenceValidationService(Dio()));
-  getIt.registerSingleton<MusicValidationService>(MusicValidationService(Dio()));
+  getIt.registerSingleton<ConfluenceValidationService>(
+    ConfluenceValidationService(Dio()),
+  );
+  getIt.registerSingleton<MusicValidationService>(
+    MusicValidationService(Dio()),
+  );
 
   // Register core providers
-  getIt.registerSingleton<AppProvider>(AppProvider(
-    getIt<ConfigService>(),
-    getIt<StorageService>(),
-  ));
-  getIt.registerSingleton<SettingsProvider>(SettingsProvider(
-    aiValidationService: getIt<AIValidationService>(),
-    confluenceValidationService: getIt<ConfluenceValidationService>(),
-    musicValidationService: getIt<MusicValidationService>(),
-  ));
+  getIt.registerSingleton<AppProvider>(
+    AppProvider(getIt<ConfigService>(), getIt<StorageService>()),
+  );
+  getIt.registerSingleton<SettingsProvider>(
+    SettingsProvider(
+      aiValidationService: getIt<AIValidationService>(),
+      confluenceValidationService: getIt<ConfluenceValidationService>(),
+      musicValidationService: getIt<MusicValidationService>(),
+    ),
+  );
 
   // Register shared services
   // getIt.registerSingleton<AppConfig>(AppConfig());
@@ -67,9 +75,9 @@ Future<void> setupDI() async {
   getIt.registerSingleton<WorkspaceService>(WorkspaceService());
   getIt.registerSingleton<ClipboardService>(ClipboardService());
   getIt.registerSingleton<FileIconService>(FileIconService());
-  getIt.registerSingleton<WorkspaceFileService>(WorkspaceFileService(
-    clipboardService: getIt<ClipboardService>(),
-  ));
+  getIt.registerSingleton<WorkspaceFileService>(
+    WorkspaceFileService(clipboardService: getIt<ClipboardService>()),
+  );
 
   // Register project services
   getIt.registerSingleton<FileMonitorService>(FileMonitorServiceImpl());
@@ -77,26 +85,41 @@ Future<void> setupDI() async {
   getIt.registerSingleton<ProjectService>(ProjectServiceImpl());
 
   // Register workspace providers
-  getIt.registerSingleton<WorkspaceProvider>(WorkspaceProvider(
-    workspaceService: getIt<WorkspaceService>(),
-    fileService: getIt<WorkspaceFileService>(),
-  ));
-  getIt.registerSingleton<FileExplorerProvider>(FileExplorerProvider(
-    fileService: getIt<WorkspaceFileService>(),
-    iconService: getIt<FileIconService>(),
-  ));
-  getIt.registerSingleton<TabProvider>(TabProvider(
-    workspaceService: getIt<WorkspaceService>(),
-  ));
+  getIt.registerSingleton<WorkspaceProvider>(
+    WorkspaceProvider(
+      workspaceService: getIt<WorkspaceService>(),
+      fileService: getIt<WorkspaceFileService>(),
+    ),
+  );
+  getIt.registerSingleton<FileExplorerProvider>(
+    FileExplorerProvider(
+      fileService: getIt<WorkspaceFileService>(),
+      iconService: getIt<FileIconService>(),
+    ),
+  );
+  getIt.registerSingleton<TabProvider>(
+    TabProvider(workspaceService: getIt<WorkspaceService>()),
+  );
 
   // Register project provider after file explorer provider
-  getIt.registerSingleton<ProjectProvider>(ProjectProvider(
-    getIt<ProjectService>(),
-    getIt<FileMonitorService>(),
-  ));
+  getIt.registerSingleton<ProjectProvider>(
+    ProjectProvider(getIt<ProjectService>(), getIt<FileMonitorService>()),
+  );
 
   // Register panel provider
   getIt.registerSingleton<PanelProvider>(PanelProvider());
+
+  // Register WebView2 services
+  getIt.registerSingleton<WebView2CheckerService>(WebView2CheckerService());
+  getIt.registerSingleton<SwaggerServerService>(SwaggerServerService());
+
+  // Register WebView provider
+  getIt.registerFactory<WebViewProvider>(
+    () => WebViewProvider(
+      getIt<WebView2CheckerService>(),
+      getIt<SwaggerServerService>(),
+    ),
+  );
 }
 
 class ToastService {

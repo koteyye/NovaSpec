@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../../../../core/services/toast_service.dart';
 
 class PdfViewer extends StatefulWidget {
   final String filePath;
@@ -581,14 +582,10 @@ class _PdfViewerState extends State<PdfViewer> {
   }
 
   void _printPdf() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Функция печати будет доступна в следующей версии')),
-    );
+    show(description: 'Функция печати будет доступна в следующей версии');
   }
 
   void _exportPdf() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Функция экспорта будет доступна в следующей версии')),
-    );
+    show(description: 'Функция экспорта будет доступна в следующей версии');
   }
 }

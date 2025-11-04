@@ -618,4 +618,40 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get refresh => 'Обновить';
+
+  @override
+  String fileCreationErrorPermissionDenied(Object directory) {
+    return 'Отказано в доступе: Невозможно создать файлы в директории \"$directory\"';
+  }
+
+  @override
+  String fileAlreadyExists(Object fileName) {
+    return 'Файл \"$fileName\" уже существует';
+  }
+
+  @override
+  String invalidFileName(Object fileName) {
+    return 'Недопустимое имя файла: \"$fileName\"';
+  }
+
+  @override
+  String permissionDenied(Object directory) {
+    return 'Отказано в доступе к директории \"$directory\"';
+  }
+
+  @override
+  String directoryNotFound(Object directory) {
+    return 'Директория не найдена: \"$directory\"';
+  }
+
+  @override
+  String get diskFull => 'Диск заполнен, невозможно создать файл';
+
+  @override
+  String get unknownError => 'Произошла неизвестная ошибка';
+
+  @override
+  String fileCreationError(Object error) {
+    return 'Ошибка создания файла: $error';
+  }
 }

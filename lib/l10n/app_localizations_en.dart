@@ -617,4 +617,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refresh => 'Refresh';
+
+  @override
+  String fileCreationErrorPermissionDenied(Object directory) {
+    return 'Permission denied: Cannot create files in \"$directory\"';
+  }
+
+  @override
+  String fileAlreadyExists(Object fileName) {
+    return 'File \"$fileName\" already exists';
+  }
+
+  @override
+  String invalidFileName(Object fileName) {
+    return 'Invalid file name: \"$fileName\"';
+  }
+
+  @override
+  String permissionDenied(Object directory) {
+    return 'Permission denied for directory \"$directory\"';
+  }
+
+  @override
+  String directoryNotFound(Object directory) {
+    return 'Directory not found: \"$directory\"';
+  }
+
+  @override
+  String get diskFull => 'Disk full, cannot create file';
+
+  @override
+  String get unknownError => 'Unknown error occurred';
+
+  @override
+  String fileCreationError(Object error) {
+    return 'File creation error: $error';
+  }
 }

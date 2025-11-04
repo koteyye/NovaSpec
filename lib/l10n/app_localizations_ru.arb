@@ -165,5 +165,13 @@
   "projectStatusOffline": "Офлайн",
   "expandFileExplorerPanel": "Развернуть панель файлов",
   "collapseFileExplorerPanel": "Свернуть панель файлов",
-  "refresh": "Обновить"
+  "refresh": "Обновить",
+  "fileCreationErrorPermissionDenied": "Отказано в доступе: Невозможно создать файлы в директории \"{directory}\"",
+  "fileAlreadyExists": "Файл \"{fileName}\" уже существует",
+  "invalidFileName": "Недопустимое имя файла: \"{fileName}\"",
+  "permissionDenied": "Отказано в доступе к директории \"{directory}\"",
+  "directoryNotFound": "Директория не найдена: \"{directory}\"",
+  "diskFull": "Диск заполнен, невозможно создать файл",
+  "unknownError": "Произошла неизвестная ошибка",
+  "fileCreationError": "Ошибка создания файла: {error}"
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-
+import '../../../../core/services/toast_service.dart';
 
 class AudioPlayerWidget extends StatefulWidget {
   final String filePath;
@@ -21,6 +21,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
   bool _isLoading = false;
+  bool _disposed = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   double _volume = 0.8;
@@ -38,9 +39,11 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
   @override
   void dispose() {
+    _disposed = true;
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
     _playerStateSubscription?.cancel();
+    _audioPlayer.stop().catchError((_) {});
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -48,28 +51,64 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   Future<void> _initializePlayer() async {
     try {
       setState(() => _isLoading = true);
-      
-      // Set up subscriptions
-      _positionSubscription = _audioPlayer.onPositionChanged.listen((position) {
-        setState(() => _position = position);
-      });
 
-      _durationSubscription = _audioPlayer.onDurationChanged.listen((duration) {
-        setState(() => _duration = duration);
-      });
+      // Устанавливаем режим остановки при завершении
+      await _audioPlayer.setReleaseMode(ReleaseMode.stop);
 
-      _playerStateSubscription = _audioPlayer.onPlayerStateChanged.listen((state) {
-        setState(() => _isPlaying = state == PlayerState.playing);
-      });
-
-      // Load the audio file
+      // Load the audio file first
       await _audioPlayer.setSourceDeviceFile(widget.filePath);
       await _audioPlayer.setVolume(_volume);
-      
-      setState(() => _isLoading = false);
+
+      // Проверяем состояние после загрузки
+      if (_disposed || !mounted) {
+        return;
+      }
+
+      // Set up subscriptions AFTER successful load
+      _positionSubscription = _audioPlayer.onPositionChanged.listen(
+        (position) {
+          if (!_disposed && mounted) {
+            setState(() => _position = position);
+          }
+        },
+        onError: (error) {
+          // Игнорируем ошибки стрима
+        },
+        cancelOnError: false,
+      );
+
+      _durationSubscription = _audioPlayer.onDurationChanged.listen(
+        (duration) {
+          if (!_disposed && mounted) {
+            setState(() => _duration = duration);
+          }
+        },
+        onError: (error) {
+          // Игнорируем ошибки стрима
+        },
+        cancelOnError: false,
+      );
+
+      _playerStateSubscription = _audioPlayer.onPlayerStateChanged.listen(
+        (state) {
+          if (!_disposed && mounted) {
+            setState(() => _isPlaying = state == PlayerState.playing);
+          }
+        },
+        onError: (error) {
+          // Игнорируем ошибки стрима
+        },
+        cancelOnError: false,
+      );
+
+      if (!_disposed && mounted) {
+        setState(() => _isLoading = false);
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
-      _showError('Ошибка загрузки аудио: $e');
+      if (!_disposed && mounted) {
+        setState(() => _isLoading = false);
+        _showError('Ошибка загрузки аудио: $e');
+      }
     }
   }
 
@@ -82,24 +121,24 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         children: [
           // Audio icon and info
           _buildAudioInfo(context),
-          
+
           const SizedBox(height: 32),
-          
+
           // Playback controls
           _buildPlaybackControls(context),
-          
+
           const SizedBox(height: 24),
-          
+
           // Progress bar
           _buildProgressBar(context),
-          
+
           const SizedBox(height: 24),
-          
+
           // Volume and speed controls
           _buildAdditionalControls(context),
-          
+
           const SizedBox(height: 24),
-          
+
           // File info
           _buildFileInfo(context),
         ],
@@ -127,25 +166,27 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         Text(
           widget.fileName,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         Text(
           _formatDuration(_duration),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
       ],
@@ -164,18 +205,18 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
           },
           iconSize: 32,
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // Rewind button
         IconButton(
           icon: const Icon(Icons.replay_10),
           onPressed: _rewind,
           iconSize: 32,
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // Play/Pause button
         Container(
           decoration: BoxDecoration(
@@ -200,18 +241,18 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             iconSize: 32,
           ),
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // Fast forward button
         IconButton(
           icon: const Icon(Icons.forward_30),
           onPressed: _fastForward,
           iconSize: 32,
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // Next button (placeholder)
         IconButton(
           icon: const Icon(Icons.skip_next),
@@ -239,12 +280,14 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               _audioPlayer.seek(Duration(milliseconds: value.round()));
             },
             activeColor: Theme.of(context).colorScheme.primary,
-            inactiveColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            inactiveColor: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest,
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -272,12 +315,16 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               Icon(
                 Icons.volume_up,
                 size: 20,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               const SizedBox(height: 8),
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 6,
+                  ),
                   trackHeight: 2,
                 ),
                 child: Slider(
@@ -285,19 +332,23 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                   min: 0.0,
                   max: 1.0,
                   onChanged: (value) {
-                    setState(() => _volume = value);
-                    _audioPlayer.setVolume(value);
+                    if (!_disposed && mounted) {
+                      setState(() => _volume = value);
+                      _audioPlayer.setVolume(value);
+                    }
                   },
                   activeColor: Theme.of(context).colorScheme.primary,
-                  inactiveColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  inactiveColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
                 ),
               ),
             ],
           ),
         ),
-        
+
         const SizedBox(width: 32),
-        
+
         // Speed control
         Expanded(
           child: Column(
@@ -305,17 +356,20 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               Icon(
                 Icons.speed,
                 size: 20,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor,
-                  ),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: DropdownButton<double>(
                   value: _playbackSpeed,
@@ -328,7 +382,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                     );
                   }).toList(),
                   onChanged: (value) {
-                    if (value != null) {
+                    if (value != null && !_disposed && mounted) {
                       setState(() => _playbackSpeed = value);
                       _audioPlayer.setPlaybackRate(value);
                     }
@@ -348,18 +402,16 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Информация о файле',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           _buildInfoRow('Имя файла', widget.fileName),
@@ -383,16 +435,13 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             width: 120,
             child: Text(
               '$label:',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            child: Text(value, style: Theme.of(context).textTheme.bodySmall),
           ),
         ],
       ),
@@ -400,6 +449,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   }
 
   Future<void> _togglePlayPause() async {
+    if (_disposed) return;
     try {
       if (_isPlaying) {
         await _audioPlayer.pause();
@@ -407,29 +457,43 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         await _audioPlayer.resume();
       }
     } catch (e) {
-      _showError('Ошибка воспроизведения: $e');
+      if (!_disposed && mounted) {
+        _showError('Ошибка воспроизведения: $e');
+      }
     }
   }
 
   Future<void> _rewind() async {
+    if (_disposed) return;
     try {
-      final newPosition = (_position - const Duration(seconds: 10)) < Duration.zero 
-          ? Duration.zero 
-          : ((_position - const Duration(seconds: 10)) > _duration ? _duration : (_position - const Duration(seconds: 10)));
+      final newPosition =
+          (_position - const Duration(seconds: 10)) < Duration.zero
+          ? Duration.zero
+          : ((_position - const Duration(seconds: 10)) > _duration
+                ? _duration
+                : (_position - const Duration(seconds: 10)));
       await _audioPlayer.seek(newPosition);
     } catch (e) {
-      _showError('Ошибка перемотки: $e');
+      if (!_disposed && mounted) {
+        _showError('Ошибка перемотки: $e');
+      }
     }
   }
 
   Future<void> _fastForward() async {
+    if (_disposed) return;
     try {
-      final newPosition = (_position + const Duration(seconds: 30)) < Duration.zero 
-          ? Duration.zero 
-          : ((_position + const Duration(seconds: 30)) > _duration ? _duration : (_position + const Duration(seconds: 30)));
+      final newPosition =
+          (_position + const Duration(seconds: 30)) < Duration.zero
+          ? Duration.zero
+          : ((_position + const Duration(seconds: 30)) > _duration
+                ? _duration
+                : (_position + const Duration(seconds: 30)));
       await _audioPlayer.seek(newPosition);
     } catch (e) {
-      _showError('Ошибка перемотки: $e');
+      if (!_disposed && mounted) {
+        _showError('Ошибка перемотки: $e');
+      }
     }
   }
 
@@ -437,23 +501,20 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60);
-    
+
     if (hours > 0) {
       return '${hours.toString().padLeft(2, '0')}:'
-             '${minutes.toString().padLeft(2, '0')}:'
-             '${seconds.toString().padLeft(2, '0')}';
+          '${minutes.toString().padLeft(2, '0')}:'
+          '${seconds.toString().padLeft(2, '0')}';
     } else {
       return '${minutes.toString().padLeft(2, '0')}:'
-             '${seconds.toString().padLeft(2, '0')}';
+          '${seconds.toString().padLeft(2, '0')}';
     }
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      ),
-    );
+    if (!_disposed && mounted) {
+      error(description: message);
+    }
   }
 }

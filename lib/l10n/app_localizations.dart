@@ -1273,6 +1273,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh'**
   String get refresh;
+
+  /// No description provided for @fileCreationErrorPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied: Cannot create files in \"{directory}\"'**
+  String fileCreationErrorPermissionDenied(Object directory);
+
+  /// No description provided for @fileAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'File \"{fileName}\" already exists'**
+  String fileAlreadyExists(Object fileName);
+
+  /// No description provided for @invalidFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid file name: \"{fileName}\"'**
+  String invalidFileName(Object fileName);
+
+  /// No description provided for @permissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied for directory \"{directory}\"'**
+  String permissionDenied(Object directory);
+
+  /// No description provided for @directoryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory not found: \"{directory}\"'**
+  String directoryNotFound(Object directory);
+
+  /// No description provided for @diskFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Disk full, cannot create file'**
+  String get diskFull;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error occurred'**
+  String get unknownError;
+
+  /// No description provided for @fileCreationError.
+  ///
+  /// In en, this message translates to:
+  /// **'File creation error: {error}'**
+  String fileCreationError(Object error);
 }
 
 class _AppLocalizationsDelegate

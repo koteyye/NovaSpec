@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../shared/widgets/modern_button.dart';
+import '../../../../core/services/toast_service.dart';
 
 class CodeEditor extends StatefulWidget {
   final String filePath;
@@ -68,21 +69,11 @@ class _CodeEditorState extends State<CodeEditor> {
           _isModified = false;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Файл сохранен'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        success(description: 'Файл сохранен');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Ошибка сохранения: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        error(description: 'Ошибка сохранения: $e');
       }
     }
   }
@@ -118,14 +109,7 @@ class _CodeEditorState extends State<CodeEditor> {
   }
 
   void _showError(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    error(description: message);
   }
 
   @override

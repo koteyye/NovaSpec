@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/services/toast_service.dart';
 
 class AIChatPlaceholder extends StatelessWidget {
   const AIChatPlaceholder({super.key});
@@ -318,12 +319,7 @@ class AIChatPlaceholder extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Вы подписаны на уведомления!'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              success(description: 'Вы подписаны на уведомления!');
             },
             child: const Text('Подписаться'),
           ),

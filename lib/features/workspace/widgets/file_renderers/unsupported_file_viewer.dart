@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 // import '../../../core/services/workspace_file_service.dart';
 import '../../../../shared/widgets/modern_button.dart';
+import '../../../../core/services/toast_service.dart';
 
 
 class UnsupportedFileViewer extends StatefulWidget {
@@ -46,22 +47,12 @@ class _UnsupportedFileViewerState extends State<UnsupportedFileViewer> {
         // Here you would copy the file to the selected location
         // For now, we'll just show a success message
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Файл сохранен в: $result'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          success(description: 'Файл сохранен в: $result');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Ошибка сохранения файла: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        error(description: 'Ошибка сохранения файла: $e');
       }
     } finally {
       if (mounted) {
@@ -76,21 +67,11 @@ class _UnsupportedFileViewerState extends State<UnsupportedFileViewer> {
     try {
       await Clipboard.setData(ClipboardData(text: widget.content));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Содержимое скопировано в буфер обмена'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        success(description: 'Содержимое скопировано в буфер обмена');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Ошибка копирования: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        error(description: 'Ошибка копирования: $e');
       }
     }
   }

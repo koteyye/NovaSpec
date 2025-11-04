@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../../core/services/toast_service.dart';
 
 class ImageViewer extends StatefulWidget {
   final String filePath;
@@ -354,9 +355,7 @@ class _ImageViewerState extends State<ImageViewer> {
 
   void _copyFilePath() {
     // TODO: Implement clipboard functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Путь скопирован в буфер обмена')),
-    );
+    success(description: 'Путь скопирован в буфер обмена');
   }
 }
 

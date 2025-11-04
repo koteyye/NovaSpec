@@ -8,6 +8,7 @@ import '../models/file_explorer_node.dart';
 import '../../../core/services/workspace_file_service.dart';
 
 import '../../../shared/widgets/modern_button.dart';
+import '../../../core/services/toast_service.dart';
 
 
 class SearchDialog extends StatefulWidget {
@@ -125,12 +126,7 @@ class _SearchDialogState extends State<SearchDialog> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSearching = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Ошибка поиска: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        error(description: 'Ошибка поиска: $e');
       }
     }
   }
@@ -182,12 +178,7 @@ class _SearchDialogState extends State<SearchDialog> {
   void _showFileInExplorer(FileExplorerNode file) {
     // TODO: Implement showing file in explorer
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Файл "${file.name}" найден'),
-        backgroundColor: Colors.green,
-      ),
-    );
+    success(description: 'Файл "${file.name}" найден');
   }
 
   @override

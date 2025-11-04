@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../../../../core/services/toast_service.dart';
 
 class SwaggerViewer extends StatefulWidget {
   final String filePath;
@@ -371,9 +372,7 @@ class _SwaggerViewerState extends State<SwaggerViewer> {
 
   Future<void> _openInBrowser() async {
     // TODO: Implement opening in external browser
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Функция открытия в браузере будет добавлена')),
-    );
+    show(description: 'Функция открытия в браузере будет добавлена');
   }
 
   void _handleMenuAction(String action) {
@@ -447,9 +446,7 @@ class _SwaggerViewerState extends State<SwaggerViewer> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Экспорт будет добавлен в следующей версии')),
-              );
+              show(description: 'Экспорт будет добавлен в следующей версии');
             },
             child: const Text('Экспортировать'),
           ),

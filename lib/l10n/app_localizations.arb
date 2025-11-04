@@ -204,5 +204,13 @@
   "projectStatusOffline": "Offline",
   "expandFileExplorerPanel": "Expand file explorer panel",
   "collapseFileExplorerPanel": "Collapse file explorer panel",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "fileCreationErrorPermissionDenied": "Permission denied: Cannot create files in \"{directory}\"",
+  "fileAlreadyExists": "File \"{fileName}\" already exists",
+  "invalidFileName": "Invalid file name: \"{fileName}\"",
+  "permissionDenied": "Permission denied for directory \"{directory}\"",
+  "directoryNotFound": "Directory not found: \"{directory}\"",
+  "diskFull": "Disk full, cannot create file",
+  "unknownError": "Unknown error occurred",
+  "fileCreationError": "File creation error: {error}"
 }

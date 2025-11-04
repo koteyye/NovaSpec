@@ -604,16 +604,12 @@ class _CreateProjectDialogState extends State<_CreateProjectDialog> {
 
   Future<void> _createProject() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Введите имя проекта')));
+      error(description: 'Введите имя проекта');
       return;
     }
 
     if (_directoryController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Выберите директорию')));
+      error(description: 'Выберите директорию');
       return;
     }
 
@@ -723,16 +719,12 @@ class _SaveProjectAsDialogState extends State<_SaveProjectAsDialog> {
 
   Future<void> _saveProjectAs() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Введите имя проекта')));
+      error(description: 'Введите имя проекта');
       return;
     }
 
     if (_directoryController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Выберите директорию')));
+      error(description: 'Выберите директорию');
       return;
     }
 

@@ -1,10 +1,11 @@
 
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../models/file_explorer_node.dart';
 import '../models/context_menu_action.dart';
 import '../../../core/services/workspace_file_service.dart';
-
 import '../../../core/services/file_icon_service.dart';
+import '../../../shared/models/directory_validation_result.dart';
 
 enum SortOption {
   nameAsc,
@@ -614,6 +615,45 @@ class FileExplorerProvider extends ChangeNotifier {
       _error = e.toString();
       notifyListeners();
     }
+  }
+
+  // Методы для валидации директории
+  Future<DirectoryValidationResult> validateDirectory(String path) async {
+    try {
+      final directory = Directory(path);
+      
+      // Проверяем существование
+      if (!await directory.exists()) {
+        return DirectoryValidationResult.notFound(path);
+      }
+      
+      // Проверяем права на запись
+      try {
+        final testFile = File('$path/.write_test_${DateTime.now().millisecondsSinceEpoch}');
+        await testFile.writeAsString('test');
+        await testFile.delete();
+      } catch (e) {
+        return DirectoryValidationResult.permissionDenied(path);
+      }
+      
+      // Проверяем длину пути
+      if (path.length > 260) {
+        return DirectoryValidationResult.pathTooLong(path);
+      }
+      
+      return DirectoryValidationResult.success(path);
+    } catch (e) {
+      return DirectoryValidationResult.error(
+        DirectoryValidationStatus.unknownError,
+        e.toString(),
+        path,
+      );
+    }
+  }
+  
+  Future<bool> isDirectoryAccessible(String path) async {
+    final result = await validateDirectory(path);
+    return result.isAccessible && result.hasWritePermission;
   }
 
 }

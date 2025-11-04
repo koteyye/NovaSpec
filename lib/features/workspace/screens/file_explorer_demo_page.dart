@@ -7,6 +7,7 @@ import '../providers/workspace_provider.dart';
 import '../providers/tab_provider.dart';
 import '../../../shared/services/di_container.dart';
 import '../../../core/services/file_icon_service.dart';
+import '../../../core/services/toast_service.dart';
 
 /// Demo page for testing file explorer functionality
 class FileExplorerDemoPage extends StatefulWidget {
@@ -344,12 +345,7 @@ class _FileExplorerDemoPageState extends State<FileExplorerDemoPage> {
     // This would open a directory picker
     // For now, just show a snackbar
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Directory picker not implemented yet'),
-          backgroundColor: Colors.orange,
-        ),
-      );
+      warning(description: 'Directory picker not implemented yet');
     }
   }
 }
