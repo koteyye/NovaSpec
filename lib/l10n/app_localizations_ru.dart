@@ -217,6 +217,92 @@ class AppLocalizationsRu extends AppLocalizations {
   String get musication_close => 'Закрыть';
 
   @override
+  String get musication_no_content =>
+      'Выберите текст или откройте файл с содержимым';
+
+  @override
+  String get musication_tray_show => 'Показать NovaSpec';
+
+  @override
+  String get musication_tray_exit => 'Завершить работу';
+
+  @override
+  String get musication_error_no_api_key => 'API ключ gen-api.ru не настроен';
+
+  @override
+  String get musication_error_no_ai_model => 'AI модель не выбрана';
+
+  @override
+  String get musication_error_no_content =>
+      'Выберите текст или откройте файл с содержимым';
+
+  @override
+  String get musication_error_invalid_api_key => 'Неверный API ключ gen-api.ru';
+
+  @override
+  String get musication_error_insufficient_funds =>
+      'Недостаточно средств на балансе';
+
+  @override
+  String get musication_error_unauthorized => 'Неверный токен авторизации';
+
+  @override
+  String get musication_error_forbidden => 'Доступ запрещен';
+
+  @override
+  String get musication_error_not_found => 'Ресурс не найден';
+
+  @override
+  String get musication_error_request_not_found =>
+      'Запрос с таким ID не найден';
+
+  @override
+  String get musication_error_model_not_found => 'Указанная модель не найдена';
+
+  @override
+  String get musication_error_too_many_requests =>
+      'Слишком много запросов, попробуйте позже';
+
+  @override
+  String get musication_error_service_error =>
+      'Ошибка сервиса, обратитесь в поддержку';
+
+  @override
+  String get musication_error_network => 'Ошибка сети';
+
+  @override
+  String get musication_error_connection_timeout => 'Таймаут подключения';
+
+  @override
+  String get musication_error_lyrics_generation_failed =>
+      'Ошибка генерации текста песни';
+
+  @override
+  String get musication_error_empty_lyrics_response =>
+      'Получен пустой ответ от AI модели';
+
+  @override
+  String get musication_error_music_generation_failed =>
+      'Ошибка генерации музыки';
+
+  @override
+  String get musication_error_polling_timeout =>
+      'Таймаут генерации музыки (10 минут)';
+
+  @override
+  String get musication_error_polling_failed =>
+      'Ошибка проверки статуса генерации';
+
+  @override
+  String get musication_error_file_download_failed => 'Ошибка скачивания файла';
+
+  @override
+  String get musication_error_file_save_failed => 'Ошибка сохранения файла';
+
+  @override
+  String get musication_error_unknown => 'Неизвестная ошибка';
+
+  @override
   String get genre_pop => 'Поп';
 
   @override
@@ -364,49 +450,49 @@ class AppLocalizationsRu extends AppLocalizations {
   String get back => 'Назад';
 
   @override
-  String get componentDemo => 'Component Demo';
+  String get componentDemo => 'Демонстрация компонентов';
 
   @override
-  String get buttons => 'Buttons';
+  String get buttons => 'Кнопки';
 
   @override
-  String get textFields => 'Text Fields';
+  String get textFields => 'Текстовые поля';
 
   @override
-  String get dialogs => 'Dialogs';
+  String get dialogs => 'Диалоги';
 
   @override
-  String get toastNotifications => 'Toast Notifications';
+  String get toastNotifications => 'Toast уведомления';
 
   @override
-  String get otherComponents => 'Other Components';
+  String get otherComponents => 'Другие компоненты';
 
   @override
-  String get primaryButtons => 'Primary Buttons';
+  String get primaryButtons => 'Основные кнопки';
 
   @override
-  String get secondaryButtons => 'Secondary Buttons';
+  String get secondaryButtons => 'Вторичные кнопки';
 
   @override
-  String get tertiaryButtons => 'Tertiary Buttons';
+  String get tertiaryButtons => 'Третичные кнопки';
 
   @override
-  String get statusButtons => 'Status Buttons';
+  String get statusButtons => 'Кнопки статуса';
 
   @override
-  String get toggleButtons => 'Toggle Buttons';
+  String get toggleButtons => 'Переключатели';
 
   @override
-  String get iconButtons => 'Icon Buttons';
+  String get iconButtons => 'Иконочные кнопки';
 
   @override
-  String get tertiaryWithIcons => 'Tertiary with Icons';
+  String get tertiaryWithIcons => 'Третичные с иконками';
 
   @override
-  String get normalTextField => 'Normal Text Field';
+  String get normalTextField => 'Обычное текстовое поле';
 
   @override
-  String get enterText => 'Enter text...';
+  String get enterText => 'Введите текст...';
 
   @override
   String get email => 'Email';
@@ -415,70 +501,70 @@ class AppLocalizationsRu extends AppLocalizations {
   String get emailHint => 'example@email.com';
 
   @override
-  String get password => 'Password';
+  String get password => 'Пароль';
 
   @override
-  String get enterPassword => 'Enter password';
+  String get enterPassword => 'Введите пароль';
 
   @override
-  String get description => 'Description';
+  String get description => 'Описание';
 
   @override
-  String get enterDescription => 'Enter description...';
+  String get enterDescription => 'Введите описание...';
 
   @override
-  String get searchComponents => 'Search components...';
+  String get searchComponents => 'Поиск компонентов...';
 
   @override
-  String get disabledField => 'Disabled Field';
+  String get disabledField => 'Отключенное поле';
 
   @override
-  String get fieldDisabled => 'This field is disabled';
+  String get fieldDisabled => 'Это поле отключено';
 
   @override
-  String get valueCannotBeChanged => 'Value cannot be changed';
+  String get valueCannotBeChanged => 'Значение не может быть изменено';
 
   @override
-  String get confirmDialog => 'Confirm Dialog';
+  String get confirmDialog => 'Диалог подтверждения';
 
   @override
-  String get inputDialog => 'Input Dialog';
+  String get inputDialog => 'Диалог ввода';
 
   @override
-  String get choiceDialog => 'Choice Dialog';
+  String get choiceDialog => 'Диалог выбора';
 
   @override
-  String get loadingDialog => 'Loading Dialog';
+  String get loadingDialog => 'Диалог загрузки';
 
   @override
-  String get testingToastNotifications => 'Testing toast notifications:';
+  String get testingToastNotifications => 'Тестирование toast уведомлений:';
 
   @override
-  String get defaultToast => 'Default Toast';
+  String get defaultToast => 'Toast по умолчанию';
 
   @override
-  String get successToast => 'Success Toast';
+  String get successToast => 'Успешный Toast';
 
   @override
-  String get warningToast => 'Warning Toast';
+  String get warningToast => 'Предупреждающий Toast';
 
   @override
-  String get errorToast => 'Error Toast';
+  String get errorToast => 'Toast ошибки';
 
   @override
-  String get svgIcons => 'SVG Icons:';
+  String get svgIcons => 'SVG иконки:';
 
   @override
-  String get indicators => 'Indicators:';
+  String get indicators => 'Индикаторы:';
 
   @override
-  String get active => 'Active';
+  String get active => 'Активен';
 
   @override
-  String get inProgress => 'In Progress';
+  String get inProgress => 'В процессе';
 
   @override
-  String get completed => 'Completed';
+  String get completed => 'Завершено';
 
   @override
   String get parameters => 'Параметры';

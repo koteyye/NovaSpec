@@ -215,6 +215,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get musication_close => 'Close';
 
   @override
+  String get musication_no_content => 'Select text or open a file with content';
+
+  @override
+  String get musication_tray_show => 'Show NovaSpec';
+
+  @override
+  String get musication_tray_exit => 'Exit';
+
+  @override
+  String get musication_error_no_api_key => 'gen-api.ru API key not set';
+
+  @override
+  String get musication_error_no_ai_model => 'AI model not selected';
+
+  @override
+  String get musication_error_no_content =>
+      'Select text or open a file with content';
+
+  @override
+  String get musication_error_invalid_api_key => 'Invalid gen-api.ru API key';
+
+  @override
+  String get musication_error_insufficient_funds => 'Insufficient balance';
+
+  @override
+  String get musication_error_unauthorized => 'Invalid authorization token';
+
+  @override
+  String get musication_error_forbidden => 'Access forbidden';
+
+  @override
+  String get musication_error_not_found => 'Resource not found';
+
+  @override
+  String get musication_error_request_not_found =>
+      'Request with this ID not found';
+
+  @override
+  String get musication_error_model_not_found => 'Specified model not found';
+
+  @override
+  String get musication_error_too_many_requests =>
+      'Too many requests, try again later';
+
+  @override
+  String get musication_error_service_error => 'Service error, contact support';
+
+  @override
+  String get musication_error_network => 'Network error';
+
+  @override
+  String get musication_error_connection_timeout => 'Connection timeout';
+
+  @override
+  String get musication_error_lyrics_generation_failed =>
+      'Song lyrics generation failed';
+
+  @override
+  String get musication_error_empty_lyrics_response =>
+      'Empty response from AI model';
+
+  @override
+  String get musication_error_music_generation_failed =>
+      'Music generation failed';
+
+  @override
+  String get musication_error_polling_timeout =>
+      'Music generation timeout (10 minutes)';
+
+  @override
+  String get musication_error_polling_failed =>
+      'Generation status check failed';
+
+  @override
+  String get musication_error_file_download_failed => 'File download failed';
+
+  @override
+  String get musication_error_file_save_failed => 'File save failed';
+
+  @override
+  String get musication_error_unknown => 'Unknown error';
+
+  @override
   String get genre_pop => 'Pop';
 
   @override

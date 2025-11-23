@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/logs/musication_log.dart';
 import '../models/requests/musication_request.dart';
 import '../models/responses/musication_api_response.dart';
+import '../models/musication_error_code.dart';
+import '../models/musication_exception.dart';
 import '../../musication/providers/musication_provider.dart';
 import '../../../core/providers/settings_provider.dart';
 
@@ -49,7 +51,10 @@ class MusicationService {
     // Используем токен из SettingsProvider вместо SharedPreferences
     final apiKey = _settingsProvider.musicToken;
     if (apiKey.isEmpty) {
-      throw Exception('API ключ gen-api.ru не настроен');
+      throw MusicationException(
+        code: MusicationErrorCode.noApiKey,
+        technicalMessage: 'Gen-api.ru API key not configured',
+      );
     }
 
     final url = '$_baseApiUrl/api/v1/user';
@@ -68,20 +73,22 @@ class MusicationService {
         final userData = response.data;
         return userData['balance'] as int? ?? 0;
       } else {
-        throw Exception('Неверный статус ответа: ${response.statusCode}');
+        throw MusicationException.fromStatusCode(
+          response.statusCode ?? 500,
+          message: 'Invalid response status: ${response.statusCode}',
+        );
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        throw Exception('Неверный API ключ gen-api.ru');
-      } else if (e.response?.statusCode == 403) {
-        throw Exception('Доступ запрещен');
-      } else if (e.response?.statusCode == 429) {
-        throw Exception('Превышен лимит запросов');
-      } else {
-        throw Exception('Ошибка подключения: ${e.message}');
-      }
-    } catch (e) {
-      throw Exception('Ошибка получения баланса: $e');
+      throw MusicationException.fromDioError(e);
+    } on MusicationException {
+      rethrow;
+    } catch (e, stackTrace) {
+      throw MusicationException(
+        code: MusicationErrorCode.unknown,
+        technicalMessage: 'Error getting balance: $e',
+        originalError: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -136,17 +143,24 @@ class MusicationService {
     required String selectedText,
     required String genre,
     MusicationProvider? provider,
+    String selectDirectoryDialogTitle = 'Select directory to save music',
   }) async {
     // Используем токен из SettingsProvider
     final apiKey = _settingsProvider.musicToken;
     if (apiKey.isEmpty) {
-      throw Exception('API ключ gen-api.ru не настроен');
+      throw MusicationException(
+        code: MusicationErrorCode.noApiKey,
+        technicalMessage: 'Gen-api.ru API key not configured',
+      );
     }
 
     // Проверяем баланс
     final balance = await getMusicBalance();
     if (balance <= 0) {
-      throw Exception('Недостаточно средств на балансе');
+      throw MusicationException(
+        code: MusicationErrorCode.insufficientFunds,
+        technicalMessage: 'Balance: $balance',
+      );
     }
 
     // Обновляем провайдер - начинаем генерацию Lyrics
@@ -188,9 +202,17 @@ class MusicationService {
         provider?.setGeneratingAudio(response.requestId!);
 
         // Начинаем опрос статуса
-        _startPolling(apiKey, response.requestId!, provider);
+        _startPolling(
+          apiKey,
+          response.requestId!,
+          provider,
+          selectDirectoryDialogTitle: selectDirectoryDialogTitle,
+        );
       } else {
-        throw Exception('Не получен ID запроса от API');
+        throw const MusicationException(
+          code: MusicationErrorCode.musicGenerationFailed,
+          technicalMessage: 'No request ID received from API',
+        );
       }
     } catch (e) {
       final errorLog = log.copyWith(
@@ -212,7 +234,10 @@ class MusicationService {
     
     final selectedModel = _settingsProvider.selectedAiModel;
     if (selectedModel.isEmpty) {
-      throw Exception('AI модель не выбрана. Выберите модель в AI-ассистенте.');
+      throw const MusicationException(
+        code: MusicationErrorCode.noAiModel,
+        technicalMessage: 'AI model not selected in settings',
+      );
     }
 
     final provider = _settingsProvider.selectedProvider;
@@ -311,13 +336,29 @@ class MusicationService {
           return lyrics.trim();
         }
 
-        throw Exception('Пустой ответ от AI модели');
+        throw const MusicationException(
+          code: MusicationErrorCode.emptyLyricsResponse,
+          technicalMessage: 'Empty response from AI model',
+        );
       } else {
-        throw Exception('HTTP ${response.statusCode}: ${response.statusMessage}');
+        throw MusicationException.fromStatusCode(
+          response.statusCode ?? 500,
+          message: 'HTTP ${response.statusCode}: ${response.statusMessage}',
+        );
       }
-    } catch (e) {
+    } on MusicationException {
+      rethrow;
+    } on DioException catch (e) {
+      debugPrint('🎵 Dio error generating lyrics: $e');
+      throw MusicationException.fromDioError(e);
+    } catch (e, stackTrace) {
       debugPrint('🎵 Error generating lyrics: $e');
-      throw Exception('Ошибка генерации lyrics: ${e.toString()}');
+      throw MusicationException(
+        code: MusicationErrorCode.lyricsGenerationFailed,
+        technicalMessage: 'Error generating lyrics: ${e.toString()}',
+        originalError: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -341,23 +382,23 @@ class MusicationService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return MusicationApiResponse.fromMap(response.data);
-      } else if (response.statusCode == 402) {
-        throw Exception('Недостаточно средств на балансе');
       } else {
-        throw Exception('Ошибка генерации музыки: ${response.statusCode}');
+        throw MusicationException.fromStatusCode(
+          response.statusCode ?? 500,
+          message: 'Music generation failed with status: ${response.statusCode}',
+        );
       }
+    } on MusicationException {
+      rethrow;
     } on DioException catch (e) {
-      if (e.response?.statusCode == 402) {
-        throw Exception('Недостаточно средств на балансе');
-      } else if (e.response?.statusCode == 401) {
-        throw Exception('Неверный API ключ gen-api.ru');
-      } else if (e.response?.statusCode == 429) {
-        throw Exception('Превышен лимит запросов');
-      } else {
-        throw Exception('Ошибка API: ${e.message}');
-      }
-    } catch (e) {
-      throw Exception('Ошибка генерации музыки: $e');
+      throw MusicationException.fromDioError(e);
+    } catch (e, stackTrace) {
+      throw MusicationException(
+        code: MusicationErrorCode.musicGenerationFailed,
+        technicalMessage: 'Error generating music: $e',
+        originalError: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -365,8 +406,9 @@ class MusicationService {
   void _startPolling(
     String apiKey,
     int requestId,
-    MusicationProvider? provider,
-  ) {
+    MusicationProvider? provider, {
+    String selectDirectoryDialogTitle = 'Select directory to save music',
+  }) {
     const pollingInterval = Duration(seconds: 5);
     const timeoutDuration = Duration(minutes: 10);
 
@@ -393,7 +435,10 @@ class MusicationService {
             _logController.add(completedLog);
 
             // Скачиваем файлы
-            final downloadedFiles = await _downloadGeneratedFiles(response);
+            final downloadedFiles = await _downloadGeneratedFiles(
+              response,
+              dialogTitle: selectDirectoryDialogTitle,
+            );
 
             final finalLog = completedLog.copyWith(
               generatedFiles: downloadedFiles,
@@ -452,10 +497,22 @@ class MusicationService {
       if (response.statusCode == 200) {
         return MusicationApiResponse.fromMap(response.data);
       } else {
-        throw Exception('Ошибка получения статуса: ${response.statusCode}');
+        throw MusicationException.fromStatusCode(
+          response.statusCode ?? 500,
+          message: 'Error getting status: ${response.statusCode}',
+        );
       }
-    } catch (e) {
-      throw Exception('Ошибка проверки статуса: $e');
+    } on MusicationException {
+      rethrow;
+    } on DioException catch (e) {
+      throw MusicationException.fromDioError(e);
+    } catch (e, stackTrace) {
+      throw MusicationException(
+        code: MusicationErrorCode.pollingFailed,
+        technicalMessage: 'Error checking generation status: $e',
+        originalError: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -463,7 +520,13 @@ class MusicationService {
   void _handleTimeout(int requestId, MusicationProvider? provider) {
     _pollingTimer?.cancel();
 
-    _markAsFailed(requestId, 'Таймаут генерации (10 минут)');
+    _markAsFailed(
+      requestId,
+      const MusicationException(
+        code: MusicationErrorCode.pollingTimeout,
+        technicalMessage: 'Music generation timeout (10 minutes)',
+      ).toString(),
+    );
 
     provider?.setError('Таймаут генерации музыки');
 
@@ -472,14 +535,15 @@ class MusicationService {
 
   /// Скачивание сгенерированных файлов
   Future<List<String>> _downloadGeneratedFiles(
-    MusicationApiResponse response,
-  ) async {
+    MusicationApiResponse response, {
+    String dialogTitle = 'Select directory to save music',
+  }) async {
     final files = <String>[];
 
     if (response.result != null) {
       // Выбираем директорию для сохранения
       final directory = await FilePicker.platform.getDirectoryPath(
-        dialogTitle: 'Выберите директорию для сохранения музыки',
+        dialogTitle: dialogTitle,
       );
 
       if (directory != null) {
@@ -504,11 +568,27 @@ class MusicationService {
             );
 
             files.add(filePath);
-          } catch (e) {
+          } on DioException catch (e) {
             debugPrint('Ошибка скачивания файла ${audio.title}: $e');
+            throw MusicationException.fromDioError(e);
+          } catch (e, stackTrace) {
+            debugPrint('Ошибка скачивания файла ${audio.title}: $e');
+            throw MusicationException(
+              code: MusicationErrorCode.fileDownloadFailed,
+              technicalMessage: 'Error downloading file ${audio.title}: $e',
+              originalError: e,
+              stackTrace: stackTrace,
+            );
           }
         }
       }
+    }
+
+    if (files.isEmpty && response.result != null && response.result!.isNotEmpty) {
+      throw const MusicationException(
+        code: MusicationErrorCode.fileSaveFailed,
+        technicalMessage: 'No directory selected or no files downloaded',
+      );
     }
 
     return files;

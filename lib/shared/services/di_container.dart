@@ -140,9 +140,7 @@ Future<void> setupDI() async {
   // Tray Manager (только для desktop)
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     getIt.registerSingleton<TrayManagerService>(TrayManagerService());
-
-    // Инициализация после запуска приложения
-    getIt<TrayManagerService>().initialize();
+    // Инициализация будет вызвана позже в main.dart с локализованными текстами
   }
 
   // Musication

@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:io';
 import '../providers/musication_provider.dart';
 import '../services/musication_service.dart';
+import '../models/musication_exception.dart';
+import '../utils/musication_error_handler.dart';
 import '../../../core/providers/settings_provider.dart';
 import '../../../core/services/toast_service.dart';
 import '../../../l10n/app_localizations.dart';
@@ -125,7 +127,7 @@ class MusicationButton extends StatelessWidget {
         final toastService = getIt<ToastService>();
         toastService.showError(
           title: l10n.musication_error,
-          description: 'Выберите текст или откройте файл с содержимым',
+          description: l10n.musication_no_content,
         );
       }
       return;
@@ -138,14 +140,28 @@ class MusicationButton extends StatelessWidget {
         selectedText: textToGenerate,
         genre: settingsProvider.musicGenre,
         provider: provider,
+        selectDirectoryDialogTitle: l10n.musication_select_directory,
       );
-    } catch (e) {
+    } on MusicationException catch (e) {
+      // Обрабатываем MusicationException - получаем локализованное сообщение
       if (context.mounted) {
-        provider.setError(e.toString());
+        final localizedMessage = MusicationErrorHandler.getLocalizedMessage(context, e);
+        provider.setError(localizedMessage);
         final toastService = getIt<ToastService>();
         toastService.showError(
           title: l10n.musication_error,
-          description: e.toString(),
+          description: localizedMessage,
+        );
+      }
+    } catch (e) {
+      // Обрабатываем неожиданные ошибки
+      if (context.mounted) {
+        final errorMessage = e.toString();
+        provider.setError(errorMessage);
+        final toastService = getIt<ToastService>();
+        toastService.showError(
+          title: l10n.musication_error,
+          description: errorMessage,
         );
       }
     }

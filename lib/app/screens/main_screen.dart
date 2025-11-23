@@ -15,6 +15,9 @@ import '../../features/topbar/widgets/status_bar.dart';
 import '../../features/settings/widgets/settings_dialog.dart';
 import '../../features/workspace/screens/workspace_screen.dart';
 import '../../shared/widgets/modern_button.dart';
+import '../../shared/services/di_container.dart';
+import '../../features/musication/services/tray_manager_service.dart';
+import 'dart:io';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -39,6 +42,20 @@ class _MainScreenState extends State<MainScreen> {
       context,
       listen: false,
     );
+
+    // Инициализация TrayManager с локализованными текстами
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          final trayService = getIt<TrayManagerService>();
+          trayService.initialize(
+            showLabel: l10n.musication_tray_show,
+            exitLabel: l10n.musication_tray_exit,
+          );
+        }
+      });
+    }
 
     // Check if this is first run or no last project
     final isFirstRun = appProvider.lastOpenedProject == null;

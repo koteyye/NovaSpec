@@ -14,7 +14,10 @@ class TrayManagerService with TrayListener, WindowListener {
   bool get isInitialized => _isInitialized;
   bool get hasPendingNotification => _hasPendingNotification;
 
-  Future<void> initialize() async {
+  Future<void> initialize({
+    String showLabel = 'Show NovaSpec',
+    String exitLabel = 'Exit',
+  }) async {
     if (_isInitialized ||
         !Platform.isWindows && !Platform.isLinux && !Platform.isMacOS) {
       return;
@@ -29,12 +32,12 @@ class TrayManagerService with TrayListener, WindowListener {
       final menu = Menu(
         items: [
           MenuItem(
-            label: 'Показать NovaSpec',
+            label: showLabel,
             onClick: (menuItem) => _restoreWindow(),
           ),
           MenuItem.separator(),
           MenuItem(
-            label: 'Завершить работу',
+            label: exitLabel,
             onClick: (menuItem) => _forceExit(),
           ),
         ],
@@ -113,13 +116,16 @@ class TrayManagerService with TrayListener, WindowListener {
     }
   }
 
-  Future<void> notifyGenerationFailed(String error) async {
+  Future<void> notifyGenerationFailed(
+    String error, {
+    String title = 'Musication error',
+  }) async {
     _hasPendingNotification = true;
 
     try {
       final notification = LocalNotification(
         identifier: 'musication_failed',
-        title: 'Ошибка музикации',
+        title: title,
         body: error,
       );
 
