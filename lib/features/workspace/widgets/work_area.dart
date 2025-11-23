@@ -14,6 +14,8 @@ import 'file_renderers/video_viewer.dart';
 import '../../../core/services/workspace_file_service.dart';
 import '../../../core/services/clipboard_service.dart';
 import '../../../core/services/toast_service.dart';
+import '../../musication/widgets/musication_button.dart';
+import '../../project/providers/project_provider.dart';
 
 class WorkArea extends StatefulWidget {
   const WorkArea({super.key});
@@ -276,6 +278,25 @@ class _WorkAreaState extends State<WorkArea> {
                     minWidth: 24,
                     minHeight: 24,
                   ),
+                ),
+              ],
+
+              // Кнопка музикации для .md и .html файлов
+              if (activeTab.path.endsWith('.md') || activeTab.path.endsWith('.html')) ...[
+                Container(
+                  width: 1,
+                  height: 16,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  color: Theme.of(context).dividerColor,
+                ),
+                Consumer<ProjectProvider>(
+                  builder: (context, projectProvider, _) {
+                    return MusicationButton(
+                      projectPath: projectProvider.currentProject?.directory ?? '',
+                      selectedText: '', // TODO: получить выделенный текст из Monaco Editor
+                      filePath: activeTab.path,
+                    );
+                  },
                 ),
               ],
             ],

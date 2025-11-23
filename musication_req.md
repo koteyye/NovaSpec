@@ -558,7 +558,7 @@ showDialog(
 ```json
 {
   "request_id": 28104643,
-  "project_path": "G:\\test_project",
+  "project_path": "/home/user/my_project",
   "started_at": "2024-01-15T10:30:00.000Z",
   "status": "generatingAudio",
   "file_uuid": "550e8400-e29b-41d4-a716-446655440000",
@@ -1398,7 +1398,6 @@ flutter:
 - [ ] Добавить переводы в `app_localizations_ru.arb`
 
 ### Иконки и ассеты:
-- [ ] Создать `music.svg`
 - [ ] Создать `tray_icon.ico` (Windows)
 - [ ] Создать `tray_icon.png` (Linux/macOS)
 - [ ] Обновить `pubspec.yaml` assets
@@ -1409,7 +1408,7 @@ flutter:
 - [ ] Добавить `uuid: ^4.0.0` (если нет)
 - [ ] Запустить `flutter pub get`
 
-### Тестирование:
+### Ручное тестирование:
 - [ ] Тест полного цикла музикации
 - [ ] Тест graceful shutdown
 - [ ] Тест восстановления из лога

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../project/providers/project_provider.dart';
+import '../../musication/widgets/musication_indicator.dart';
 import '../../../shared/models/project_status.dart';
 
 class StatusBar extends StatelessWidget {
@@ -62,6 +63,10 @@ class StatusBar extends StatelessWidget {
           // Right section - Additional info
           Row(
             children: [
+              // Musication indicator
+              const MusicationIndicator(),
+              const SizedBox(width: 16),
+              
               // File accessibility status
               if (projectProvider.hasActiveProject) ...[
                 _buildFileAccessibilityStatus(context),

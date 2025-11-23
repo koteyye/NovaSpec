@@ -3,7 +3,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../project/providers/project_provider.dart';
 import '../../../core/providers/settings_provider.dart';
+import '../../../core/providers/app_provider.dart';
+import '../../musication/services/musication_service.dart';
 import '../../settings/widgets/settings_dialog.dart';
+import '../../../../shared/services/di_container.dart';
+import '../../../core/services/toast_service.dart' as toast_core;
+
 
 class TopBar extends StatelessWidget {
   final ProjectProvider projectProvider;
@@ -404,7 +409,7 @@ class TopBar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             InkWell(
-              onTap: () => _refreshMusicBalance(),
+              onTap: () => _refreshMusicBalance(context),
               borderRadius: BorderRadius.circular(4),
               child: Padding(
                 padding: const EdgeInsets.all(2),
@@ -435,9 +440,28 @@ class TopBar extends StatelessWidget {
     return provider.displayName;
   }
 
-  void _refreshMusicBalance() async {
-    // TODO: Implement music balance refresh
-    // This would call the music validation service to update the balance
+  void _refreshMusicBalance(BuildContext context) async {
+    try {
+      final musicationService = getIt<MusicationService>();
+      final balance = await musicationService.getMusicBalance();
+      
+      // Обновить в SettingsProvider
+      settingsProvider.updateMusicBalance(balance);
+      
+      // Обновить в AppProvider для индикатора
+      final appProvider = getIt<AppProvider>();
+      appProvider.updateMusicStatus(true, balance: balance);
+      
+      if (context.mounted) {
+        final toastService = getIt<toast_core.ToastService>();
+        toastService.showSuccess(description: 'Баланс обновлен: $balance ₽');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        final toastService = getIt<toast_core.ToastService>();
+        toastService.showError(description: 'Ошибка обновления баланса: $e');
+      }
+    }
   }
 
   void _showFileMenu(BuildContext context, AppLocalizations localizations) {

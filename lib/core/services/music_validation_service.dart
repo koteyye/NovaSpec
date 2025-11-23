@@ -58,7 +58,11 @@ class MusicValidationService {
   }
   
   /// Получение баланса пользователя
-  Future<double> getBalance(String apiKey) async {
+  Future<DataResult<int>> getBalance(String apiKey) async {
+    if (apiKey.isEmpty) {
+      return DataResult.error('API ключ gen-api.ru не настроен');
+    }
+    
     try {
       final response = await _dio.get(
         'https://api.gen-api.ru/api/v1/user',
@@ -69,12 +73,23 @@ class MusicValidationService {
       
       if (response.statusCode == 200) {
         final userData = response.data;
-        return double.tryParse(userData['balance']?.toString() ?? '0') ?? 0.0;
+        final balance = userData['balance'] as int? ?? 0;
+        return DataResult.success(balance, message: 'Баланс получен успешно');
       } else {
-        throw Exception('Failed to get balance: ${response.statusCode}');
+        return DataResult.error('Неверный статус ответа: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        return DataResult.error('Неверный API ключ gen-api.ru');
+      } else if (e.response?.statusCode == 403) {
+        return DataResult.error('Доступ запрещен');
+      } else if (e.response?.statusCode == 429) {
+        return DataResult.error('Превышен лимит запросов');
+      } else {
+        return DataResult.error('Ошибка подключения: ${e.message}');
       }
     } catch (e) {
-      throw Exception('Error getting balance: $e');
+      return DataResult.error('Ошибка получения баланса: $e');
     }
   }
   

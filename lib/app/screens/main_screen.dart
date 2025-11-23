@@ -367,6 +367,48 @@ class _MainScreenState extends State<MainScreen> {
               },
               type: ButtonType.secondary,
             ),
+            const SizedBox(height: 16),
+            // Mock gen-api.ru settings
+            Consumer<SettingsProvider>(
+              builder: (context, settingsProvider, child) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: settingsProvider.mockGenApiEnabled,
+                          onChanged: (value) {
+                            debugPrint('🔧 Debug Menu: Setting mockGenApiEnabled to $value');
+                            settingsProvider.setMockGenApiEnabled(value ?? false);
+                            debugPrint('🔧 Debug Menu: mockGenApiEnabled is now ${settingsProvider.mockGenApiEnabled}');
+                          },
+                        ),
+                        const Text('Мок gen-api.ru'),
+                      ],
+                    ),
+                    if (settingsProvider.mockGenApiEnabled) ...[
+                      const SizedBox(height: 8),
+                      TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'URL мока',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        controller: TextEditingController(
+                          text: settingsProvider.mockGenApiUrl,
+                        ),
+                        onChanged: (value) {
+                          debugPrint('🔧 Debug Menu: Setting mockGenApiUrl to $value');
+                          settingsProvider.setMockGenApiUrl(value);
+                          debugPrint('🔧 Debug Menu: mockGenApiUrl is now ${settingsProvider.mockGenApiUrl}');
+                        },
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
           ],
         ),
         actions: [

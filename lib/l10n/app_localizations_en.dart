@@ -155,6 +155,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterFileNameError => 'Enter file name';
 
   @override
+  String get musication => 'Musication';
+
+  @override
+  String get musication_button_tooltip => 'Create music based on text';
+
+  @override
+  String get musication_select_genre => 'Select genre';
+
+  @override
+  String get musication_generating_lyrics => 'Generating song lyrics';
+
+  @override
+  String get musication_generating_audio => 'Generating audio';
+
+  @override
+  String get musication_saving_audio => 'Saving audio';
+
+  @override
+  String get musication_completed => 'Musication completed';
+
+  @override
+  String get musication_failed => 'Musication failed';
+
+  @override
+  String get musication_cancel => 'Cancel';
+
+  @override
+  String get musication_cancel_confirmation => 'Cancel musication?';
+
+  @override
+  String get musication_balance => 'Balance';
+
+  @override
+  String get musication_insufficient_balance => 'Insufficient balance';
+
+  @override
+  String get musication_api_key_not_set => 'gen-api.ru API key not set';
+
+  @override
+  String get musication_invalid_api_key => 'Invalid gen-api.ru API key';
+
+  @override
+  String get musication_generation_timeout => 'Music generation timeout';
+
+  @override
+  String get musication_select_directory => 'Select directory to save music';
+
+  @override
+  String get musication_files_saved => 'Files saved successfully';
+
+  @override
+  String get musication_error => 'Musication error';
+
+  @override
+  String get musication_retry => 'Retry';
+
+  @override
+  String get musication_close => 'Close';
+
+  @override
+  String get genre_pop => 'Pop';
+
+  @override
+  String get genre_russian_rap => 'Russian rap';
+
+  @override
+  String get genre_rock => 'Rock';
+
+  @override
+  String get genre_jazz => 'Jazz';
+
+  @override
+  String get genre_classic => 'Classic';
+
+  @override
+  String get genre_electronic => 'Electronic music';
+
+  @override
+  String get genre_hiphop => 'Hip-hop';
+
+  @override
+  String get genre_rnb => 'R&B';
+
+  @override
   String get invalidFileNameError => 'File name contains invalid characters';
 
   @override

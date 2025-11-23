@@ -155,6 +155,92 @@ class AppLocalizationsRu extends AppLocalizations {
   String get enterFileNameError => 'Введите имя файла';
 
   @override
+  String get musication => 'Музикация';
+
+  @override
+  String get musication_button_tooltip => 'Создать музыку на основе текста';
+
+  @override
+  String get musication_select_genre => 'Выберите жанр';
+
+  @override
+  String get musication_generating_lyrics => 'Генерация текста песни';
+
+  @override
+  String get musication_generating_audio => 'Генерация аудио';
+
+  @override
+  String get musication_saving_audio => 'Сохранение аудио';
+
+  @override
+  String get musication_completed => 'Музикация завершена';
+
+  @override
+  String get musication_failed => 'Ошибка музикации';
+
+  @override
+  String get musication_cancel => 'Отмена';
+
+  @override
+  String get musication_cancel_confirmation => 'Отменить музикацию?';
+
+  @override
+  String get musication_balance => 'Баланс';
+
+  @override
+  String get musication_insufficient_balance =>
+      'Недостаточно средств на балансе';
+
+  @override
+  String get musication_api_key_not_set => 'API ключ gen-api.ru не настроен';
+
+  @override
+  String get musication_invalid_api_key => 'Неверный API ключ gen-api.ru';
+
+  @override
+  String get musication_generation_timeout => 'Таймаут генерации музыки';
+
+  @override
+  String get musication_select_directory =>
+      'Выберите директорию для сохранения музыки';
+
+  @override
+  String get musication_files_saved => 'Файлы успешно сохранены';
+
+  @override
+  String get musication_error => 'Ошибка музикации';
+
+  @override
+  String get musication_retry => 'Повторить';
+
+  @override
+  String get musication_close => 'Закрыть';
+
+  @override
+  String get genre_pop => 'Поп';
+
+  @override
+  String get genre_russian_rap => 'Русский рэп';
+
+  @override
+  String get genre_rock => 'Рок';
+
+  @override
+  String get genre_jazz => 'Джаз';
+
+  @override
+  String get genre_classic => 'Классика';
+
+  @override
+  String get genre_electronic => 'Электронная музыка';
+
+  @override
+  String get genre_hiphop => 'Хип-хоп';
+
+  @override
+  String get genre_rnb => 'R&B';
+
+  @override
   String get invalidFileNameError => 'Имя содержит недопустимые символы';
 
   @override

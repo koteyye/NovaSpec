@@ -386,6 +386,174 @@ abstract class AppLocalizations {
   /// **'Enter file name'**
   String get enterFileNameError;
 
+  /// No description provided for @musication.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication'**
+  String get musication;
+
+  /// No description provided for @musication_button_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create music based on text'**
+  String get musication_button_tooltip;
+
+  /// No description provided for @musication_select_genre.
+  ///
+  /// In en, this message translates to:
+  /// **'Select genre'**
+  String get musication_select_genre;
+
+  /// No description provided for @musication_generating_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating song lyrics'**
+  String get musication_generating_lyrics;
+
+  /// No description provided for @musication_generating_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating audio'**
+  String get musication_generating_audio;
+
+  /// No description provided for @musication_saving_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving audio'**
+  String get musication_saving_audio;
+
+  /// No description provided for @musication_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication completed'**
+  String get musication_completed;
+
+  /// No description provided for @musication_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication failed'**
+  String get musication_failed;
+
+  /// No description provided for @musication_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get musication_cancel;
+
+  /// No description provided for @musication_cancel_confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel musication?'**
+  String get musication_cancel_confirmation;
+
+  /// No description provided for @musication_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get musication_balance;
+
+  /// No description provided for @musication_insufficient_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get musication_insufficient_balance;
+
+  /// No description provided for @musication_api_key_not_set.
+  ///
+  /// In en, this message translates to:
+  /// **'gen-api.ru API key not set'**
+  String get musication_api_key_not_set;
+
+  /// No description provided for @musication_invalid_api_key.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid gen-api.ru API key'**
+  String get musication_invalid_api_key;
+
+  /// No description provided for @musication_generation_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Music generation timeout'**
+  String get musication_generation_timeout;
+
+  /// No description provided for @musication_select_directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select directory to save music'**
+  String get musication_select_directory;
+
+  /// No description provided for @musication_files_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Files saved successfully'**
+  String get musication_files_saved;
+
+  /// No description provided for @musication_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication error'**
+  String get musication_error;
+
+  /// No description provided for @musication_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get musication_retry;
+
+  /// No description provided for @musication_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get musication_close;
+
+  /// No description provided for @genre_pop.
+  ///
+  /// In en, this message translates to:
+  /// **'Pop'**
+  String get genre_pop;
+
+  /// No description provided for @genre_russian_rap.
+  ///
+  /// In en, this message translates to:
+  /// **'Russian rap'**
+  String get genre_russian_rap;
+
+  /// No description provided for @genre_rock.
+  ///
+  /// In en, this message translates to:
+  /// **'Rock'**
+  String get genre_rock;
+
+  /// No description provided for @genre_jazz.
+  ///
+  /// In en, this message translates to:
+  /// **'Jazz'**
+  String get genre_jazz;
+
+  /// No description provided for @genre_classic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get genre_classic;
+
+  /// No description provided for @genre_electronic.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic music'**
+  String get genre_electronic;
+
+  /// No description provided for @genre_hiphop.
+  ///
+  /// In en, this message translates to:
+  /// **'Hip-hop'**
+  String get genre_hiphop;
+
+  /// No description provided for @genre_rnb.
+  ///
+  /// In en, this message translates to:
+  /// **'R&B'**
+  String get genre_rnb;
+
   /// No description provided for @invalidFileNameError.
   ///
   /// In en, this message translates to:

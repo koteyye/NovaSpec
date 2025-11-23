@@ -511,4 +511,101 @@ class AIValidationService {
       }
     }
   }
+
+  /// Получение списка моделей для указанного провайдера
+  Future<List<String>> getModels(AIProvider provider, String apiKey, {String? baseUrl}) async {
+    try {
+      // Для Z.AI используем предустановленные модели
+      if (provider == AIProvider.zai) {
+        return [
+          'glm-4.6',
+          'glm-4.5',
+          'glm-4-32b-0414-128k',
+        ];
+      }
+
+      String url;
+      Map<String, String> headers;
+
+      switch (provider) {
+        case AIProvider.anthropic:
+          url = '${baseUrl ?? 'https://api.anthropic.com'}/v1/models';
+          headers = {
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'Content-Type': 'application/json',
+          };
+          break;
+        default:
+          // Для всех остальных провайдеров используем OpenAI-совместимый формат
+          final providerBaseUrl = _getProviderBaseUrl(provider, baseUrl);
+          url = '$providerBaseUrl/models';
+          headers = {
+            'Authorization': 'Bearer $apiKey',
+            'Content-Type': 'application/json',
+          };
+          break;
+      }
+
+      final response = await _dio.get(
+        url,
+        options: Options(headers: headers),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        List<String> models = [];
+
+        if (data is Map<String, dynamic>) {
+          if (data.containsKey('data')) {
+            final modelsList = data['data'] as List;
+            models = modelsList
+                .map((model) => model['id']?.toString() ?? '')
+                .where((id) => id.isNotEmpty)
+                .toList();
+          } else if (data.containsKey('models')) {
+            // Для Ollama формат отличается
+            final modelsList = data['models'] as List;
+            models = modelsList
+                .map((model) => model['name']?.toString() ?? '')
+                .where((name) => name.isNotEmpty)
+                .toList();
+          }
+        }
+
+        return models;
+      } else {
+        throw Exception('HTTP ${response.statusCode}: ${response.statusMessage}');
+      }
+    } catch (e) {
+      throw Exception('Ошибка получения моделей: ${e.toString()}');
+    }
+  }
+
+  /// Получение базового URL для провайдера
+  String _getProviderBaseUrl(AIProvider provider, String? customBaseUrl) {
+    if (customBaseUrl != null && customBaseUrl.isNotEmpty) {
+      return customBaseUrl;
+    }
+
+    switch (provider) {
+      case AIProvider.openai:
+        return 'https://api.openai.com/v1';
+      case AIProvider.anthropic:
+        return 'https://api.anthropic.com/v1';
+      case AIProvider.cerebras:
+        return 'https://api.cerebras.ai/openai/v1';
+      case AIProvider.groq:
+        return 'https://api.groq.com/openai/v1';
+      case AIProvider.openrouter:
+        return 'https://openrouter.ai/api/v1';
+      case AIProvider.openaiCompetitive:
+        return 'https://api.openai.com/v1';
+      case AIProvider.lmStudio:
+      case AIProvider.ollama:
+        return customBaseUrl ?? ''; // Для локальных провайдеров нужен custom URL
+      case AIProvider.zai:
+        return 'https://api.z.ai';
+    }
+  }
 }

@@ -83,6 +83,13 @@ class SettingsProvider extends ChangeNotifier {
   String _audioFormat = 'mp3';
   String _audioQuality = 'standard';
 
+  // AI Model Settings
+  String _selectedAiModel = '';
+
+  // Mock Settings
+  bool _mockGenApiEnabled = false;
+  String _mockGenApiUrl = 'http://localhost:8080';
+
   // Genre mappings for localization
   static const Map<String, String> genresRu = {
     'Поп': 'pop',
@@ -117,6 +124,7 @@ class SettingsProvider extends ChangeNotifier {
   AIProvider get selectedAIProvider => _selectedProvider;
   String get apiKey => _openaiToken; // For backward compatibility
   String get baseUrl => _openaiCompetitiveBaseUrl; // For backward compatibility
+  AIProvider get selectedProvider => _selectedProvider;
 
   // Individual provider getters
   String get openaiToken => _openaiToken;
@@ -143,13 +151,17 @@ class SettingsProvider extends ChangeNotifier {
   String get musicGenre => _musicGenre;
   String get audioFormat => _audioFormat;
   String get audioQuality => _audioQuality;
+  String get selectedAiModel => _selectedAiModel;
+  bool get mockGenApiEnabled => _mockGenApiEnabled;
+  String get mockGenApiUrl => _mockGenApiUrl;
   String get language => _language;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null;
 
-  // Music balance (placeholder for now)
-  int get musicBalance => 150; // TODO: Implement actual balance fetching
+  // Music balance
+  int get musicBalance => _musicBalance;
+  int _musicBalance = 0;
 
   bool get needsBaseUrl =>
       _selectedProvider == AIProvider.openaiCompetitive ||
@@ -210,11 +222,11 @@ class SettingsProvider extends ChangeNotifier {
             ? 'http://localhost:11434/v1'
             : _ollamaBaseUrl;
       case AIProvider.zai:
-        return _zaiBaseUrl.isEmpty
-            ? (_zaiAccessType == ZAIAccessType.codingPlan
-                ? 'https://api.z.ai/api/coding/paas/v4'
-                : 'https://api.z.ai/api/paas/v4')
-            : _zaiBaseUrl;
+        // Для Z.AI всегда используем динамический URL на основе типа доступа
+        // Игнорируем сохраненный _zaiBaseUrl, так как он зависит от типа доступа
+        return _zaiAccessType == ZAIAccessType.codingPlan
+            ? 'https://api.z.ai/api/coding/paas/v4'
+            : 'https://api.z.ai/api/paas/v4';
     }
   }
 
@@ -477,6 +489,30 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setSelectedAiModel(String model) {
+    _selectedAiModel = model;
+    _prefs?.setString('selected_ai_model', model);
+    notifyListeners();
+  }
+
+  void setMockGenApiEnabled(bool enabled) {
+    _mockGenApiEnabled = enabled;
+    _prefs?.setBool('mock_gen_api_enabled', enabled);
+    notifyListeners();
+  }
+
+  void setMockGenApiUrl(String url) {
+    _mockGenApiUrl = url;
+    _prefs?.setString('mock_gen_api_url', url);
+    notifyListeners();
+  }
+
+  void updateMusicBalance(int balance) {
+    _musicBalance = balance;
+    _prefs?.setInt('music_balance', balance);
+    notifyListeners();
+  }
+
   List<String> getAvailableGenres(String language) {
     if (language == 'ru') {
       return genresRu.keys.toList();
@@ -619,6 +655,16 @@ class SettingsProvider extends ChangeNotifier {
         _musicGenre = 'pop';
         await _prefs?.setString('music_genre', 'pop');
       }
+
+      // Load AI Model settings
+      _selectedAiModel = _prefs?.getString('selected_ai_model') ?? '';
+
+      // Load Mock settings
+      _mockGenApiEnabled = _prefs?.getBool('mock_gen_api_enabled') ?? false;
+      _mockGenApiUrl = _prefs?.getString('mock_gen_api_url') ?? 'http://localhost:8080';
+
+      // Load music balance
+      _musicBalance = _prefs?.getInt('music_balance') ?? 0;
 
       // Load general settings
       _language = _prefs?.getString('language') ?? 'ru';
