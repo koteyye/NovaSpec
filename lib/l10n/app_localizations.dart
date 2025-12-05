@@ -386,6 +386,324 @@ abstract class AppLocalizations {
   /// **'Enter file name'**
   String get enterFileNameError;
 
+  /// No description provided for @musication.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication'**
+  String get musication;
+
+  /// No description provided for @musication_button_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create music based on text'**
+  String get musication_button_tooltip;
+
+  /// No description provided for @musication_select_genre.
+  ///
+  /// In en, this message translates to:
+  /// **'Select genre'**
+  String get musication_select_genre;
+
+  /// No description provided for @musication_generating_lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating song lyrics'**
+  String get musication_generating_lyrics;
+
+  /// No description provided for @musication_generating_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating audio'**
+  String get musication_generating_audio;
+
+  /// No description provided for @musication_saving_audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving audio'**
+  String get musication_saving_audio;
+
+  /// No description provided for @musication_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication completed'**
+  String get musication_completed;
+
+  /// No description provided for @musication_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication failed'**
+  String get musication_failed;
+
+  /// No description provided for @musication_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get musication_cancel;
+
+  /// No description provided for @musication_cancel_confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel musication?'**
+  String get musication_cancel_confirmation;
+
+  /// No description provided for @musication_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get musication_balance;
+
+  /// No description provided for @musication_insufficient_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get musication_insufficient_balance;
+
+  /// No description provided for @musication_api_key_not_set.
+  ///
+  /// In en, this message translates to:
+  /// **'gen-api.ru API key not set'**
+  String get musication_api_key_not_set;
+
+  /// No description provided for @musication_invalid_api_key.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid gen-api.ru API key'**
+  String get musication_invalid_api_key;
+
+  /// No description provided for @musication_generation_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Music generation timeout'**
+  String get musication_generation_timeout;
+
+  /// No description provided for @musication_select_directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select directory to save music'**
+  String get musication_select_directory;
+
+  /// No description provided for @musication_files_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Files saved successfully'**
+  String get musication_files_saved;
+
+  /// No description provided for @musication_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Musication error'**
+  String get musication_error;
+
+  /// No description provided for @musication_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get musication_retry;
+
+  /// No description provided for @musication_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get musication_close;
+
+  /// No description provided for @musication_no_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Select text or open a file with content'**
+  String get musication_no_content;
+
+  /// No description provided for @musication_tray_show.
+  ///
+  /// In en, this message translates to:
+  /// **'Show NovaSpec'**
+  String get musication_tray_show;
+
+  /// No description provided for @musication_tray_exit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get musication_tray_exit;
+
+  /// No description provided for @musication_error_no_api_key.
+  ///
+  /// In en, this message translates to:
+  /// **'gen-api.ru API key not set'**
+  String get musication_error_no_api_key;
+
+  /// No description provided for @musication_error_no_ai_model.
+  ///
+  /// In en, this message translates to:
+  /// **'AI model not selected'**
+  String get musication_error_no_ai_model;
+
+  /// No description provided for @musication_error_no_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Select text or open a file with content'**
+  String get musication_error_no_content;
+
+  /// No description provided for @musication_error_invalid_api_key.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid gen-api.ru API key'**
+  String get musication_error_invalid_api_key;
+
+  /// No description provided for @musication_error_insufficient_funds.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get musication_error_insufficient_funds;
+
+  /// No description provided for @musication_error_unauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid authorization token'**
+  String get musication_error_unauthorized;
+
+  /// No description provided for @musication_error_forbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Access forbidden'**
+  String get musication_error_forbidden;
+
+  /// No description provided for @musication_error_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource not found'**
+  String get musication_error_not_found;
+
+  /// No description provided for @musication_error_request_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Request with this ID not found'**
+  String get musication_error_request_not_found;
+
+  /// No description provided for @musication_error_model_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Specified model not found'**
+  String get musication_error_model_not_found;
+
+  /// No description provided for @musication_error_too_many_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests, try again later'**
+  String get musication_error_too_many_requests;
+
+  /// No description provided for @musication_error_service_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Service error, contact support'**
+  String get musication_error_service_error;
+
+  /// No description provided for @musication_error_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error'**
+  String get musication_error_network;
+
+  /// No description provided for @musication_error_connection_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timeout'**
+  String get musication_error_connection_timeout;
+
+  /// No description provided for @musication_error_lyrics_generation_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Song lyrics generation failed'**
+  String get musication_error_lyrics_generation_failed;
+
+  /// No description provided for @musication_error_empty_lyrics_response.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty response from AI model'**
+  String get musication_error_empty_lyrics_response;
+
+  /// No description provided for @musication_error_music_generation_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Music generation failed'**
+  String get musication_error_music_generation_failed;
+
+  /// No description provided for @musication_error_polling_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Music generation timeout (10 minutes)'**
+  String get musication_error_polling_timeout;
+
+  /// No description provided for @musication_error_polling_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Generation status check failed'**
+  String get musication_error_polling_failed;
+
+  /// No description provided for @musication_error_file_download_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'File download failed'**
+  String get musication_error_file_download_failed;
+
+  /// No description provided for @musication_error_file_save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'File save failed'**
+  String get musication_error_file_save_failed;
+
+  /// No description provided for @musication_error_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get musication_error_unknown;
+
+  /// No description provided for @genre_pop.
+  ///
+  /// In en, this message translates to:
+  /// **'Pop'**
+  String get genre_pop;
+
+  /// No description provided for @genre_russian_rap.
+  ///
+  /// In en, this message translates to:
+  /// **'Russian rap'**
+  String get genre_russian_rap;
+
+  /// No description provided for @genre_rock.
+  ///
+  /// In en, this message translates to:
+  /// **'Rock'**
+  String get genre_rock;
+
+  /// No description provided for @genre_jazz.
+  ///
+  /// In en, this message translates to:
+  /// **'Jazz'**
+  String get genre_jazz;
+
+  /// No description provided for @genre_classic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get genre_classic;
+
+  /// No description provided for @genre_electronic.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic music'**
+  String get genre_electronic;
+
+  /// No description provided for @genre_hiphop.
+  ///
+  /// In en, this message translates to:
+  /// **'Hip-hop'**
+  String get genre_hiphop;
+
+  /// No description provided for @genre_rnb.
+  ///
+  /// In en, this message translates to:
+  /// **'R&B'**
+  String get genre_rnb;
+
   /// No description provided for @invalidFileNameError.
   ///
   /// In en, this message translates to:
@@ -1273,6 +1591,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh'**
   String get refresh;
+
+  /// No description provided for @fileCreationErrorPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied: Cannot create files in \"{directory}\"'**
+  String fileCreationErrorPermissionDenied(Object directory);
+
+  /// No description provided for @fileAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'File \"{fileName}\" already exists'**
+  String fileAlreadyExists(Object fileName);
+
+  /// No description provided for @invalidFileName.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid file name: \"{fileName}\"'**
+  String invalidFileName(Object fileName);
+
+  /// No description provided for @permissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied for directory \"{directory}\"'**
+  String permissionDenied(Object directory);
+
+  /// No description provided for @directoryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory not found: \"{directory}\"'**
+  String directoryNotFound(Object directory);
+
+  /// No description provided for @diskFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Disk full, cannot create file'**
+  String get diskFull;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error occurred'**
+  String get unknownError;
+
+  /// No description provided for @fileCreationError.
+  ///
+  /// In en, this message translates to:
+  /// **'File creation error: {error}'**
+  String fileCreationError(Object error);
 }
 
 class _AppLocalizationsDelegate

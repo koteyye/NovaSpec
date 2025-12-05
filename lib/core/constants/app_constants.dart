@@ -288,4 +288,47 @@ class AppConstants {
   
   // Legacy API Settings (for backward compatibility)
   static const int maxRetryAttempts = apiMaxRetries;
+  
+  // WebView2 Configuration
+  static const String webview2MinVersion = '90.0.0';
+  static const Duration webview2CheckTimeout = Duration(seconds: 5);
+  static const Duration webview2CacheTimeout = Duration(hours: 24);
+  static const String webview2RegistryKey = r'SOFTWARE\Microsoft\EdgeWebView';
+  static const String webview2StatusKey = 'webview2_status';
+  static const String webview2LastCheckKey = 'webview2_last_check';
+  static const String webviewWindowStateKey = 'webview_window_states';
+  
+  // WebView2 Window Defaults
+  static const double webview2DefaultWidth = 1200;
+  static const double webview2DefaultHeight = 800;
+  static const double webview2DefaultX = 100;
+  static const double webview2DefaultY = 100;
+  static const double webview2MinWidth = 400;
+  static const double webview2MinHeight = 300;
+  
+  // WebView2 Performance
+  static const Duration webview2LoadTimeout = Duration(seconds: 30);
+  static const int webview2MaxRetries = 3;
+  static const Duration webview2RetryDelay = Duration(milliseconds: 500);
+  
+  // OpenAPI File Support
+  static const List<String> openApiExtensions = ['yaml', 'yml', 'json'];
+  static const List<String> yamlExtensions = ['yaml', 'yml'];
+  static const List<String> jsonExtensions = ['json'];
+  
+  // WebView2 Error Messages
+  static const Map<String, String> webview2ErrorMessages = {
+    'not_installed': 'WebView2 не установлен. Пожалуйста, установите Microsoft Edge WebView2.',
+    'version_too_old': 'Версия WebView2 слишком старая. Пожалуйста, обновите Microsoft Edge WebView2.',
+    'check_failed': 'Не удалось проверить наличие WebView2.',
+    'initialization_failed': 'Не удалось инициализировать WebView2.',
+    'load_failed': 'Не удалось загрузить страницу в WebView2.',
+  };
+  
+  // WebView2 Success Messages
+  static const Map<String, String> webview2SuccessMessages = {
+    'initialized': 'WebView2 успешно инициализирован.',
+    'page_loaded': 'Страница успешно загружена.',
+    'file_opened': 'OpenAPI файл успешно открыт.',
+  };
 }

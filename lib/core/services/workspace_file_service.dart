@@ -3,14 +3,15 @@ import 'package:path/path.dart' as path;
 import '../../features/workspace/models/file_explorer_node.dart';
 import '../../features/workspace/models/file_operation.dart';
 import 'clipboard_service.dart';
+import '../../shared/models/file_creation_context.dart';
+import '../../shared/models/file_creation_result.dart';
 
 class WorkspaceFileService {
   final ClipboardService _clipboardService;
   String _currentDirectory = '';
 
-  WorkspaceFileService({
-    required ClipboardService clipboardService,
-  }) : _clipboardService = clipboardService;
+  WorkspaceFileService({required ClipboardService clipboardService})
+    : _clipboardService = clipboardService;
 
   Future<void> initialize() async {
     // Инициализируем с пустой директорией, будет установлена при открытии проекта
@@ -26,8 +27,10 @@ class WorkspaceFileService {
   // Directory operations
   Future<List<FileExplorerNode>> getDirectoryContents(String dirPath) async {
     try {
-      final directory = Directory(dirPath.isEmpty ? _currentDirectory : dirPath);
-      
+      final directory = Directory(
+        dirPath.isEmpty ? _currentDirectory : dirPath,
+      );
+
       if (!await directory.exists()) {
         throw Exception('Directory does not exist: $dirPath');
       }
@@ -40,15 +43,17 @@ class WorkspaceFileService {
         final isDirectory = entity is Directory;
         await entity.stat();
 
-        nodes.add(FileExplorerNode(
-          id: entity.path,
-          name: name,
-          path: entity.path,
-          type: isDirectory ? FileNodeType.folder : FileNodeType.file,
-          children: [],
-          isExpanded: false,
-          isRenaming: false,
-        ));
+        nodes.add(
+          FileExplorerNode(
+            id: entity.path,
+            name: name,
+            path: entity.path,
+            type: isDirectory ? FileNodeType.folder : FileNodeType.file,
+            children: [],
+            isExpanded: false,
+            isRenaming: false,
+          ),
+        );
       }
 
       // Sort: directories first, then files, both alphabetically
@@ -63,8 +68,6 @@ class WorkspaceFileService {
       throw Exception('Failed to read directory: $e');
     }
   }
-
-
 
   // File operations
   Future<void> createDirectory(String dirPath) async {
@@ -108,7 +111,7 @@ class WorkspaceFileService {
           throw Exception('Destination already exists: $newPath');
         }
       }
-      
+
       final oldEntity = File(oldPath);
       await oldEntity.rename(newPath);
     } catch (e) {
@@ -145,14 +148,14 @@ class WorkspaceFileService {
   Future<void> _copyDirectory(String sourcePath, String destinationPath) async {
     final sourceDir = Directory(sourcePath);
     final destinationDir = Directory(destinationPath);
-    
+
     if (!await destinationDir.exists()) {
       await destinationDir.create(recursive: true);
     }
 
     await for (final entity in sourceDir.list()) {
       final newPath = path.join(destinationPath, path.basename(entity.path));
-      
+
       if (entity is Directory) {
         await _copyDirectory(entity.path, newPath);
       } else {
@@ -165,36 +168,44 @@ class WorkspaceFileService {
   Future<List<FileExplorerNode>> search(String dirPath, String query) async {
     try {
       final results = <FileExplorerNode>[];
-      final directory = Directory(dirPath.isEmpty ? _currentDirectory : dirPath);
-      
+      final directory = Directory(
+        dirPath.isEmpty ? _currentDirectory : dirPath,
+      );
+
       await _searchRecursive(directory, query, results);
-      
+
       return results;
     } catch (e) {
       throw Exception('Search failed: $e');
     }
   }
 
-  Future<void> _searchRecursive(Directory directory, String query, List<FileExplorerNode> results) async {
+  Future<void> _searchRecursive(
+    Directory directory,
+    String query,
+    List<FileExplorerNode> results,
+  ) async {
     try {
       await for (final entity in directory.list()) {
         final name = path.basename(entity.path);
-        
+
         if (name.toLowerCase().contains(query.toLowerCase())) {
           final isDirectory = entity is Directory;
           await entity.stat();
-          
-          results.add(FileExplorerNode(
-            id: entity.path,
-            name: name,
-            path: entity.path,
-            type: isDirectory ? FileNodeType.folder : FileNodeType.file,
-            children: [],
-            isExpanded: false,
-            isRenaming: false,
-          ));
+
+          results.add(
+            FileExplorerNode(
+              id: entity.path,
+              name: name,
+              path: entity.path,
+              type: isDirectory ? FileNodeType.folder : FileNodeType.file,
+              children: [],
+              isExpanded: false,
+              isRenaming: false,
+            ),
+          );
         }
-        
+
         if (entity is Directory) {
           await _searchRecursive(entity, query, results);
         }
@@ -215,13 +226,13 @@ class WorkspaceFileService {
 
   Future<void> pasteFromClipboard(String destinationPath) async {
     final clipboardData = await _clipboardService.getClipboardData();
-    
+
     if (clipboardData == null) return;
 
     for (final sourcePath in clipboardData.paths) {
       final fileName = path.basename(sourcePath);
       final destination = path.join(destinationPath, fileName);
-      
+
       try {
         if (clipboardData.isCut) {
           await move(sourcePath, destination);
@@ -233,7 +244,7 @@ class WorkspaceFileService {
         continue;
       }
     }
-    
+
     if (clipboardData.isCut) {
       await _clipboardService.clear();
     }
@@ -248,26 +259,29 @@ class WorkspaceFileService {
           await createFile(fullPath);
         }
         break;
-        
+
       case FileOperationType.copy:
         if (operation.destinationPath != null) {
           await copy(operation.sourcePath, operation.destinationPath!);
         }
         break;
-        
+
       case FileOperationType.move:
         if (operation.destinationPath != null) {
           await move(operation.sourcePath, operation.destinationPath!);
         }
         break;
-        
+
       case FileOperationType.delete:
         await delete(operation.sourcePath, isFolder: false);
         break;
-        
+
       case FileOperationType.rename:
         if (operation.newName != null) {
-          final newPath = path.join(path.dirname(operation.sourcePath), operation.newName!);
+          final newPath = path.join(
+            path.dirname(operation.sourcePath),
+            operation.newName!,
+          );
           await rename(operation.sourcePath, newPath);
         }
         break;
@@ -288,7 +302,8 @@ class WorkspaceFileService {
   }
 
   String getFileExtension(String filePath) {
-    return path.extension(filePath);
+    final ext = path.extension(filePath);
+    return ext.isEmpty ? '' : ext.substring(1); // Убираем точку из расширения
   }
 
   bool isAbsolutePath(String pathStr) {
@@ -297,7 +312,8 @@ class WorkspaceFileService {
 
   // File info
   Future<bool> exists(String entityPath) async {
-    return await File(entityPath).exists() || await Directory(entityPath).exists();
+    return await File(entityPath).exists() ||
+        await Directory(entityPath).exists();
   }
 
   Future<bool> isDirectory(String entityPath) async {
@@ -346,7 +362,7 @@ class WorkspaceFileService {
   // File type detection
   String getFileType(String fileName) {
     final extension = getFileExtension(fileName).toLowerCase();
-    
+
     // Programming languages
     const programmingLanguages = {
       'dart': 'dart',
@@ -433,26 +449,27 @@ class WorkspaceFileService {
     if (programmingLanguages.containsKey(extension)) {
       return programmingLanguages[extension]!;
     }
-    
+
     if (webTech.containsKey(extension)) {
       return webTech[extension]!;
     }
-    
+
     if (dataFormats.containsKey(extension)) {
       return dataFormats[extension]!;
     }
-    
+
     if (documentation.containsKey(extension)) {
       return documentation[extension]!;
     }
-    
+
     if (configuration.containsKey(extension)) {
       return configuration[extension]!;
     }
 
     // Special files by name
     final baseFileName = getFileName(fileName).toLowerCase();
-    if (baseFileName == 'dockerfile' || baseFileName.startsWith('dockerfile.')) {
+    if (baseFileName == 'dockerfile' ||
+        baseFileName.startsWith('dockerfile.')) {
       return 'dockerfile';
     }
     if (baseFileName == 'makefile') {
@@ -467,35 +484,54 @@ class WorkspaceFileService {
     if (baseFileName == 'changelog' || baseFileName.startsWith('changelog.')) {
       return 'changelog';
     }
-    
+
     // API/Swagger files
     if (baseFileName.contains('swagger') || baseFileName.contains('openapi')) {
       return 'swagger';
     }
 
     // Media files
-    const imageExtensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg', 'webp', 'ico'};
+    const imageExtensions = {
+      'png',
+      'jpg',
+      'jpeg',
+      'gif',
+      'bmp',
+      'svg',
+      'webp',
+      'ico',
+    };
     const audioExtensions = {'mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a'};
     const videoExtensions = {'mp4', 'avi', 'mkv', 'mov', 'wmv', 'flv', 'webm'};
-    
+
     if (imageExtensions.contains(extension)) return 'image';
     if (audioExtensions.contains(extension)) return 'audio';
     if (videoExtensions.contains(extension)) return 'video';
 
     // Documents
-    const documentExtensions = {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'};
+    const documentExtensions = {
+      'pdf',
+      'doc',
+      'docx',
+      'xls',
+      'xlsx',
+      'ppt',
+      'pptx',
+    };
     if (documentExtensions.contains(extension)) return 'document';
 
     // Archives
     const archiveExtensions = {'zip', 'rar', '7z', 'tar', 'gz', 'bz2'};
-    if (archiveExtensions.contains(extension)) return 'archive';
+    if (archiveExtensions.contains(extension)) {
+      return 'archive';
+    }
 
     return 'unknown';
   }
 
   bool isBinaryFile(String fileName) {
     final extension = getFileExtension(fileName).toLowerCase();
-    
+
     const binaryExtensions = {
       // Images
       'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'ico',
@@ -520,7 +556,7 @@ class WorkspaceFileService {
 
   String getFileIcon(String fileName) {
     final fileType = getFileType(fileName);
-    
+
     switch (fileType) {
       // Programming languages
       case 'dart':
@@ -556,7 +592,7 @@ class WorkspaceFileService {
         return 'scatter_plot';
       case 'r':
         return 'bar_chart';
-      
+
       // Web technologies
       case 'html':
         return 'web';
@@ -568,7 +604,7 @@ class WorkspaceFileService {
         return 'style';
       case 'vue':
         return 'view_quilt';
-      
+
       // Data formats
       case 'json':
         return 'data_object';
@@ -584,7 +620,7 @@ class WorkspaceFileService {
       case 'csv':
       case 'tsv':
         return 'table_chart';
-      
+
       // Documentation
       case 'markdown':
       case 'md':
@@ -596,7 +632,7 @@ class WorkspaceFileService {
         return 'menu_book';
       case 'asciidoc':
         return 'article';
-      
+
       // Configuration
       case 'config':
       case 'conf':
@@ -611,7 +647,7 @@ class WorkspaceFileService {
       case 'prettierrc':
       case 'babelrc':
         return 'rule';
-      
+
       // Shell scripts
       case 'shell':
       case 'bash':
@@ -624,11 +660,11 @@ class WorkspaceFileService {
       case 'bat':
       case 'cmd':
         return 'computer';
-      
+
       // Databases
       case 'sql':
         return 'storage';
-      
+
       // Media files
       case 'image':
         return 'image';
@@ -636,15 +672,15 @@ class WorkspaceFileService {
         return 'audiotrack';
       case 'video':
         return 'videocam';
-      
+
       // Documents
       case 'document':
         return 'description';
-      
+
       // Archives
       case 'archive':
         return 'archive';
-      
+
       // Special files (handled above)
       case 'makefile':
         return 'build';
@@ -654,9 +690,58 @@ class WorkspaceFileService {
         return 'gavel';
       case 'changelog':
         return 'history';
-      
+
       default:
         return 'insert_drive_file';
+    }
+  }
+
+  // Новый метод для создания файла с контекстом
+  Future<FileCreationResult> createFileWithContext(
+    FileCreationContext context,
+  ) async {
+    try {
+      // Валидация контекста
+      if (!context.isValid) {
+        return FileCreationResult.error(
+          FileCreationErrorType.invalidFileName,
+          context.validationError ?? 'Invalid file name',
+        );
+      }
+
+      // Проверяем существование файла
+      if (await File(context.fullPath).exists()) {
+        return FileCreationResult.error(
+          FileCreationErrorType.fileAlreadyExists,
+          'File already exists: ${context.fileName}',
+        );
+      }
+
+      // Создаем файл
+      final file = File(context.fullPath);
+      await file.writeAsString('');
+
+      return FileCreationResult.success(context.fullPath);
+    } catch (e) {
+      // Определяем тип ошибки
+      final String message = e.toString();
+
+      final FileCreationErrorType errorType;
+      if (e is FileSystemException) {
+        if (e.message.contains('Permission denied')) {
+          errorType = FileCreationErrorType.permissionDenied;
+        } else if (e.message.contains('No space left')) {
+          errorType = FileCreationErrorType.diskFull;
+        } else if (e.message.contains('No such file or directory')) {
+          errorType = FileCreationErrorType.directoryNotFound;
+        } else {
+          errorType = FileCreationErrorType.unknownError;
+        }
+      } else {
+        errorType = FileCreationErrorType.unknownError;
+      }
+
+      return FileCreationResult.error(errorType, message);
     }
   }
 }

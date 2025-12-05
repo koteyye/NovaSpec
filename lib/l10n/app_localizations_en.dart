@@ -155,6 +155,173 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterFileNameError => 'Enter file name';
 
   @override
+  String get musication => 'Musication';
+
+  @override
+  String get musication_button_tooltip => 'Create music based on text';
+
+  @override
+  String get musication_select_genre => 'Select genre';
+
+  @override
+  String get musication_generating_lyrics => 'Generating song lyrics';
+
+  @override
+  String get musication_generating_audio => 'Generating audio';
+
+  @override
+  String get musication_saving_audio => 'Saving audio';
+
+  @override
+  String get musication_completed => 'Musication completed';
+
+  @override
+  String get musication_failed => 'Musication failed';
+
+  @override
+  String get musication_cancel => 'Cancel';
+
+  @override
+  String get musication_cancel_confirmation => 'Cancel musication?';
+
+  @override
+  String get musication_balance => 'Balance';
+
+  @override
+  String get musication_insufficient_balance => 'Insufficient balance';
+
+  @override
+  String get musication_api_key_not_set => 'gen-api.ru API key not set';
+
+  @override
+  String get musication_invalid_api_key => 'Invalid gen-api.ru API key';
+
+  @override
+  String get musication_generation_timeout => 'Music generation timeout';
+
+  @override
+  String get musication_select_directory => 'Select directory to save music';
+
+  @override
+  String get musication_files_saved => 'Files saved successfully';
+
+  @override
+  String get musication_error => 'Musication error';
+
+  @override
+  String get musication_retry => 'Retry';
+
+  @override
+  String get musication_close => 'Close';
+
+  @override
+  String get musication_no_content => 'Select text or open a file with content';
+
+  @override
+  String get musication_tray_show => 'Show NovaSpec';
+
+  @override
+  String get musication_tray_exit => 'Exit';
+
+  @override
+  String get musication_error_no_api_key => 'gen-api.ru API key not set';
+
+  @override
+  String get musication_error_no_ai_model => 'AI model not selected';
+
+  @override
+  String get musication_error_no_content =>
+      'Select text or open a file with content';
+
+  @override
+  String get musication_error_invalid_api_key => 'Invalid gen-api.ru API key';
+
+  @override
+  String get musication_error_insufficient_funds => 'Insufficient balance';
+
+  @override
+  String get musication_error_unauthorized => 'Invalid authorization token';
+
+  @override
+  String get musication_error_forbidden => 'Access forbidden';
+
+  @override
+  String get musication_error_not_found => 'Resource not found';
+
+  @override
+  String get musication_error_request_not_found =>
+      'Request with this ID not found';
+
+  @override
+  String get musication_error_model_not_found => 'Specified model not found';
+
+  @override
+  String get musication_error_too_many_requests =>
+      'Too many requests, try again later';
+
+  @override
+  String get musication_error_service_error => 'Service error, contact support';
+
+  @override
+  String get musication_error_network => 'Network error';
+
+  @override
+  String get musication_error_connection_timeout => 'Connection timeout';
+
+  @override
+  String get musication_error_lyrics_generation_failed =>
+      'Song lyrics generation failed';
+
+  @override
+  String get musication_error_empty_lyrics_response =>
+      'Empty response from AI model';
+
+  @override
+  String get musication_error_music_generation_failed =>
+      'Music generation failed';
+
+  @override
+  String get musication_error_polling_timeout =>
+      'Music generation timeout (10 minutes)';
+
+  @override
+  String get musication_error_polling_failed =>
+      'Generation status check failed';
+
+  @override
+  String get musication_error_file_download_failed => 'File download failed';
+
+  @override
+  String get musication_error_file_save_failed => 'File save failed';
+
+  @override
+  String get musication_error_unknown => 'Unknown error';
+
+  @override
+  String get genre_pop => 'Pop';
+
+  @override
+  String get genre_russian_rap => 'Russian rap';
+
+  @override
+  String get genre_rock => 'Rock';
+
+  @override
+  String get genre_jazz => 'Jazz';
+
+  @override
+  String get genre_classic => 'Classic';
+
+  @override
+  String get genre_electronic => 'Electronic music';
+
+  @override
+  String get genre_hiphop => 'Hip-hop';
+
+  @override
+  String get genre_rnb => 'R&B';
+
+  @override
   String get invalidFileNameError => 'File name contains invalid characters';
 
   @override
@@ -617,4 +784,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refresh => 'Refresh';
+
+  @override
+  String fileCreationErrorPermissionDenied(Object directory) {
+    return 'Permission denied: Cannot create files in \"$directory\"';
+  }
+
+  @override
+  String fileAlreadyExists(Object fileName) {
+    return 'File \"$fileName\" already exists';
+  }
+
+  @override
+  String invalidFileName(Object fileName) {
+    return 'Invalid file name: \"$fileName\"';
+  }
+
+  @override
+  String permissionDenied(Object directory) {
+    return 'Permission denied for directory \"$directory\"';
+  }
+
+  @override
+  String directoryNotFound(Object directory) {
+    return 'Directory not found: \"$directory\"';
+  }
+
+  @override
+  String get diskFull => 'Disk full, cannot create file';
+
+  @override
+  String get unknownError => 'Unknown error occurred';
+
+  @override
+  String fileCreationError(Object error) {
+    return 'File creation error: $error';
+  }
 }

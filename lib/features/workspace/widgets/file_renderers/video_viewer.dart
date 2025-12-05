@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import '../../../../core/services/toast_service.dart';
 
 class VideoViewer extends StatefulWidget {
   final String filePath;
@@ -343,9 +344,7 @@ class _VideoViewerState extends State<VideoViewer> {
 
   void _toggleFullscreen() {
     // TODO: Implement fullscreen functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Полноэкранный режим будет добавлен в следующей версии')),
-    );
+    show(description: 'Полноэкранный режим будет добавлен в следующей версии');
   }
 
   void _handleMenuAction(String action) {
@@ -494,8 +493,6 @@ class _VideoViewerState extends State<VideoViewer> {
   }
 
   void _showQualityDialog() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Изменение качества будет доступно в следующей версии')),
-    );
+    show(description: 'Изменение качества будет доступно в следующей версии');
   }
 }

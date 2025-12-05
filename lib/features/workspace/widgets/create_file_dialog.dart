@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import '../providers/workspace_provider.dart';
 import '../providers/tab_provider.dart';
+import '../providers/file_explorer_provider.dart';
+import '../../project/providers/project_provider.dart';
 import '../../../core/services/workspace_file_service.dart';
+import '../../../core/services/toast_service.dart' as toast;
 import '../../../shared/widgets/modern_button.dart';
+import '../../../shared/models/file_creation_context.dart';
+import '../../../shared/models/file_creation_result.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/services/di_container.dart';
 
@@ -10,11 +14,7 @@ class CreateFileDialog extends StatefulWidget {
   final String? initialPath;
   final Function(String)? onFileCreated;
 
-  const CreateFileDialog({
-    super.key,
-    this.initialPath,
-    this.onFileCreated,
-  });
+  const CreateFileDialog({super.key, this.initialPath, this.onFileCreated});
 
   @override
   State<CreateFileDialog> createState() => _CreateFileDialogState();
@@ -106,11 +106,7 @@ class _CreateFileDialogState extends State<CreateFileDialog> {
   // Шаблоны для разных типов файлов
   Map<String, List<TemplateOption>> get _templates => {
     'dart': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'class',
         title: 'Класс',
@@ -142,11 +138,7 @@ class CustomWidget extends StatelessWidget {
       ),
     ],
     'js': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'function',
         title: 'Функция',
@@ -174,11 +166,7 @@ export default ClassName;''',
       ),
     ],
     'ts': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'interface',
         title: 'Interface',
@@ -208,11 +196,7 @@ export default ClassName;''',
       ),
     ],
     'py': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'function',
         title: 'Функция',
@@ -228,10 +212,10 @@ if __name__ == "__main__":
         title: 'Класс',
         content: '''class ClassName:
     """TODO: Add docstring"""
-    
+
     def __init__(self):
         pass
-    
+
     def method_name(self):
         pass
 
@@ -241,11 +225,7 @@ if __name__ == "__main__":
       ),
     ],
     'html': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'basic',
         title: 'Базовая HTML страница',
@@ -282,11 +262,7 @@ if __name__ == "__main__":
       ),
     ],
     'css': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'reset',
         title: 'CSS Reset',
@@ -304,11 +280,7 @@ body {
       ),
     ],
     'json': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'object',
         title: 'JSON объект',
@@ -334,11 +306,7 @@ body {
       ),
     ],
     'yaml': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'config',
         title: 'Конфигурация',
@@ -355,11 +323,7 @@ database:
       ),
     ],
     'md': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'readme',
         title: 'README',
@@ -387,18 +351,10 @@ MIT''',
       ),
     ],
     'txt': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
     ],
     'env': [
-      const TemplateOption(
-        value: 'empty',
-        title: 'Пустой файл',
-        content: '',
-      ),
+      const TemplateOption(value: 'empty', title: 'Пустой файл', content: ''),
       const TemplateOption(
         value: 'basic',
         title: 'Базовый .env',
@@ -438,7 +394,14 @@ Thumbs.db
   };
 
   List<TemplateOption> get _currentTemplates {
-    return _templates[_selectedType] ?? [const TemplateOption(value: 'empty', title: 'Пустой файл', content: '')];
+    return _templates[_selectedType] ??
+        [
+          const TemplateOption(
+            value: 'empty',
+            title: 'Пустой файл',
+            content: '',
+          ),
+        ];
   }
 
   @override
@@ -448,14 +411,26 @@ Thumbs.db
   }
 
   Future<void> _createFile() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_nameController.text.trim().isEmpty) return;
+
+    // Получаем локализации ДО async операций
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() => _isCreating = true);
 
     try {
-      final workspaceProvider = getIt<WorkspaceProvider>();
-      final tabProvider = getIt<TabProvider>();
+      final fileExplorerProvider = getIt<FileExplorerProvider>();
       final workspaceFileService = getIt<WorkspaceFileService>();
+      final tabProvider = getIt<TabProvider>();
+
+      // Получаем текущую директорию
+      final currentDir = fileExplorerProvider.currentDirectory;
+      final projectRoot =
+          getIt<ProjectProvider>().currentProject?.directory ?? '';
+
+      // Если текущая директория не установлена, используем корень проекта
+      final targetDirectory = currentDir.isNotEmpty ? currentDir : projectRoot;
 
       // Формируем имя файла с расширением
       String fileName = _nameController.text.trim();
@@ -463,42 +438,97 @@ Thumbs.db
         fileName += '.$_selectedType';
       }
 
-      // Формируем полный путь
-      final fullPath = widget.initialPath != null 
-          ? '${widget.initialPath}/$fileName'
-          : fileName;
+      // Создаем контекст
+      final fileContext = FileCreationContext.create(
+        fileName: fileName,
+        currentDirectory: targetDirectory,
+        projectRoot: projectRoot,
+      );
 
-      // Получаем содержимое шаблона
-      final template = _currentTemplates.firstWhere((t) => t.value == _selectedTemplate);
-      final content = template.content;
+      // Валидируем директорию
+      final validation = await fileExplorerProvider.validateDirectory(
+        targetDirectory,
+      );
+      if (!validation.isAccessible || !validation.hasWritePermission) {
+        if (mounted) {
+          toast.ToastService().showError(
+            description: l10n.fileCreationErrorPermissionDenied(
+              targetDirectory,
+            ),
+          );
+        }
+        return;
+      }
 
       // Создаем файл
-      await workspaceFileService.writeFile(fullPath, content);
+      final result = await workspaceFileService.createFileWithContext(
+        fileContext,
+      );
 
-      // Обновляем файловый эксплорер
-      await workspaceProvider.refreshCurrentDirectory();
-
-      // Открываем файл в новой вкладке
-      await tabProvider.openTab(fullPath);
-
-      if (mounted) {
-        Navigator.of(context).pop();
-        widget.onFileCreated?.call(fullPath);
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.fileCreated(fileName)),
-            backgroundColor: Colors.green,
-          ),
+      if (result.success) {
+        // Получаем содержимое шаблона и записываем в файл
+        final template = _currentTemplates.firstWhere(
+          (t) => t.value == _selectedTemplate,
         );
+        if (template.content.isNotEmpty) {
+          await workspaceFileService.writeFile(
+            result.filePath!,
+            template.content,
+          );
+        }
+
+        if (mounted) {
+          toast.ToastService().showSuccess(
+            description: l10n.fileCreated(fileName),
+          );
+        }
+
+        // Устанавливаем текущую директорию в provider перед обновлением
+        // чтобы избежать ошибки "Directory does not exist"
+        if (fileExplorerProvider.currentDirectory != targetDirectory) {
+          await fileExplorerProvider.loadDirectory(targetDirectory);
+        } else {
+          // Обновляем проводник
+          await fileExplorerProvider.refresh();
+        }
+
+        // Открываем файл в новой вкладке
+        await tabProvider.openTab(result.filePath!);
+
+        if (mounted) {
+          Navigator.of(context).pop();
+          widget.onFileCreated?.call(result.filePath!);
+        }
+      } else {
+        if (mounted) {
+          String errorMessage;
+          switch (result.errorType) {
+            case FileCreationErrorType.fileAlreadyExists:
+              errorMessage = l10n.fileAlreadyExists(fileContext.fileName);
+              break;
+            case FileCreationErrorType.invalidFileName:
+              errorMessage = l10n.invalidFileName(fileContext.fileName);
+              break;
+            case FileCreationErrorType.permissionDenied:
+              errorMessage = l10n.permissionDenied(targetDirectory);
+              break;
+            case FileCreationErrorType.directoryNotFound:
+              errorMessage = l10n.directoryNotFound(targetDirectory);
+              break;
+            case FileCreationErrorType.diskFull:
+              errorMessage = l10n.diskFull;
+              break;
+            default:
+              errorMessage = result.errorMessage ?? l10n.unknownError;
+          }
+
+          toast.ToastService().showError(description: errorMessage);
+        }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.createFileError(e.toString())),
-            backgroundColor: Colors.red,
-          ),
+        toast.ToastService().showError(
+          description: l10n.fileCreationError(e.toString()),
         );
       }
     } finally {
@@ -511,11 +541,9 @@ Thumbs.db
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         width: 600,
         constraints: const BoxConstraints(maxHeight: 700),
@@ -530,17 +558,13 @@ Thumbs.db
                 // Заголовок
                 Row(
                   children: [
-                    Icon(
-                      Icons.note_add,
-                      color: Theme.of(context).primaryColor,
-                    ),
+                    Icon(Icons.note_add, color: Theme.of(context).primaryColor),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         l10n.createNewFile,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                     IconButton(
@@ -549,9 +573,9 @@ Thumbs.db
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Имя файла
                 TextFormField(
                   controller: _nameController,
@@ -572,9 +596,9 @@ Thumbs.db
                   },
                   textInputAction: TextInputAction.next,
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Тип файла
                 Text(
                   l10n.fileType,
@@ -583,7 +607,7 @@ Thumbs.db
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 Container(
                   height: 200,
                   decoration: BoxDecoration(
@@ -595,16 +619,20 @@ Thumbs.db
                     itemBuilder: (context, index) {
                       final fileType = _fileTypes[index];
                       final isSelected = fileType.value == _selectedType;
-                      
+
                       return ListTile(
                         leading: Icon(
                           fileType.icon,
-                          color: isSelected ? Theme.of(context).primaryColor : null,
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : null,
                         ),
                         title: Text(fileType.title),
                         subtitle: Text(fileType.description),
                         selected: isSelected,
-                        selectedTileColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                        selectedTileColor: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.1),
                         onTap: () {
                           setState(() {
                             _selectedType = fileType.value;
@@ -615,9 +643,9 @@ Thumbs.db
                     },
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Шаблон
                 if (_currentTemplates.length > 1) ...[
                   Text(
@@ -627,7 +655,7 @@ Thumbs.db
                     ),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   DropdownButtonFormField<String>(
                     value: _selectedTemplate,
                     decoration: const InputDecoration(
@@ -646,10 +674,10 @@ Thumbs.db
                       }
                     },
                   ),
-                  
+
                   const SizedBox(height: 20),
                 ],
-                
+
                 // Кнопки
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,

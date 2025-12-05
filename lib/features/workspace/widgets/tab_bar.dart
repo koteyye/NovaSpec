@@ -9,14 +9,11 @@ class TabBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 36,
+      height: 40,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
+          bottom: BorderSide(color: Theme.of(context).dividerColor, width: 1),
         ),
       ),
       child: Consumer<TabProvider>(
@@ -29,7 +26,9 @@ class TabBarWidget extends StatelessWidget {
                   'Нет открытых вкладок',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -49,7 +48,7 @@ class TabBarWidget extends StatelessWidget {
                   },
                 ),
               ),
-              
+
               // Tab actions
               Row(
                 children: [
@@ -82,24 +81,28 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(BuildContext context, WorkspaceTab tab, TabProvider tabProvider) {
+  Widget _buildTab(
+    BuildContext context,
+    WorkspaceTab tab,
+    TabProvider tabProvider,
+  ) {
     final isActive = tab.isActive;
     final isModified = tab.isModified;
-    
+
     return Container(
       margin: const EdgeInsets.only(left: 2, top: 2, bottom: 2),
       decoration: BoxDecoration(
-        color: isActive 
+        color: isActive
             ? Theme.of(context).colorScheme.surface
-            : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            : Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(6),
           topRight: Radius.circular(6),
         ),
         border: Border.all(
-          color: isActive 
-              ? Theme.of(context).dividerColor
-              : Colors.transparent,
+          color: isActive ? Theme.of(context).dividerColor : Colors.transparent,
           width: 1,
         ),
       ),
@@ -112,16 +115,17 @@ class TabBarWidget extends StatelessWidget {
             child: Icon(
               _getFileIcon(tab.path),
               size: 14,
-              color: isActive 
+              color: isActive
                   ? Theme.of(context).colorScheme.onSurface
                   : Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          
+
           // Tab title
           GestureDetector(
             onTap: () => tabProvider.switchTab(tab.id),
-            onSecondaryTap: () => _showTabContextMenu(context, tab, tabProvider),
+            onSecondaryTap: () =>
+                _showTabContextMenu(context, tab, tabProvider),
             child: Container(
               constraints: const BoxConstraints(maxWidth: 200),
               padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -129,7 +133,7 @@ class TabBarWidget extends StatelessWidget {
                 tab.title,
                 style: TextStyle(
                   fontSize: 12,
-                  color: isActive 
+                  color: isActive
                       ? Theme.of(context).colorScheme.onSurface
                       : Theme.of(context).colorScheme.onSurface,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
@@ -138,7 +142,7 @@ class TabBarWidget extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Modified indicator
           if (isModified) ...[
             Padding(
@@ -150,7 +154,7 @@ class TabBarWidget extends StatelessWidget {
               ),
             ),
           ],
-          
+
           // Close button
           GestureDetector(
             onTap: () => tabProvider.closeTab(tab.id),
@@ -160,9 +164,13 @@ class TabBarWidget extends StatelessWidget {
               child: Icon(
                 Icons.close,
                 size: 14,
-                color: isActive 
-                    ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)
-                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: isActive
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -244,7 +252,11 @@ class TabBarWidget extends StatelessWidget {
     );
   }
 
-  void _showTabContextMenu(BuildContext context, WorkspaceTab tab, TabProvider tabProvider) {
+  void _showTabContextMenu(
+    BuildContext context,
+    WorkspaceTab tab,
+    TabProvider tabProvider,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Column(
@@ -305,7 +317,7 @@ class TabBarWidget extends StatelessWidget {
 
   IconData _getFileIcon(String filePath) {
     final extension = filePath.split('.').last.toLowerCase();
-    
+
     switch (extension) {
       case 'dart':
         return Icons.code;

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
 import '../models/workspace_tab.dart';
 import '../models/open_file.dart';
 import '../../../core/services/workspace_service.dart';
@@ -12,9 +13,8 @@ class TabProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  TabProvider({
-    required WorkspaceService workspaceService,
-  }) : _workspaceService = workspaceService;
+  TabProvider({required WorkspaceService workspaceService})
+    : _workspaceService = workspaceService;
 
   // Getters
   List<WorkspaceTab> get tabs => List.unmodifiable(_tabs);
@@ -22,7 +22,7 @@ class TabProvider extends ChangeNotifier {
   String? get activeTabId => _activeTabId;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  WorkspaceTab? get activeTab => _tabs.isNotEmpty 
+  WorkspaceTab? get activeTab => _tabs.isNotEmpty
       ? _tabs.firstWhere(
           (tab) => tab.id == _activeTabId,
           orElse: () => _tabs.first,
@@ -35,12 +35,12 @@ class TabProvider extends ChangeNotifier {
     try {
       _tabs = await _workspaceService.getTabs();
       _openFiles = await _workspaceService.getOpenFiles();
-      
+
       // Set first tab as active if no active tab
       if (_tabs.isNotEmpty && _activeTabId == null) {
         _activeTabId = _tabs.first.id;
       }
-      
+
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -54,9 +54,7 @@ class TabProvider extends ChangeNotifier {
     try {
       // Check if tab already exists
       try {
-        final existingTab = _tabs.firstWhere(
-          (tab) => tab.filePath == filePath,
-        );
+        final existingTab = _tabs.firstWhere((tab) => tab.filePath == filePath);
         // Switch to existing tab
         await switchTab(existingTab.id);
         return;
@@ -114,7 +112,7 @@ class TabProvider extends ChangeNotifier {
       if (tabIndex == -1) return;
 
       final tab = _tabs[tabIndex];
-      
+
       // Check if file is modified
       if (tab.isModified) {
         // TODO: Show save dialog
@@ -154,7 +152,7 @@ class TabProvider extends ChangeNotifier {
   Future<void> closeOtherTabs(String keepTabId) async {
     try {
       final tabsToClose = _tabs.where((tab) => tab.id != keepTabId).toList();
-      
+
       for (final tab in tabsToClose) {
         await closeTab(tab.id);
       }
@@ -253,12 +251,15 @@ class TabProvider extends ChangeNotifier {
   }
 
   String _getFileNameFromPath(String filePath) {
-    return filePath.split('/').last;
+    return path.basename(filePath);
   }
 
   FileContentType _detectContentType(String filePath) {
-    final extension = filePath.split('.').last.toLowerCase();
-    
+    final extension = path
+        .extension(filePath)
+        .toLowerCase()
+        .replaceFirst('.', '');
+
     switch (extension) {
       case 'md':
       case 'markdown':
@@ -272,17 +273,27 @@ class TabProvider extends ChangeNotifier {
       case 'flac':
         return FileContentType.audio;
       case 'json':
-        return FileContentType.swagger; // For now
+      case 'yaml':
+      case 'yml':
+        return FileContentType
+            .swagger; // Will be checked for OpenAPI in work_area
       case 'txt':
+      case 'log':
+      case 'csv':
+      case 'tsv':
         return FileContentType.text;
       default:
-        return FileContentType.binary;
+        return FileContentType
+            .text; // Default to text instead of binary for editable files
     }
   }
 
   String _detectLanguage(String filePath) {
-    final extension = filePath.split('.').last.toLowerCase();
-    
+    final extension = path
+        .extension(filePath)
+        .toLowerCase()
+        .replaceFirst('.', '');
+
     switch (extension) {
       case 'js':
       case 'jsx':
@@ -351,6 +362,4 @@ class TabProvider extends ChangeNotifier {
         return 'plaintext';
     }
   }
-
-
 }

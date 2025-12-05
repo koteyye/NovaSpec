@@ -28,6 +28,8 @@ class ValidationResult {
     );
   }
   
+  bool get isSuccess => isValid;
+  
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -44,4 +46,20 @@ class ValidationResult {
   String toString() {
     return 'ValidationResult(isValid: $isValid, message: $message, details: $details)';
   }
+}
+
+/// Результат операции с данными
+class DataResult<T> {
+  final bool isSuccess;
+  final T? data;
+  final String? error;
+  final String? message;
+  
+  DataResult.success(this.data, {this.message}) 
+      : isSuccess = true,
+        error = null;
+  
+  DataResult.error(this.error, {this.message})
+      : isSuccess = false,
+        data = null;
 }

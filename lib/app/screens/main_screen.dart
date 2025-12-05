@@ -15,6 +15,9 @@ import '../../features/topbar/widgets/status_bar.dart';
 import '../../features/settings/widgets/settings_dialog.dart';
 import '../../features/workspace/screens/workspace_screen.dart';
 import '../../shared/widgets/modern_button.dart';
+import '../../shared/services/di_container.dart';
+import '../../features/musication/services/tray_manager_service.dart';
+import 'dart:io';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -39,6 +42,20 @@ class _MainScreenState extends State<MainScreen> {
       context,
       listen: false,
     );
+
+    // Инициализация TrayManager с локализованными текстами
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          final trayService = getIt<TrayManagerService>();
+          trayService.initialize(
+            showLabel: l10n.musication_tray_show,
+            exitLabel: l10n.musication_tray_exit,
+          );
+        }
+      });
+    }
 
     // Check if this is first run or no last project
     final isFirstRun = appProvider.lastOpenedProject == null;
@@ -367,6 +384,48 @@ class _MainScreenState extends State<MainScreen> {
               },
               type: ButtonType.secondary,
             ),
+            const SizedBox(height: 16),
+            // Mock gen-api.ru settings
+            Consumer<SettingsProvider>(
+              builder: (context, settingsProvider, child) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: settingsProvider.mockGenApiEnabled,
+                          onChanged: (value) {
+                            debugPrint('🔧 Debug Menu: Setting mockGenApiEnabled to $value');
+                            settingsProvider.setMockGenApiEnabled(value ?? false);
+                            debugPrint('🔧 Debug Menu: mockGenApiEnabled is now ${settingsProvider.mockGenApiEnabled}');
+                          },
+                        ),
+                        const Text('Мок gen-api.ru'),
+                      ],
+                    ),
+                    if (settingsProvider.mockGenApiEnabled) ...[
+                      const SizedBox(height: 8),
+                      TextField(
+                        decoration: const InputDecoration(
+                          labelText: 'URL мока',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        controller: TextEditingController(
+                          text: settingsProvider.mockGenApiUrl,
+                        ),
+                        onChanged: (value) {
+                          debugPrint('🔧 Debug Menu: Setting mockGenApiUrl to $value');
+                          settingsProvider.setMockGenApiUrl(value);
+                          debugPrint('🔧 Debug Menu: mockGenApiUrl is now ${settingsProvider.mockGenApiUrl}');
+                        },
+                      ),
+                    ],
+                  ],
+                );
+              },
+            ),
           ],
         ),
         actions: [
@@ -604,16 +663,12 @@ class _CreateProjectDialogState extends State<_CreateProjectDialog> {
 
   Future<void> _createProject() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Введите имя проекта')));
+      error(description: 'Введите имя проекта');
       return;
     }
 
     if (_directoryController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Выберите директорию')));
+      error(description: 'Выберите директорию');
       return;
     }
 
@@ -723,16 +778,12 @@ class _SaveProjectAsDialogState extends State<_SaveProjectAsDialog> {
 
   Future<void> _saveProjectAs() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Введите имя проекта')));
+      error(description: 'Введите имя проекта');
       return;
     }
 
     if (_directoryController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Выберите директорию')));
+      error(description: 'Выберите директорию');
       return;
     }
 

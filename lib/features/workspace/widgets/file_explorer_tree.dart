@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/file_explorer_provider.dart';
 import '../providers/tab_provider.dart';
 import '../models/file_explorer_node.dart';
+import '../../../../core/providers/app_provider.dart';
 
 import '../../../../shared/widgets/modern_button.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -16,22 +17,41 @@ class FileExplorerTree extends StatefulWidget {
 }
 
 class _FileExplorerTreeState extends State<FileExplorerTree> {
+  ThemeMode? _lastThemeMode;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Проверяем изменение темы и форсируем rebuild
+    final appProvider = Provider.of<AppProvider>(context, listen: true);
+    final currentTheme = appProvider.themeMode;
+
+    if (_lastThemeMode != null && _lastThemeMode != currentTheme) {
+      // Тема изменилась - форсируем перестройку
+      setState(() {});
+    }
+    _lastThemeMode = currentTheme;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FileExplorerProvider>(
-      builder: (context, provider, child) {
+    // Слушаем AppProvider для отслеживания изменений темы
+    return Consumer2<FileExplorerProvider, AppProvider>(
+      builder: (context, provider, appProvider, child) {
         if (provider.isLoading && provider.currentPath.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
+        // Используем themeMode из appProvider для перестройки при смене темы
+        final currentTheme = appProvider.themeMode;
+
         return ListView.builder(
+          key: ValueKey('file_tree_$currentTheme'),
           itemCount: provider.currentPath.length,
           itemBuilder: (context, index) {
             final node = provider.currentPath[index];
-            return _buildTreeNode(context, node, provider, 0);
+            return _buildTreeNode(context, node, provider, 0, currentTheme);
           },
         );
       },
@@ -43,11 +63,11 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
     FileExplorerNode node,
     FileExplorerProvider provider,
     int depth,
+    ThemeMode currentTheme,
   ) {
     final isExpanded = provider.isNodeExpanded(node.id);
     final children = provider.getNodeChildren(node.id);
     final isLoading = provider.isNodeLoading(node.id);
-
 
     return Container(
       decoration: BoxDecoration(
@@ -91,14 +111,18 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
                             ? const SizedBox(
                                 width: 12,
                                 height: 12,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : Icon(
                                 node.isExpanded
                                     ? Icons.keyboard_arrow_down
                                     : Icons.keyboard_arrow_right,
                                 size: 16,
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
                       ),
                     ),
@@ -118,10 +142,13 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
                   Expanded(
                     child: Text(
                       node.name,
+                      key: ValueKey('${node.id}_text_$currentTheme'),
                       style: TextStyle(
                         fontSize: 13,
                         color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: node.isFolder ? FontWeight.w500 : FontWeight.normal,
+                        fontWeight: node.isFolder
+                            ? FontWeight.w500
+                            : FontWeight.normal,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -129,21 +156,18 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
 
                   // Actions
                   if (node.isRenaming)
-                    const SizedBox(
+                    SizedBox(
                       width: 16,
                       height: 16,
                       child: Icon(
                         Icons.edit,
                         size: 12,
-                        color: Colors.blue,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     )
                   else
                     PopupMenuButton<FileExplorerNode>(
-                      icon: const Icon(
-                        Icons.more_vert,
-                        size: 16,
-                      ),
+                      icon: const Icon(Icons.more_vert, size: 16),
                       itemBuilder: (context) => [
                         PopupMenuItem(
                           value: node,
@@ -209,7 +233,15 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
 
           // Children (if expanded)
           if (node.isFolder && isExpanded && children.isNotEmpty)
-            ...children.map((child) => _buildTreeNode(context, child, provider, depth + 1)),
+            ...children.map(
+              (child) => _buildTreeNode(
+                context,
+                child,
+                provider,
+                depth + 1,
+                currentTheme,
+              ),
+            ),
         ],
       ),
     );
@@ -259,41 +291,48 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
       return Theme.of(context).colorScheme.primary.withValues(alpha: 0.7);
     }
 
+    // Используем адаптивные цвета для темной/светлой темы
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
     final extension = node.name.split('.').last.toLowerCase();
     switch (extension) {
       case 'dart':
-        return Colors.blue;
+        return isDark ? Colors.blue.shade300 : Colors.blue.shade700;
       case 'js':
       case 'ts':
-        return Colors.yellow;
+        return isDark ? Colors.yellow.shade300 : Colors.yellow.shade700;
       case 'html':
-        return Colors.orange;
+        return isDark ? Colors.orange.shade300 : Colors.orange.shade700;
       case 'css':
-        return Colors.purple;
+        return isDark ? Colors.purple.shade300 : Colors.purple.shade700;
       case 'json':
-        return Colors.grey;
+        return isDark ? Colors.grey.shade400 : Colors.grey.shade700;
       case 'md':
-        return Colors.blueGrey;
+        return isDark ? Colors.blueGrey.shade300 : Colors.blueGrey.shade700;
       case 'txt':
-        return Colors.grey;
+        return isDark ? Colors.grey.shade400 : Colors.grey.shade700;
       case 'png':
       case 'jpg':
       case 'jpeg':
       case 'gif':
       case 'svg':
-        return Colors.green;
+        return isDark ? Colors.green.shade300 : Colors.green.shade700;
       case 'pdf':
-        return Colors.red;
+        return isDark ? Colors.red.shade300 : Colors.red.shade700;
       case 'zip':
       case 'rar':
       case '7z':
-        return Colors.brown;
+        return isDark ? Colors.brown.shade300 : Colors.brown.shade700;
       default:
-        return Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
+        return onSurface.withValues(alpha: 0.6);
     }
   }
 
-  void _toggleNodeExpansion(FileExplorerNode node, FileExplorerProvider provider) {
+  void _toggleNodeExpansion(
+    FileExplorerNode node,
+    FileExplorerProvider provider,
+  ) {
     provider.toggleNodeExpansion(node.id);
   }
 
@@ -318,7 +357,7 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
     FileExplorerProvider provider,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -392,15 +431,10 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
     FileExplorerProvider provider,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showMenu(
       context: context,
-      position: const RelativeRect.fromLTRB(
-        100,
-        100,
-        300,
-        400,
-      ),
+      position: const RelativeRect.fromLTRB(100, 100, 300, 400),
       items: [
         PopupMenuItem(
           value: 'create_file',
@@ -540,16 +574,14 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
   ) {
     final controller = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.rename),
         content: TextField(
           controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n.newName,
-          ),
+          decoration: InputDecoration(labelText: l10n.newName),
         ),
         actions: [
           ModernButton(
@@ -578,16 +610,14 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
   ) {
     final controller = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.createFolder),
         content: TextField(
           controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n.folderName,
-          ),
+          decoration: InputDecoration(labelText: l10n.folderName),
         ),
         actions: [
           ModernButton(
@@ -599,7 +629,10 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
             text: l10n.create,
             onPressed: () {
               if (controller.text.trim().isNotEmpty) {
-                provider.createFolderInDirectory(node.path, controller.text.trim());
+                provider.createFolderInDirectory(
+                  node.path,
+                  controller.text.trim(),
+                );
                 Navigator.pop(context);
               }
             },
@@ -615,13 +648,16 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
     FileExplorerProvider provider,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.delete),
         content: Text(
-          l10n.confirmDelete(node.isFolder ? l10n.folder : l10n.file, node.name),
+          l10n.confirmDelete(
+            node.isFolder ? l10n.folder : l10n.file,
+            node.name,
+          ),
         ),
         actions: [
           ModernButton(

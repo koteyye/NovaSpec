@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/tab_provider.dart';
 import '../providers/file_explorer_provider.dart';
+import '../../musication/widgets/musication_indicator.dart';
+import '../../musication/providers/musication_provider.dart';
 
 class StatusBar extends StatelessWidget {
   const StatusBar({super.key});
@@ -19,14 +21,19 @@ class StatusBar extends StatelessWidget {
           ),
         ),
       ),
-      child: Consumer2<TabProvider, FileExplorerProvider>(
-        builder: (context, tabProvider, fileExplorerProvider, child) {
+      child: Consumer3<TabProvider, FileExplorerProvider, MusicationProvider>(
+        builder: (context, tabProvider, fileExplorerProvider, musicationProvider, child) {
+          debugPrint('🎵 StatusBar rebuild: musicationProvider.isActive=${musicationProvider.isActive}');
           return Row(
             children: [
               // File info
               Expanded(
                 child: _buildFileInfo(context, tabProvider),
               ),
+              
+              // Musication progress indicator
+              const MusicationIndicator(),
+              const SizedBox(width: 4),
               
               // Position info (placeholder)
               _buildPositionInfo(context),
